@@ -1,0 +1,77 @@
+using_ns:
+  - Engine.Common.Protocol
+ns: Engine.Common.Protocol.Pt
+pts:
+  - className: PtFrame
+    fields:
+      - type: uint16
+        name: Cmd
+      - type: uint32
+        name: EntityId
+      - type: bytes
+        name: ParamContent
+  - className: PtInt32List
+    fields:
+      - type: int32
+        name: Value
+  - className: PtFrames
+    fields:
+      - type: int32
+        name: FrameIdx
+      - type: PtFrame
+        name: KeyFrames
+        isArray: 1
+  - className: PtFramesList
+    fields:
+      - type: int32
+        name: FrameIdx
+      - type: PtFrames
+        name: Elements
+        isArray: 1
+  - className: PtLaunchData
+    fields:
+      - type: string
+        name: RoomServerAddr
+      - type: uint16
+        name: RoomServerPort
+      - type: uint32
+        name: MapId
+      - type: string
+        name: ConnectionKey
+      - type: bool
+        name: IsStandaloneMode
+      - type: byte
+        name: PlayerNumber
+  - className: PtRoomPlayer
+    fields:
+      - type: uint32
+        name: EntityId
+      - type: byte
+        name: TeamId
+      - type: string
+        name: Name
+      - type: string
+        name: UserId
+      - type: byte
+        name: Status
+  - className: PtRoom
+    fields:
+      - type: uint32
+        name: RoomId
+      - type: byte
+        name: Status
+      - type: uint32
+        name: MapId
+      - type: string
+        name: RoomOwnerUserId
+      - type: byte
+        name: MaxPlayerCount
+      - type: PtRoomPlayer
+        name: Players
+        isArray: 1
+  - className: PtRoomList
+    fields:
+      - type: PtRoom
+        name: Rooms
+        isArray: 1
+
