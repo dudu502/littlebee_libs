@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 49d9b1fac0c818946a858d58d3dddfc3, type: 3}
+  m_Name: ZSH
+  m_EditorClassIdentifier: 
+  console: " \u2192"
+  font: {fileID: 12800000, guid: 1a32c30d99b6e784687c5a903045cb10, type: 3}
+  fontSize: 30
+  commandColor: {r: 1, g: 1, b: 1, a: 1}
+  backgroundColor: {r: 0, g: 0, b: 0, a: 0.70980394}
+  autoCompleteHoverColor: {r: 1, g: 0, b: 0, a: 1}
+  supportEmail: support@mycompany.com
+  EmailTitle: MyAwesomeGame - Report
+  LogCount: 2000
+  infoStacks: 0
+  warningStacks: 0
+  errorStacks: 1
+  assertStacks: 1
+  exceptionStacks: 1

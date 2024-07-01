@@ -9,7 +9,7 @@ namespace Engine.Client.Lockstep.Behaviours
     public class ReplayLogicFrameBehaviour : ISimulativeBehaviour
     {
         public Simulation Sim { get; set; }
-        public int CurrentFrameIdx;
+        public int CurrentFrameIdx { private set; get; }
         List<List<PtFrame>> m_Frames;
         public void Start()
         {

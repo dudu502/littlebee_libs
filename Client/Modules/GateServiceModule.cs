@@ -1,5 +1,6 @@
 ﻿using Engine.Common;
 using Engine.Common.Event;
+using Engine.Common.Log;
 using Engine.Common.Module;
 using Engine.Common.Network;
 using Engine.Common.Network.Integration;
@@ -14,9 +15,11 @@ namespace Engine.Client.Modules
     public class GateServiceModule:AbstractModule
     {
         public PtRoom SelfRoom { private set; get; }
-        public INetworkClient NetworkClient { private set; get; }
+        INetworkClient NetworkClient;
+        ILogger Logger;
         public GateServiceModule()
         {
+            Logger = Context.Retrieve(Context.CLIENT).Logger;
             NetworkClient = Context.Retrieve(Context.CLIENT).Client;
             //EventDispatcher<ResponseMessageId, PtMessagePackage>.AddListener(ResponseMessageId.GS_ClientConnected, OnResponseGateServerCliented);
             //EventDispatcher<ResponseMessageId, PtMessagePackage>.AddListener(ResponseMessageId.UGS_SearchAvailableGate, OnSearchAvailableGate);
@@ -49,9 +52,9 @@ namespace Engine.Client.Modules
 
         }
 
-        public void ConnectGate()
+        public void ConnectGate(string ip, int port, string key)
         {
-            
+            NetworkClient.Connect(ip, port, key);
         }
 
         public override void Dispose()

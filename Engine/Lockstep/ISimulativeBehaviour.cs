@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Engine.Common.Lockstep
+﻿namespace Engine.Common.Lockstep
 {
     public interface ISimulativeBehaviour
     {

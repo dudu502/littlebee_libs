@@ -1,4 +1,7 @@
-﻿using Engine.Common.Module;
+﻿using Engine.Common;
+using Engine.Common.Log;
+using Engine.Common.Module;
+using Engine.Common.Network.Integration;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -7,9 +10,12 @@ namespace Engine.Client.Modules
 {
     public class RoomServiceModule:AbstractModule
     {
-        public RoomServiceModule() 
+        INetworkClient NetworkClient;
+        ILogger Logger;
+        public RoomServiceModule()
         {
-
+            Logger = Context.Retrieve(Context.CLIENT).Logger;
+            NetworkClient = Context.Retrieve(Context.CLIENT).Client;
         }
 
         public void RequestEnterRoom()

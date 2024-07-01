@@ -6,7 +6,12 @@ using Engine.Common.Protocol;
 
 namespace Engine.Common.Protocol
 {
-    public class PtMessagePackage
+    public partial class PtMessagePackage
+    {
+        public int ExtraPeerId;
+        public object ExtraData;
+    }
+    public partial class PtMessagePackage
     {
         public byte __tag__ { get; private set; }
 

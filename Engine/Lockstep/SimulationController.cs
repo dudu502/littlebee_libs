@@ -67,10 +67,14 @@ namespace Engine.Common.Lockstep
                 if (runner != null)
                 {
                     ((Action)runner)();
+                    runner = null;
                 }
             }
         }
-
+        public override string ToString()
+        {
+            return $"DefaultFrameMsLentgh:{c_DefaultFrameMsLength} Simulation:{m_SimulationInstance}";
+        }
         public S GetSimulation<S>() where S:Simulation
         {
             return (S)m_SimulationInstance;

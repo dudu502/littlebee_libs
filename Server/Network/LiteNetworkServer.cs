@@ -39,6 +39,7 @@ namespace Engine.Server.Network
             {
                 byte[] raw = reader.GetRemainingBytes();
                 PtMessagePackage package = PtMessagePackage.Read(raw);
+                package.ExtraPeerId = peer.Id;
                 EventDispatcher<RequestMessageId, PtMessagePackage>
                     .DispatchEvent((RequestMessageId)package.MessageId, package);
                 reader.Recycle();

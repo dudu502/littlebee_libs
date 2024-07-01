@@ -1,4 +1,5 @@
 ﻿using Engine.Common.Lockstep;
+using Engine.Common.Log;
 using Engine.Common.Module;
 using Engine.Common.Network.Integration;
 using System;
@@ -15,26 +16,32 @@ namespace Engine.Common
         public INetworkServer Server { get; private set; }
         public INetworkClient Client { get; private set; }
 
+        public ILogger Logger { get;private set; }
+
         public string Name; 
 
         SimulationController simulationController;
 
         Dictionary<Type, AbstractModule> modules;
 
-        public Context(string name,INetworkClient client)
+        public Context(string name,INetworkClient client, ILogger logger)
         {
+            Logger = Logger;
             Client = client;
             Name = name;
             s_instances[name] = this;
-            modules = new Dictionary<Type, AbstractModule>();
+            modules = new Dictionary<Type, AbstractModule>(); 
+            Logger.Info($"Context Created Name:{name}");
         }
 
-        public Context(string name, INetworkServer server)
+        public Context(string name, INetworkServer server,ILogger logger)
         {
+            Logger = logger;
             Server = server;
             Name = name;
             s_instances[name] = this;
             modules = new Dictionary<Type, AbstractModule>();
+            Logger.Info($"Context Created Name:{name}");
         }
 
         public static Context Retrieve(string name)
@@ -43,27 +50,29 @@ namespace Engine.Common
                 return value;
             return null;
         }
-        public Context SetSimulationController(SimulationController wrap)
+        public Context SetSimulationController(SimulationController controller)
         {
-            simulationController = wrap;
+            simulationController = controller;
+            Logger.Info("Context SetSimulationController " + controller);
             return this;
         }
         public SimulationController GetSimulationController()
         {
             return simulationController;
         }
-        public Context RegisterModule(AbstractModule module)
+        public Context SetModule(AbstractModule module)
         {
-            modules[module.GetType()] = module;
+            modules[module.GetType()] = module; 
+            Logger.Info("Context SetModule " + module);
             return this;
         }
-        public M RetrieveModule<M>() where M : AbstractModule
+        public M GetModule<M>() where M : AbstractModule
         {
             if (modules.TryGetValue(typeof(M), out AbstractModule module))
                 return (M)module;
             return default;
         }
-        public Context UnregisterModule(Type type)
+        public Context RemoveModule(Type type)
         {
             if (modules.TryGetValue(type, out var module))
             {

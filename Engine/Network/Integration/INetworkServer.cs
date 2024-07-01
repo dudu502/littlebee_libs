@@ -8,7 +8,6 @@ namespace Engine.Common.Network.Integration
     {
         void Send(int clientId, ushort messageId,byte[] data);
         void Send(int[] clientIds, ushort messageId, byte[] data);
-
         void Run(int port);
     }
 }

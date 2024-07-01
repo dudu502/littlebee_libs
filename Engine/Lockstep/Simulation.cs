@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Engine.Common.Lockstep
 {
@@ -61,6 +62,11 @@ namespace Engine.Common.Lockstep
         {
             m_Behaviours.Clear();
             m_Behaviours = null;
+        }
+
+        public override string ToString()
+        {
+            return $"ISimulativeBehaviour Count:{m_Behaviours.Count} [{string.Join(",",m_Behaviours.Select(b=>b.GetType().ToString()))}]";
         }
     }
 }

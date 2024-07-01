@@ -74,3 +74,8 @@ crashlytics-build.properties
 /Tools/MapEditor/Logs
 /Engine/obj
 /Server/obj
+/Examples/Clients/LockstepClient/Library
+/Examples/Servers/LockstepGate/obj
+/Examples/Clients/LockstepClient/Logs
+/Examples/Clients/LockstepClient/ProjectSettings
+/Examples/Servers/LockstepGate/bin
