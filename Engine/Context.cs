@@ -7,6 +7,10 @@ using System.Collections.Generic;
 
 namespace Engine.Common
 {
+    public sealed class ContextMetaId
+    {
+        public const string UserId = "user_id";
+    }
     public sealed class Context
     {
         public const string CLIENT = "client";
@@ -24,23 +28,29 @@ namespace Engine.Common
 
         Dictionary<Type, AbstractModule> modules;
 
+        Dictionary<string, string> metas;
+
         public Context(string name,INetworkClient client, ILogger logger)
         {
-            Logger = Logger;
+            metas = new Dictionary<string, string>();
+            Logger = logger;
             Client = client;
             Name = name;
             s_instances[name] = this;
-            modules = new Dictionary<Type, AbstractModule>(); 
+            modules = new Dictionary<Type, AbstractModule>();
+        
             Logger.Info($"Context Created Name:{name}");
         }
 
         public Context(string name, INetworkServer server,ILogger logger)
         {
+            metas = new Dictionary<string, string>();
             Logger = logger;
             Server = server;
             Name = name;
             s_instances[name] = this;
             modules = new Dictionary<Type, AbstractModule>();
+     
             Logger.Info($"Context Created Name:{name}");
         }
 
@@ -60,6 +70,18 @@ namespace Engine.Common
         {
             return simulationController;
         }
+
+        public Context SetMeta(string name,string value)
+        {
+            metas[name] = value;
+            return this;
+        }
+        public string GetMeta(string name)
+        {
+            if(metas.TryGetValue(name,out var value)) return value;
+            return string.Empty;
+        }
+
         public Context SetModule(AbstractModule module)
         {
             modules[module.GetType()] = module; 

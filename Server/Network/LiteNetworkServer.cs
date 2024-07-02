@@ -1,4 +1,6 @@
-﻿using Engine.Common.Event;
+﻿using Engine.Common;
+using Engine.Common.Event;
+using Engine.Common.Log;
 using Engine.Common.Network;
 using Engine.Common.Network.Integration;
 using Engine.Common.Protocol;
@@ -17,7 +19,7 @@ namespace Engine.Server.Network
         private readonly string connectionKey;
         private readonly NetManager manager;
         private readonly EventBasedNetListener listener;
-        private bool isRunning;
+        private bool isRunning = true;
         public LiteNetworkServer(string key)
         {
             connectionKey = key;
@@ -29,6 +31,7 @@ namespace Engine.Server.Network
         {
             listener.ConnectionRequestEvent += request =>
             {
+                Context.Retrieve(Context.SERVER).Logger.Info("ConnectionRequestEvent "+request.ToString());
                 request.AcceptIfKey(connectionKey);
             };
             listener.PeerConnectedEvent += peer =>
@@ -40,6 +43,7 @@ namespace Engine.Server.Network
                 byte[] raw = reader.GetRemainingBytes();
                 PtMessagePackage package = PtMessagePackage.Read(raw);
                 package.ExtraPeerId = peer.Id;
+                Context.Retrieve(Context.SERVER).Logger.Info($"NetworkReceiveEvent id:{peer.Id} messageId:{package.MessageId}");
                 EventDispatcher<RequestMessageId, PtMessagePackage>
                     .DispatchEvent((RequestMessageId)package.MessageId, package);
                 reader.Recycle();
@@ -62,6 +66,7 @@ namespace Engine.Server.Network
         public void Send(int clientId, ushort messageId, byte[] data)
         {
             byte[] raw = PtMessagePackage.Write(PtMessagePackage.Build(messageId,data));
+            Context.Retrieve(Context.SERVER).Logger.Info($"Send clientId:{clientId} messageId:{messageId} isInPeerList:{manager.ConnectedPeerList.Find(i=>i.Id == clientId) != null}");
             manager.ConnectedPeerList.First(peer => peer.Id == clientId)
                 .Send(raw, DeliveryMethod.ReliableOrdered);
         }

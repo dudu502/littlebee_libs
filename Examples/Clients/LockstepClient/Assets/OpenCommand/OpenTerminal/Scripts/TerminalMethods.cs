@@ -36,7 +36,7 @@ public class TerminalMethods
         Type monoType = mono.GetType();
 
         // Retreive the fields from the mono instance
-        MethodInfo[] methodFields = monoType.GetMethods(BindingFlags.Instance | BindingFlags.Public);
+        MethodInfo[] methodFields = monoType.GetMethods(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
 
         // search all fields and find the attribute
         for (int i = 0; i < methodFields.Length; i++)

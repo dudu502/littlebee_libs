@@ -17,11 +17,13 @@ namespace Engine.Client.Modules
         public PtRoom SelfRoom { private set; get; }
         INetworkClient NetworkClient;
         ILogger Logger;
+        Context ClientContext;
         public GateServiceModule()
         {
-            Logger = Context.Retrieve(Context.CLIENT).Logger;
-            NetworkClient = Context.Retrieve(Context.CLIENT).Client;
-            //EventDispatcher<ResponseMessageId, PtMessagePackage>.AddListener(ResponseMessageId.GS_ClientConnected, OnResponseGateServerCliented);
+            ClientContext = Context.Retrieve(Context.CLIENT);
+            Logger = ClientContext.Logger;
+            NetworkClient = ClientContext.Client;
+            EventDispatcher<ResponseMessageId, PtMessagePackage>.AddListener(ResponseMessageId.GS_ClientConnected, OnResponseGateServerCliented);
             //EventDispatcher<ResponseMessageId, PtMessagePackage>.AddListener(ResponseMessageId.UGS_SearchAvailableGate, OnSearchAvailableGate);
             //EventDispatcher<ResponseMessageId, PtMessagePackage>.AddListener(ResponseMessageId.GS_UpdateRoom, OnResponseUpdateRoom);
             //EventDispatcher<ResponseMessageId, PtMessagePackage>.AddListener(ResponseMessageId.GS_RoomList, OnResponseRoomList);
@@ -35,6 +37,14 @@ namespace Engine.Client.Modules
         public void RequestRoomList()
         {
             NetworkClient.Send((ushort)RequestMessageId.GS_RoomList, null);
+        }
+
+        void OnResponseGateServerCliented(PtMessagePackage message)
+        {
+            string userId = ClientContext.GetMeta(ContextMetaId.UserId) ?? GetHashCode().ToString();
+            Logger.Info(nameof(OnResponseGateServerCliented)+ " userId:"+userId);
+       
+            NetworkClient.Send((ushort)RequestMessageId.GS_EnterGate, new ByteBuffer().WriteString(userId).GetRawBytes());
         }
 
         public void RequestCreateRoom(uint mapId)

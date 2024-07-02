@@ -1,4 +1,5 @@
-﻿using Engine.Common.Event;
+﻿using Engine.Common;
+using Engine.Common.Event;
 using Engine.Common.Network;
 using Engine.Common.Network.Integration;
 using Engine.Common.Protocol;
@@ -39,6 +40,7 @@ namespace Engine.Client.Network
         {
             manager.Start();
             manager.Connect(ip, port, key);
+            Context.Retrieve(Context.CLIENT).Logger.Info($"Client Connect {ip}:{port} Key:{key}");
             CreateThreads();
         }
 
@@ -69,6 +71,7 @@ namespace Engine.Client.Network
                 if (queueMessages.TryDequeue(out byte[] bytes))
                 {
                     PtMessagePackage package = PtMessagePackage.Read(bytes);
+                    Context.Retrieve(Context.CLIENT).Logger.Info($"{nameof(TickDispatchMessages)} messageId:{package.MessageId}");
                     EventDispatcher<ResponseMessageId, PtMessagePackage>
                         .DispatchEvent((ResponseMessageId)package.MessageId, package);
                 }
@@ -87,6 +90,7 @@ namespace Engine.Client.Network
         }
         public void Send(ushort messageId, byte[] bytes)
         {
+            Context.Retrieve(Context.CLIENT).Logger.Info($"{nameof(Send)} messageId:{messageId}");
             manager.SendToAll(PtMessagePackage.Write(PtMessagePackage.Build(messageId, bytes)), DeliveryMethod.ReliableOrdered);
         }
     }
