@@ -33,6 +33,21 @@ namespace LockstepGate
             if (IsDebugEnabled)
                 Console.WriteLine($"[{DateTime.Now.ToString(_TimeFormatPatten)}]W[{_tag}]\t{message}");
         }
+
+        public void Info(object message)
+        {
+            Info(message.ToString());
+        }
+
+        public void Warn(object message)
+        {
+            Warn(message.ToString());
+        }
+
+        public void Error(object message)
+        {
+            Error(message.ToString());
+        }
     }
 
     internal class Program

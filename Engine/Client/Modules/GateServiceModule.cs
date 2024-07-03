@@ -7,6 +7,7 @@ using Engine.Common.Network;
 using Engine.Common.Network.Integration;
 using Engine.Common.Protocol;
 using Engine.Common.Protocol.Pt;
+using System;
 
 namespace Engine.Client.Modules
 {
@@ -39,11 +40,12 @@ namespace Engine.Client.Modules
         void OnResponseLeaveRoom(PtMessagePackage message)
         {
             SelfRoom = null;
+            m_Logger.Info($"{nameof(OnResponseLeaveRoom)}");
         }
         void OnResponseLaunchRoomInstance(PtMessagePackage message)
         {
             PtLaunchData launchData = PtLaunchData.Read(message.Content);
-
+            DispatchHandlerEvent(MainLoopLoadingEvent.UpdateLoading, new Tuple<LoadingType, float>(LoadingType.CreateRoomServiceComplete,0.4f));
         }
         void OnResponseLaunchGame(PtMessagePackage message)
         {
@@ -67,12 +69,14 @@ namespace Engine.Client.Modules
         {
             PtRoomList rooms = PtRoomList.Read(message.Content);
             DispatchHandlerEvent(MainLoopGateEvent.RoomListUpdated, rooms);
+            m_Logger.Info(rooms);
         }
         void OnResponseCreateRoom(PtMessagePackage message)
         {
             PtRoom room = PtRoom.Read(message.Content);
             SelfRoom = room;
             DispatchHandlerEvent(MainLoopGateEvent.RoomCreated, room);
+            m_Logger.Info(room);
         }
         void OnResponseJoinRoom(PtMessagePackage message)
         {

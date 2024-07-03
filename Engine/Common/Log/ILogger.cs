@@ -10,5 +10,9 @@ namespace Engine.Common.Log
         void Info(string message);
         void Warn(string message);
         void Error(string message);
+
+        void Info(object message);
+        void Warn(object message);
+        void Error(object message);
     }
 }
