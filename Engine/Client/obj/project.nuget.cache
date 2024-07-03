@@ -1,8 +1,11 @@
 {
   "version": 2,
-  "dgSpecHash": "fvkhGM0oiCgNfMySU8AnRZQuOnqHgPKCNqUvmA7qp6XiQNYGn6ysvuVsKAjFXvg+8TH4Vt+d+b7Uj9zRRRGJ4w==",
+  "dgSpecHash": "n98h/h0si9t8QzoySkynJqAoAQmgHD7JPFL9NGdLpAwoq84uZUATcV8NlBmVXz42iCqFRh4AS8pL+549AqxvaA==",
   "success": true,
   "projectFilePath": "D:\\dudu502\\littlebee_libs\\Engine\\Client\\Client.csproj",
-  "expectedPackageFiles": [],
+  "expectedPackageFiles": [
+    "C:\\Users\\panhj2\\.nuget\\packages\\microsoft.netcore.platforms\\1.1.0\\microsoft.netcore.platforms.1.1.0.nupkg.sha512",
+    "C:\\Users\\panhj2\\.nuget\\packages\\netstandard.library\\2.0.3\\netstandard.library.2.0.3.nupkg.sha512"
+  ],
   "logs": []
 }

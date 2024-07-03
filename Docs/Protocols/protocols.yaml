@@ -10,10 +10,6 @@ pts:
         name: EntityId
       - type: bytes
         name: ParamContent
-  - className: PtInt32List
-    fields:
-      - type: int32
-        name: Value
   - className: PtFrames
     fields:
       - type: int32
@@ -48,6 +44,8 @@ pts:
         name: EntityId
       - type: byte
         name: TeamId
+      - type: byte
+        name: Color
       - type: string
         name: Name
       - type: string

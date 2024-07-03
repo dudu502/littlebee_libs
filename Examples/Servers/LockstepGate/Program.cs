@@ -40,8 +40,11 @@ namespace LockstepGate
         const string TAG = "GS";
         static void Main(string[] args)
         {
-            Context context = new Context(Context.SERVER, new LiteNetworkServer(TAG),new ConsoleLogger(TAG));
-            context.SetModule(new RoomModule());
+            Context context = new Context(Context.SERVER, new LiteNetworkServer(TAG), new ConsoleLogger(TAG))
+                .SetMeta(ContextMetaId.RoomModuleFullPath,"*.dll")
+                .SetMeta(ContextMetaId.MaxConnectionCount,"16")
+                .SetMeta(ContextMetaId.RoomServerAddress,"127.0.0.1")
+                .SetModule(new RoomModule());
             context.Server.Run(9030);
             Console.ReadKey();
         }

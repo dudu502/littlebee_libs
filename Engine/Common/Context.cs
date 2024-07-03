@@ -10,6 +10,9 @@ namespace Engine.Common
     public sealed class ContextMetaId
     {
         public const string UserId = "user_id";
+        public const string RoomServerAddress = "room_server_address";
+        public const string MaxConnectionCount = "max_connection_count";
+        public const string RoomModuleFullPath = "room_module_full_path";
     }
     public sealed class Context
     {

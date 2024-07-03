@@ -1,0 +1,10 @@
+D:\dudu502\littlebee_libs\Engine\Common\bin\Debug\netstandard2.0\Common.deps.json
+D:\dudu502\littlebee_libs\Engine\Common\bin\Debug\netstandard2.0\Common.dll
+D:\dudu502\littlebee_libs\Engine\Common\bin\Debug\netstandard2.0\Common.pdb
+D:\dudu502\littlebee_libs\Engine\Common\obj\Debug\netstandard2.0\Common.csproj.AssemblyReference.cache
+D:\dudu502\littlebee_libs\Engine\Common\obj\Debug\netstandard2.0\Common.GeneratedMSBuildEditorConfig.editorconfig
+D:\dudu502\littlebee_libs\Engine\Common\obj\Debug\netstandard2.0\Common.AssemblyInfoInputs.cache
+D:\dudu502\littlebee_libs\Engine\Common\obj\Debug\netstandard2.0\Common.AssemblyInfo.cs
+D:\dudu502\littlebee_libs\Engine\Common\obj\Debug\netstandard2.0\Common.csproj.CoreCompileInputs.cache
+D:\dudu502\littlebee_libs\Engine\Common\obj\Debug\netstandard2.0\Common.dll
+D:\dudu502\littlebee_libs\Engine\Common\obj\Debug\netstandard2.0\Common.pdb
