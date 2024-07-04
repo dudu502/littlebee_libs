@@ -59,9 +59,16 @@ public class MainCommand : MonoBehaviour
     {
         Handler.Initialize();
         MainContext = new Context(Context.CLIENT, new LiteNetworkClient(), new UnityLogger("Unity"));
+        MainContext.SetMeta(ContextMetaId.StandaloneModePort, "50000");
         MainContext.SetModule(new GateServiceModule())
                     .SetModule(new RoomServiceModule());
 
+    }
+
+    private void Start()
+    {
+        //SetUserId("test1");
+        //Connect();
     }
     [TerminalCommand("setuid","setuid(id)")]
     public void SetUserId(string uid)
@@ -81,15 +88,38 @@ public class MainCommand : MonoBehaviour
         ConnectIP_Port_Key("127.0.0.1",9030,"GS");
     }
 
-    [TerminalCommand("create_room","create_room()")]
+    [TerminalCommand("create","create_room()")]
     public void CreateRoom()
     {
         MainContext.GetModule<GateServiceModule>().RequestCreateRoom(1);
     }
+
+    [TerminalCommand("join","join(roomId)")]
+    public void JoinRoom(uint roomId)
+    {
+        MainContext.GetModule<GateServiceModule>().RequestJoinRoom(roomId);
+    }
+
+    [TerminalCommand("leave", "leave_room()")]
+    public void LeaveRoom()
+    {
+        MainContext.GetModule<GateServiceModule>().RequestLeaveRoom();
+    }
+
     [TerminalCommand("roomlist","fetch all rooms")]
     public void RoomList()
     {
         MainContext.GetModule<GateServiceModule>().RequestRoomList();
+    }
+    [TerminalCommand("update-team", "update-team(roomId,userId,teamId)")]
+    public void UpdateTeam(uint roomId,string userId,byte teamId)
+    {
+        MainContext.GetModule<GateServiceModule>().RequestUpdatePlayerTeam(roomId,userId,teamId);
+    }
+    [TerminalCommand("update-map", "update-map(roomId,mapId,maxPlayerCount)")]
+    public void UpdateMap(uint roomId, uint mapId, byte maxPlayerCount)
+    {
+        MainContext.GetModule<GateServiceModule>().RequestUpdateMap(roomId, mapId, maxPlayerCount);
     }
     private void Update()
     {

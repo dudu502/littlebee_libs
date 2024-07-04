@@ -1,62 +1,19 @@
 ﻿using Engine.Common;
 using Engine.Common.Log;
+using Engine.Server.Log;
 using Engine.Server.Modules;
 using Engine.Server.Network;
 
 namespace LockstepGate
 {
-    public class ConsoleLogger : ILogger
-    {
-        private string _tag;
-        private readonly string _TimeFormatPatten = "yyyy/MM/dd HH:mm:ss.fff";
-
-        public bool IsDebugEnabled { get; set; } = true;
-
-        public ConsoleLogger(string tag)
-        {
-            _tag = tag;
-        }
-        public void Error(string message)
-        {
-            if (IsDebugEnabled)
-                Console.WriteLine($"[{DateTime.Now.ToString(_TimeFormatPatten)}]E[{_tag}]\t{message}");
-        }
-
-        public void Info(string message)
-        {
-            if (IsDebugEnabled)
-                Console.WriteLine($"[{DateTime.Now.ToString(_TimeFormatPatten)}]I[{_tag}]\t{message}");
-        }
-
-        public void Warn(string message)
-        {
-            if (IsDebugEnabled)
-                Console.WriteLine($"[{DateTime.Now.ToString(_TimeFormatPatten)}]W[{_tag}]\t{message}");
-        }
-
-        public void Info(object message)
-        {
-            Info(message.ToString());
-        }
-
-        public void Warn(object message)
-        {
-            Warn(message.ToString());
-        }
-
-        public void Error(object message)
-        {
-            Error(message.ToString());
-        }
-    }
-
+   
     internal class Program
     {
         const string TAG = "GS";
         static void Main(string[] args)
         {
-            Context context = new Context(Context.SERVER, new LiteNetworkServer(TAG), new ConsoleLogger(TAG))
-                .SetMeta(ContextMetaId.RoomModuleFullPath,"*.dll")
+            Context context = new Context(Context.SERVER, new LiteNetworkServer(TAG), new DefaultConsoleLogger(TAG))
+                .SetMeta(ContextMetaId.RoomModuleFullPath, @"D:\dudu502\littlebee_libs\Examples\Servers\Battle\bin\Debug\net6.0\Battle.dll")
                 .SetMeta(ContextMetaId.MaxConnectionCount,"16")
                 .SetMeta(ContextMetaId.RoomServerAddress,"127.0.0.1")
                 .SetModule(new RoomModule());

@@ -16,16 +16,17 @@ namespace Engine.Server.Network
 {
     public class LiteNetworkServer : INetworkServer
     {
-        private readonly string connectionKey;
-        private readonly NetManager manager;
-        private readonly EventBasedNetListener listener;
-        private bool isRunning = true;
+        readonly string connectionKey;
+        readonly NetManager manager;
+        readonly EventBasedNetListener listener;
+        bool isRunning = true;
         public LiteNetworkServer(string key)
         {
             connectionKey = key;
             listener = new EventBasedNetListener();
             manager = new NetManager(listener);
-            manager.DisconnectTimeout = 30000;
+            manager.DisconnectTimeout = 5000;
+            manager.UnconnectedMessagesEnabled = true;
         }
         public void Run(int port)
         {
@@ -55,6 +56,7 @@ namespace Engine.Server.Network
             manager.Start(port);
             ThreadPool.QueueUserWorkItem(PollEvents, null);
         }
+
         void PollEvents(object obj)
         {
             while (isRunning)
@@ -65,10 +67,17 @@ namespace Engine.Server.Network
         }
         public void Send(int clientId, ushort messageId, byte[] data)
         {
-            byte[] raw = PtMessagePackage.Write(PtMessagePackage.Build(messageId,data));
-            Context.Retrieve(Context.SERVER).Logger.Info($"Send clientId:{clientId} messageId:{messageId} isInPeerList:{manager.ConnectedPeerList.Find(i=>i.Id == clientId) != null}");
-            manager.ConnectedPeerList.First(peer => peer.Id == clientId)
-                .Send(raw, DeliveryMethod.ReliableOrdered);
+            byte[] raw = PtMessagePackage.Write(PtMessagePackage.Build(messageId, data));
+            Context.Retrieve(Context.SERVER).Logger.Info($"Send clientId:{clientId} messageId:{messageId} isInPeerList:{manager.ConnectedPeerList.Find(i => i.Id == clientId) != null}");
+            for (int i = 0; i < manager.ConnectedPeerList.Count; ++i)
+            {
+                NetPeer netPeer = manager.ConnectedPeerList[i];
+                if (netPeer != null && netPeer.Id == clientId)
+                {
+                    netPeer.Send(raw, DeliveryMethod.ReliableOrdered);
+                    break;
+                }
+            }
         }
 
         public void Send(int[] clientIds, ushort messageId, byte[] data)
@@ -77,6 +86,11 @@ namespace Engine.Server.Network
             {
                 Send(clientId, messageId, data);
             }
+        }
+
+        public int GetActivePort()
+        {
+            return manager.LocalPort;
         }
     }
 }

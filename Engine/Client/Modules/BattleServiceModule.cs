@@ -1,26 +1,30 @@
 ﻿using Engine.Common;
 using Engine.Common.Log;
 using Engine.Common.Module;
+using Engine.Common.Network;
 using Engine.Common.Network.Integration;
+using Engine.Common.Protocol;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace Engine.Client.Modules
 {
-    public class RoomServiceModule:AbstractModule
+    public class BattleServiceModule : AbstractModule
     {
-        INetworkClient NetworkClient;
-        ILogger Logger;
-        public RoomServiceModule()
+        Context m_Context;
+        INetworkClient m_NetworkClient;
+        ILogger m_Logger;
+        public BattleServiceModule()
         {
-            Logger = Context.Retrieve(Context.CLIENT).Logger;
-            NetworkClient = Context.Retrieve(Context.CLIENT).Client;
+            m_Context = Context.Retrieve(Context.CLIENT);
+            m_Logger = m_Context.Logger;
+            m_NetworkClient = m_Context.Client;
         }
 
-        public void RequestEnterRoom()
+        public void RequestEnterRoom(string userId)
         {
-
+            m_NetworkClient.Send((ushort)RequestMessageId.RS_EnterRoom, new ByteBuffer().WriteString(userId).GetRawBytes());
         }
         public void RequestInitPlayer()
         {

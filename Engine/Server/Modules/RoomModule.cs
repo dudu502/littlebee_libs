@@ -107,6 +107,7 @@ namespace Engine.Server.Modules
                             {
                                 m_RoomList.Rooms.Remove(room);
                             }
+                            // created room process 
                             OnUpdateDataToRoomPlayer(room, (ushort)ResponseMessageId.GS_LaunchRoomInstance, PtLaunchData.Write(gameData));
                             room.SetStatus(1);
                         }
@@ -126,8 +127,15 @@ namespace Engine.Server.Modules
             roomProcess.LaunchData = launchData;
             roomProcess.RoomId = room.RoomId;
             roomProcess.Port = launchData.RoomServerPort;
-
-            var psi = new ProcessStartInfo();
+            
+            var psi = new ProcessStartInfo("dotnet"," "+m_Context.GetMeta(ContextMetaId.RoomModuleFullPath)+
+                " -key "+launchData.ConnectionKey+
+                " -port "+launchData.RoomServerPort+
+                " -gsPort "+m_Context.Server.GetActivePort()+
+                " -mapId "+launchData.MapId+
+                " -playernumber "+launchData.PlayerNumber);
+            psi.UseShellExecute = false;
+            psi.CreateNoWindow = false;
             return Task.Run(() =>
             {
                 DateTime now = DateTime.Now;
@@ -137,10 +145,20 @@ namespace Engine.Server.Modules
         }
         void OnPeerDisconnected(int peerId)
         {
+            m_Logger.Info(nameof(OnPeerDisconnected) + "   " + peerId);
             var user = m_Users.Find(u => u.PeerId == peerId);
             if (user != null)
             {
-                m_Users.Remove(user);
+                for(int i = m_RoomList.Rooms.Count - 1; i > -1; i--)
+                {
+                    PtRoom room = m_RoomList.Rooms[i];
+                    if(room.Status == 0)
+                    {
+                        PtRoomPlayer player = room.Players.Find(p=>p.UserId == user.UserId);
+                        if (player != null)
+                            OnLeaveRoomImpl(room.RoomId, user);
+                    }
+                }
             }
         }
         void OnEnterGate(PtMessagePackage message)
@@ -317,6 +335,7 @@ namespace Engine.Server.Modules
                 room.Players.Add(player);
                 m_RoomList.Rooms.Add(room);
                 m_Server.Send(message.ExtraPeerId, (ushort)ResponseMessageId.GS_CreateRoom, PtRoom.Write(room));
+                m_Logger.Info($"{nameof(OnCreateRoom)} roomId:{room.RoomId}");
             }
         }
         public override void Dispose()

@@ -1,0 +1,15 @@
+D:\dudu502\littlebee_libs\Examples\Servers\Battle\bin\Debug\net6.0\Battle.exe
+D:\dudu502\littlebee_libs\Examples\Servers\Battle\bin\Debug\net6.0\Battle.deps.json
+D:\dudu502\littlebee_libs\Examples\Servers\Battle\bin\Debug\net6.0\Battle.runtimeconfig.json
+D:\dudu502\littlebee_libs\Examples\Servers\Battle\bin\Debug\net6.0\Battle.dll
+D:\dudu502\littlebee_libs\Examples\Servers\Battle\bin\Debug\net6.0\Battle.pdb
+D:\dudu502\littlebee_libs\Examples\Servers\Battle\obj\Debug\net6.0\Battle.csproj.AssemblyReference.cache
+D:\dudu502\littlebee_libs\Examples\Servers\Battle\obj\Debug\net6.0\Battle.GeneratedMSBuildEditorConfig.editorconfig
+D:\dudu502\littlebee_libs\Examples\Servers\Battle\obj\Debug\net6.0\Battle.AssemblyInfoInputs.cache
+D:\dudu502\littlebee_libs\Examples\Servers\Battle\obj\Debug\net6.0\Battle.AssemblyInfo.cs
+D:\dudu502\littlebee_libs\Examples\Servers\Battle\obj\Debug\net6.0\Battle.csproj.CoreCompileInputs.cache
+D:\dudu502\littlebee_libs\Examples\Servers\Battle\obj\Debug\net6.0\Battle.dll
+D:\dudu502\littlebee_libs\Examples\Servers\Battle\obj\Debug\net6.0\refint\Battle.dll
+D:\dudu502\littlebee_libs\Examples\Servers\Battle\obj\Debug\net6.0\Battle.pdb
+D:\dudu502\littlebee_libs\Examples\Servers\Battle\obj\Debug\net6.0\Battle.genruntimeconfig.cache
+D:\dudu502\littlebee_libs\Examples\Servers\Battle\obj\Debug\net6.0\ref\Battle.dll

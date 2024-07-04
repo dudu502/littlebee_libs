@@ -13,6 +13,7 @@ namespace Engine.Common
         public const string RoomServerAddress = "room_server_address";
         public const string MaxConnectionCount = "max_connection_count";
         public const string RoomModuleFullPath = "room_module_full_path";
+        public const string StandaloneModePort = "standalone_mode_port";
     }
     public sealed class Context
     {
@@ -78,6 +79,13 @@ namespace Engine.Common
         {
             metas[name] = value;
             return this;
+        }
+        public string GetMeta(string name, string defaultValue)
+        {
+            string result = GetMeta(name);
+            if (result == string.Empty)
+                result = defaultValue;
+            return result;
         }
         public string GetMeta(string name)
         {

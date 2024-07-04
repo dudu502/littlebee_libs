@@ -10,5 +10,6 @@ namespace Engine.Common.Network.Integration
         void Connect();
         void Connect(string ip, int port, string key);
         void Close();
+        int GetActivePort();
     }
 }

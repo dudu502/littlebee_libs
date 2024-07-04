@@ -8,9 +8,23 @@ using Engine.Common.Network.Integration;
 using Engine.Common.Protocol;
 using Engine.Common.Protocol.Pt;
 using System;
+using System.Threading.Tasks;
 
 namespace Engine.Client.Modules
 {
+    public enum GateServiceEvent
+    {
+        ClientConnected,
+        UpdateRoom,
+        RoomList,
+        CreateRoom,
+        JoinRoom,
+        ErrorCode,
+        LeaveRoom,
+        LaunchGame,
+        LaunchRoomInstance,
+    }
+
     public class GateServiceModule:AbstractModule
     {
         public PtRoom SelfRoom { private set; get; }
@@ -33,23 +47,39 @@ namespace Engine.Client.Modules
             EventDispatcher<ResponseMessageId, PtMessagePackage>.AddListener(ResponseMessageId.GS_LaunchGame, OnResponseLaunchGame);
             EventDispatcher<ResponseMessageId, PtMessagePackage>.AddListener(ResponseMessageId.GS_LaunchRoomInstance, OnResponseLaunchRoomInstance);
         }
-        public void RequestRoomList()
-        {
-            m_Client.Send((ushort)RequestMessageId.GS_RoomList, null);
-        }
+     
         void OnResponseLeaveRoom(PtMessagePackage message)
         {
             SelfRoom = null;
             m_Logger.Info($"{nameof(OnResponseLeaveRoom)}");
+            EventDispatcher<GateServiceEvent, object>.DispatchEvent(GateServiceEvent.LeaveRoom, null);
         }
-        void OnResponseLaunchRoomInstance(PtMessagePackage message)
+        async void OnResponseLaunchRoomInstance(PtMessagePackage message)
         {
             PtLaunchData launchData = PtLaunchData.Read(message.Content);
-            DispatchHandlerEvent(MainLoopLoadingEvent.UpdateLoading, new Tuple<LoadingType, float>(LoadingType.CreateRoomServiceComplete,0.4f));
+            EventDispatcher<GateServiceEvent, PtLaunchData>.DispatchEvent(GateServiceEvent.LaunchRoomInstance, launchData);
+            EventDispatcher<LoadingType, LoadingEventId>.DispatchEvent(LoadingType.Loading, new LoadingEventId(LoadingEventId.CreateRoomServiceComplete,0.4f));
+
+            // disconnect gate server and connect to room server
+
+            if (launchData.IsStandaloneMode)
+            {
+                RequestLeaveRoom();
+            }
+            m_Client.Close();
+            await Task.Yield();
+            if (launchData.IsStandaloneMode)
+            {
+                m_Client.Connect();
+            }
+            else
+            {
+                m_Client.Connect();
+            }
         }
         void OnResponseLaunchGame(PtMessagePackage message)
         {
-
+            EventDispatcher<LoadingType, LoadingEventId>.DispatchEvent(LoadingType.Loading, new LoadingEventId(LoadingEventId.CreateRoomServiceComplete, 0.1f));
         }
         void OnResponseErrorCode(PtMessagePackage message)
         {
@@ -63,20 +93,21 @@ namespace Engine.Client.Modules
         {
             PtRoom room = PtRoom.Read(message.Content);
             SelfRoom = room;
-            DispatchHandlerEvent(MainLoopGateEvent.RoomUpdate, room);
+            m_Logger.Info(room);
+            EventDispatcher<GateServiceEvent,PtRoom>.DispatchEvent(GateServiceEvent.UpdateRoom,room);
         }
         void OnResponseRoomList(PtMessagePackage message)
         {
             PtRoomList rooms = PtRoomList.Read(message.Content);
-            DispatchHandlerEvent(MainLoopGateEvent.RoomListUpdated, rooms);
             m_Logger.Info(rooms);
+            EventDispatcher<GateServiceEvent,PtRoomList>.DispatchEvent(GateServiceEvent.RoomList,rooms);
         }
         void OnResponseCreateRoom(PtMessagePackage message)
         {
             PtRoom room = PtRoom.Read(message.Content);
             SelfRoom = room;
-            DispatchHandlerEvent(MainLoopGateEvent.RoomCreated, room);
             m_Logger.Info(room);
+            EventDispatcher<GateServiceEvent, PtRoom>.DispatchEvent(GateServiceEvent.CreateRoom, room);
         }
         void OnResponseJoinRoom(PtMessagePackage message)
         {
@@ -84,7 +115,7 @@ namespace Engine.Client.Modules
             {
                 byte errorCode = buffer.ReadByte();
                 if (0 == errorCode)
-                    DispatchHandlerEvent<MainLoopGateEvent,object>(MainLoopGateEvent.RoomJoined, null);
+                    EventDispatcher<GateServiceEvent, byte>.DispatchEvent(GateServiceEvent.JoinRoom, errorCode);
             }
         }
         void OnResponseGateServerCliented(PtMessagePackage message)
@@ -95,8 +126,14 @@ namespace Engine.Client.Modules
             m_Logger.Info(nameof(OnResponseGateServerCliented)+ " userId:"+userId);
 
             m_Client.Send((ushort)RequestMessageId.GS_EnterGate, new ByteBuffer().WriteString(userId).GetRawBytes());
-        }
 
+            EventDispatcher<GateServiceEvent, string>.DispatchEvent(GateServiceEvent.ClientConnected, userId);
+        }
+        public void RequestLeaveRoom()
+        {
+            if (SelfRoom != null)
+                m_Client.Send((ushort)RequestMessageId.GS_LeaveRoom, new ByteBuffer().WriteUInt32(SelfRoom.RoomId).GetRawBytes());
+        }
         public void RequestCreateRoom(uint mapId)
         {
             string userId = m_Context.GetMeta(ContextMetaId.UserId);
@@ -105,14 +142,13 @@ namespace Engine.Client.Modules
             m_Client.Send((ushort)RequestMessageId.GS_CreateRoom, new ByteBuffer()
                 .WriteUInt32(mapId).WriteString(userId).WriteString(userName).WriteByte(teamId).GetRawBytes());
         }
-
-        public void RequestJoinRoom(PtRoom room)
+        public void RequestJoinRoom(uint roomId)
         {
             string userId = m_Context.GetMeta(ContextMetaId.UserId);
             string userName = userId;
             byte teamId = 1;
             m_Client.Send((ushort)RequestMessageId.GS_JoinRoom, new ByteBuffer()
-               .WriteUInt32(room.RoomId).WriteString(userId).WriteString(userName).WriteByte(teamId).GetRawBytes());
+                .WriteUInt32(roomId).WriteString(userId).WriteString(userName).WriteByte(teamId).GetRawBytes());
         }
 
         public void RequestLaunchGame()
@@ -126,7 +162,25 @@ namespace Engine.Client.Modules
         {
             m_Client.Connect(ip, port, key);
         }
-
+        public void RequestUpdatePlayerTeam(uint roomId, string userId, byte teamId)
+        {
+            m_Client.Send((ushort)RequestMessageId.GS_UpdateRoom, new ByteBuffer()
+                .WriteByte(0).WriteUInt32(roomId).WriteString(userId).WriteByte(teamId).GetRawBytes());
+        }
+        public void RequestUpdatePlayerColor(uint roomId, string userId, byte color)
+        {
+            m_Client.Send((ushort)RequestMessageId.GS_UpdateRoom, new ByteBuffer()
+                .WriteByte(1).WriteUInt32(roomId).WriteString(userId).WriteByte(color).GetRawBytes());
+        }
+        public void RequestUpdateMap(uint roomId, uint mapId, byte maxPlayerCount)
+        {
+            m_Client.Send((ushort)RequestMessageId.GS_UpdateRoom, new ByteBuffer()
+                .WriteByte(2).WriteUInt32(roomId).WriteUInt32(mapId).WriteByte(maxPlayerCount).GetRawBytes());
+        }
+        public void RequestRoomList()
+        {
+            m_Client.Send((ushort)RequestMessageId.GS_RoomList, null);
+        }
         public override void Dispose()
         {
             base.Dispose();

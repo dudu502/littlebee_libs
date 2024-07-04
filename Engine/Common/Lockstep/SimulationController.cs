@@ -17,11 +17,7 @@ namespace Engine.Common.Lockstep
         Thread m_RunnerThread;
         DateTime m_CurrentDateTime;
 
-        public SimulationController(Simulation sim)
-        {
-            m_SimulationInstance = sim;
-            m_FrameMsLength = c_DefaultFrameMsLength;
-        }
+        public Func<Simulation> CreateSimulationFunc { get; set; }
 
         public void UpdateFrameMsLength(float factor)
         {

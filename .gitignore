@@ -80,3 +80,4 @@ crashlytics-build.properties
 /Examples/Clients/LockstepClient/ProjectSettings
 /Examples/Servers/LockstepGate/bin
 /Examples/Clients/LockstepClient/Temp
+/Examples/Clients/LockstepClient/Release

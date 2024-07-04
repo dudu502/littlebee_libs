@@ -16,28 +16,39 @@ namespace Engine.Client.Network
         Thread runnerThread;
         bool isRunning;
         ConcurrentQueue<byte[]> queueMessages;
-
+        bool inited;
         public LiteNetworkClient()
         {
-            queueMessages = new ConcurrentQueue<byte[]>();
-            listener = new EventBasedNetListener();
-            manager = new NetManager(listener);
-            manager.UnconnectedMessagesEnabled = true;
-            listener.NetworkReceiveEvent += (peer, reader, method) =>
+            Initialize();
+        }
+
+        void Initialize()
+        {
+            if (!inited)
             {
-                byte[] raw = reader.GetRemainingBytes();
-                queueMessages.Enqueue(raw);
-                reader.Recycle();
-            };
+                queueMessages = new ConcurrentQueue<byte[]>();
+                listener = new EventBasedNetListener();
+                manager = new NetManager(listener);
+                manager.UnconnectedMessagesEnabled = true;
+                listener.NetworkReceiveEvent += (peer, reader, method) =>
+                {
+                    byte[] raw = reader.GetRemainingBytes();
+                    queueMessages.Enqueue(raw);
+                    reader.Recycle();
+                };
+                inited = true;
+            }
         }
 
         public void Connect()
         {
+            Initialize();
             manager.Start(50000);
             CreateThreads();
         }
         public void Connect(string ip, int port, string key)
         {
+            Initialize();
             manager.Start();
             manager.Connect(ip, port, key);
             Context.Retrieve(Context.CLIENT).Logger.Info($"Client Connect {ip}:{port} Key:{key}");
@@ -79,6 +90,7 @@ namespace Engine.Client.Network
         }
         public void Close()
         {
+            queueMessages = null;
             isRunning = false;
             listener.ClearNetworkReceiveEvent();
             listener = null;
@@ -87,11 +99,17 @@ namespace Engine.Client.Network
             if (runnerThread != null)
                 runnerThread.Abort();
             runnerThread = null;
+            inited = false;
         }
         public void Send(ushort messageId, byte[] bytes)
         {
             Context.Retrieve(Context.CLIENT).Logger.Info($"{nameof(Send)} messageId:{messageId}");
             manager.SendToAll(PtMessagePackage.Write(PtMessagePackage.Build(messageId, bytes)), DeliveryMethod.ReliableOrdered);
+        }
+
+        public int GetActivePort()
+        {
+            return manager.LocalPort;
         }
     }
 }
