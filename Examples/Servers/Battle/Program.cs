@@ -25,6 +25,7 @@ namespace Battle
             }
             Context context = new Context(Context.SERVER, new LiteNetworkServer(key), new DefaultConsoleLogger(key))
                .SetMeta(ContextMetaId.MaxConnectionCount, playerNumber.ToString())
+               .SetMeta(ContextMetaId.GateServerPort, gsPort.ToString())
                .SetModule(new BattleModule());
             context.Server.Run(port);
             Console.ReadKey();

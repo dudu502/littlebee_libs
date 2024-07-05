@@ -37,6 +37,27 @@ namespace Engine.Server.Modules
             EventDispatcher<RequestMessageId, PtMessagePackage>.AddListener(RequestMessageId.GS_JoinRoom, OnJoinRoom);
             EventDispatcher<RequestMessageId, PtMessagePackage>.AddListener(RequestMessageId.GS_LeaveRoom, OnLeaveRoom);
             EventDispatcher<RequestMessageId, PtMessagePackage>.AddListener(RequestMessageId.GS_LaunchGame, OnLaunchGame);
+            EventDispatcher<RequestMessageId, PtMessagePackage>.AddListener(RequestMessageId.UGS_RoomPlayerDisconnect, OnRoomPlayerDisconnected);
+        }
+        void OnRoomPlayerDisconnected(PtMessagePackage message)
+        {
+            using (ByteBuffer buffer = new ByteBuffer(message.Content))
+            {
+                int battleServerPort = buffer.ReadInt32();
+                string userId = buffer.ReadString();
+                bool hasOnlinePlayer = buffer.ReadBool();
+                if (!hasOnlinePlayer)
+                {
+                    PtRoom room = m_RoomList.Rooms.Find(r => r.Players.Exists(p => p.UserId == userId));
+                    if (room != null)
+                    {
+                        m_RoomList.Rooms.Remove(room);
+                        m_Logger.Warn($"Remove Room id:{room.RoomId} by PlayerDisconnected Room Count:{m_RoomList.Rooms.Count}");
+                    }
+                    KillRoomProcessByPort(battleServerPort);
+                }
+                m_Logger.Warn($"{nameof(OnRoomPlayerDisconnected)} at Port:{battleServerPort} userId:{userId} hasOnlinePlayer:{hasOnlinePlayer}");
+            }
         }
         void OnPeerConnected(int peerId)
         {

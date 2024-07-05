@@ -8,6 +8,7 @@ using LiteNetLib;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Net.Mail;
 using System.Text;
 using System.Threading;
@@ -88,10 +89,18 @@ namespace Engine.Server.Network
                 Send(clientId, messageId, data);
             }
         }
-
+        public void Send(ushort messageId, byte[] data)
+        {
+            manager.SendToAll(PtMessagePackage.Write(PtMessagePackage.Build(messageId, data)),DeliveryMethod.ReliableOrdered);
+        }
         public int GetActivePort()
         {
             return manager.LocalPort;
+        }
+
+        public void UnconnectedSend(ushort messageId, byte[] data, IPEndPoint endPoint)
+        {
+            manager.SendUnconnectedMessage(PtMessagePackage.Write(PtMessagePackage.Build(messageId, data)), endPoint);
         }
     }
 }

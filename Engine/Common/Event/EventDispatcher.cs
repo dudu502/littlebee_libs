@@ -21,12 +21,6 @@ namespace Engine.Common.Event
                 _delegates[eventType] -= eventCallback;
         }
 
-        public static void ClearListener(EVENT_TYPE eventType)
-        {
-            if (_delegates.ContainsKey(eventType))
-                _delegates.Remove(eventType);
-        }
-
         public static void DispatchEvent(EVENT_TYPE eventType, PARAMETER param)
         {
             if (_delegates.ContainsKey(eventType))

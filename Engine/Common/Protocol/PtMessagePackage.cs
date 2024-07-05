@@ -55,7 +55,7 @@ namespace Engine.Common.Protocol
         }
         public static PtMessagePackage Build(ushort messageId, byte[] bytes)
         {
-            var message = Build(messageId);
+            PtMessagePackage message = Build(messageId);
             if (bytes != null)
                 message.SetContent(bytes);
             return message;

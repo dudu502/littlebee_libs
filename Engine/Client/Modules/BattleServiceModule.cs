@@ -33,7 +33,8 @@ namespace Engine.Client.Modules
         }
         void OnResponseRoomServerClientConnected(PtMessagePackage message)
         {
-            
+            string userId = m_Context.GetMeta(ContextMetaId.UserId);
+            RequestEnterRoom(userId);
         }
         void OnResponseEnterRoom(PtMessagePackage message)
         {

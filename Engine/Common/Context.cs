@@ -14,6 +14,7 @@ namespace Engine.Common
         public const string MaxConnectionCount = "max_connection_count";
         public const string RoomModuleFullPath = "room_module_full_path";
         public const string StandaloneModePort = "standalone_mode_port";
+        public const string GateServerPort = "gate_server_port";
     }
     public sealed class Context
     {
