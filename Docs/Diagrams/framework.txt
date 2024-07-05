@@ -1,0 +1,64 @@
+title framework 
+Client1->Gate : Connect to Gate
+activate Gate
+Gate->Client1: Accept connection request.ResponseMessageId.GS_ClientConnected
+deactivate Gate
+Client2->Gate: RequestMessageId.GS_CreateRoom
+activate Gate
+Gate->Client2: ResponseMessageId.GS_CreateRoom
+deactivate Gate
+Client1->Gate:RequestMessageId.GS_JoinRoom
+activate Gate
+Gate->Client1: ResponseMessageId.GS_JoinRoom
+Gate->Client1: ResponseMessageId.GS_UpdateRoom
+Gate->Client2: ResponseMessageId.GS_UpdateRoom
+note left of Gate: If Client1 is in Re-Enter mode
+Gate->Client1: ResponseMessageId.GS_LaunchGame
+Gate->Client1: ResponseMessageId.GS_LaunchRoomInstance
+deactivate Gate
+Client2->Gate: RequestMessageId.GS_LeaveRoom
+activate Gate
+Gate->Client2: ResponseMessageId.GS_LeaveRoom
+Gate->Client1: ResponseMessageId.GS_UpdateRoom
+Gate->Client2: ResponseMessageId.GS_UpdateRoom
+Gate->Client1: ResponseMessageId.GS_RoomList
+Gate->Client2: ResponseMessageId.GS_RoomList
+deactivate Gate
+Client1->Gate: RequestMessageId.GS_UpdateRoom
+activate Gate
+Gate->Client1: ResponseMessageId.GS_UpdateRoom
+Gate->Client2: ResponseMessageId.GS_UpdateRoom
+deactivate Gate
+Client2->Gate: RequestMessageId.GS_RoomList
+activate Gate
+Gate->Client2: ResponseMessageId.GS_RoomList
+deactivate Gate
+Client1->Gate:RequestMessageId.GS_LaunchGame
+activate Gate
+Gate->Client1: ResponseMessageId.GS_LaunchGame
+Gate->Client2: ResponseMessageId.GS_LaunchGame
+Gate->Gate: Create a Room Server process
+Gate->Client1: ResponseMessageId.GS_LaunchRoomInstance
+Gate->Client2: ResponseMessageId.GS_LaunchRoomInstance
+deactivate Gate
+
+Client2->Room: Connect to Room
+activate Room
+Room->Client2: Accept connection request. ResponseMessageId.RS_ClientConnected
+deactivate Room
+activate Client2
+Client2->Room: RequestMessageId.RS_EnterRoom
+deactivate Client2
+activate Room
+Room->Client2:ResponseMessageId.RS_EnterRoom
+Room->Client2:ResponseMessageId.RS_AllUserState
+deactivate Room
+
+Client2->Room: RequestMessageId.RS_InitPlayer
+activate Room
+Room->Client2:ResponseMessageId.RS_InitPlayer
+Room->Client2:ResponseMessageId.RS_InitSelfPlayer
+deactivate Room
+Client2->Room:RequestMessageId.RS_PlayerReady
+
+Client2->Room: Sync key frames

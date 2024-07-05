@@ -1,19 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using Engine.Common.Misc;
 
 namespace Engine.Server.Modules.Data
 {
-    public enum UserState : byte
-    {
-        None = 0,
-        EnteredRoom = 1,
-        BeReadyToEnterScene = 2,
-
-        Re_EnteredRoom = 3,
-        Re_BeReadyToEnterScene = 4,
-    }
-
     public class UserStateObject
     {
         public UserState StateFlag = UserState.EnteredRoom;

@@ -1,13 +1,13 @@
 ﻿using Engine.Common;
 using Engine.Common.Event;
 using Engine.Common.Log;
+using Engine.Common.Misc;
 using Engine.Common.Module;
 using Engine.Common.Network;
 using Engine.Common.Network.Integration;
 using Engine.Common.Protocol;
-using System;
-using System.Collections.Generic;
-using System.Text;
+using Engine.Common.Protocol.Pt;
+using System.Diagnostics;
 
 namespace Engine.Client.Modules
 {
@@ -38,7 +38,12 @@ namespace Engine.Client.Modules
         }
         void OnResponseEnterRoom(PtMessagePackage message)
         {
-
+            using (ByteBuffer buffer = new ByteBuffer(message.Content))
+            {
+                string userEntityId = buffer.ReadString();
+                string userId = buffer.ReadString();
+                m_Logger.Info($"{nameof(OnResponseEnterRoom)} userEntityId:{userEntityId} userId:{userId}");
+            }
         }
         void OnResponseSyncKeyframes(PtMessagePackage message)
         {
@@ -46,19 +51,42 @@ namespace Engine.Client.Modules
         }
         void OnResponseInitPlayer(PtMessagePackage message)
         {
-
+            using (ByteBuffer buffer = new ByteBuffer(message.Content))
+            {
+                uint id = buffer.ReadUInt32();
+                m_Logger.Info($"{nameof(OnResponseInitPlayer)} id:{id}");
+            }
         }
         void OnResponseInitSelfPlayer(PtMessagePackage message)
         {
-
+            RequestPlayerReady();
         }
         void OnResponsePlayerReady(PtMessagePackage message)
         {
-
+            m_Logger.Info($"{nameof(OnResponsePlayerReady)}");
         }
         void OnResponseAllUserState(PtMessagePackage message)
         {
+            using (ByteBuffer buffer = new ByteBuffer(message.Content))
+            {
+                UserState state = (UserState)buffer.ReadByte();
+                switch (state)
+                {
+                    case UserState.EnteredRoom:
+                        uint mapId = buffer.ReadUInt32();
 
+                        break;
+                    case UserState.Re_EnteredRoom:
+                        uint re_mapId = buffer.ReadUInt32();
+                        break;
+                    case UserState.BeReadyToEnterScene:
+                        break;
+                    case UserState.Re_BeReadyToEnterScene:
+                        break;
+                    default:
+                        break;
+                }
+            }
         }
         void OnResponseHistoryKeyframes(PtMessagePackage message)
         {
@@ -74,15 +102,16 @@ namespace Engine.Client.Modules
         }
         public void RequestPlayerReady()
         {
-
+            //m_NetworkClient.Send((ushort)RequestMessageId.RS_PlayerReady,new ByteBuffer().WriteUInt32())
         }
         public void RequestHistoryKeyframes()
         {
 
         }
-        public void RequestSyncClientKeyframes()
+        public void RequestSyncClientKeyframes(int frameIdx,PtFrames frames)
         {
-
+            frames.SetFrameIdx(frameIdx);
+            m_NetworkClient.Send((ushort)RequestMessageId.RS_SyncClientKeyframes,PtFrames.Write(frames));
         }
 
         public override void Dispose()

@@ -34,7 +34,6 @@ namespace Engine.Server.Network
             listener.ConnectionRequestEvent += request =>
             {
                 request.AcceptIfKey(connectionKey);
-                Context.Retrieve(Context.SERVER).Logger.Info("ConnectionRequestEvent11 " + request.ToString()+" key" +connectionKey);
             };
             listener.PeerConnectedEvent += peer =>
             {
@@ -47,6 +46,15 @@ namespace Engine.Server.Network
                 PtMessagePackage package = PtMessagePackage.Read(raw);
                 package.ExtraPeerId = peer.Id;
                 Context.Retrieve(Context.SERVER).Logger.Info($"NetworkReceiveEvent id:{peer.Id} messageId:{package.MessageId}");
+                EventDispatcher<RequestMessageId, PtMessagePackage>
+                    .DispatchEvent((RequestMessageId)package.MessageId, package);
+                reader.Recycle();
+            };
+            listener.NetworkReceiveUnconnectedEvent += (ep, reader, mtype) =>
+            {
+                byte[] raw = reader.GetRemainingBytes();
+                PtMessagePackage package = PtMessagePackage.Read(raw);
+                Context.Retrieve(Context.SERVER).Logger.Info($"NetworkReceiveUnconnectedEvent ep:{ep} messageId:{package.MessageId}");
                 EventDispatcher<RequestMessageId, PtMessagePackage>
                     .DispatchEvent((RequestMessageId)package.MessageId, package);
                 reader.Recycle();

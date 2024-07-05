@@ -11,6 +11,7 @@ using Engine.Common.Protocol;
 using static LiteNetLib.EventBasedNetListener;
 using Engine.Server.Modules.Data;
 using Engine.Common.Protocol.Pt;
+using Engine.Common.Misc;
 
 namespace Engine.Server.Modules
 {
@@ -71,7 +72,7 @@ namespace Engine.Server.Modules
                         .WriteString(entityId).WriteString(userId).GetRawBytes());
                     if (isFull)
                         m_Server.Send((ushort)ResponseMessageId.RS_AllUserState, new ByteBuffer()
-                            .WriteByte((byte)UserState.EnteredRoom).GetRawBytes());
+                            .WriteByte((byte)UserState.EnteredRoom).WriteUInt32(Convert.ToUInt32(m_Context.GetMeta(ContextMetaId.SelectedRoomMapId))).GetRawBytes());
                 }
                 else
                 {
@@ -80,7 +81,7 @@ namespace Engine.Server.Modules
                     m_Server.Send(message.ExtraPeerId, (ushort)ResponseMessageId.RS_EnterRoom, new ByteBuffer()
                         .WriteString(userState.UserEntityId).WriteString(userId).GetRawBytes());
                     m_Server.Send((ushort)ResponseMessageId.RS_AllUserState, new ByteBuffer()
-                        .WriteByte((byte)UserState.Re_EnteredRoom).GetRawBytes());
+                        .WriteByte((byte)UserState.Re_EnteredRoom).WriteUInt32(Convert.ToUInt32(m_Context.GetMeta(ContextMetaId.SelectedRoomMapId))).GetRawBytes());
                 }
             }
         }
