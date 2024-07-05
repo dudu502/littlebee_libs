@@ -32,11 +32,12 @@ namespace Engine.Server.Network
         {
             listener.ConnectionRequestEvent += request =>
             {
-                Context.Retrieve(Context.SERVER).Logger.Info("ConnectionRequestEvent "+request.ToString());
                 request.AcceptIfKey(connectionKey);
+                Context.Retrieve(Context.SERVER).Logger.Info("ConnectionRequestEvent11 " + request.ToString()+" key" +connectionKey);
             };
             listener.PeerConnectedEvent += peer =>
             {
+                Context.Retrieve(Context.SERVER).Logger.Info("NetworkEventId.PeerConnected " + peer.Id);
                 EventDispatcher<NetworkEventId, int>.DispatchEvent(NetworkEventId.PeerConnected, peer.Id);
             };
             listener.NetworkReceiveEvent += (peer, reader, method) =>

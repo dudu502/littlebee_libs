@@ -7,8 +7,28 @@
   "targets": {
     ".NETCoreApp,Version=v6.0": {
       "Battle/1.0.0": {
+        "dependencies": {
+          "Common": "1.0.0.0",
+          "Server": "1.0.0.0"
+        },
         "runtime": {
           "Battle.dll": {}
+        }
+      },
+      "Common/1.0.0.0": {
+        "runtime": {
+          "Common.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        }
+      },
+      "Server/1.0.0.0": {
+        "runtime": {
+          "Server.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
         }
       }
     }
@@ -16,6 +36,16 @@
   "libraries": {
     "Battle/1.0.0": {
       "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "Common/1.0.0.0": {
+      "type": "reference",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "Server/1.0.0.0": {
+      "type": "reference",
       "serviceable": false,
       "sha512": ""
     }

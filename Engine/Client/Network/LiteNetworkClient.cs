@@ -4,6 +4,7 @@ using Engine.Common.Network;
 using Engine.Common.Network.Integration;
 using Engine.Common.Protocol;
 using LiteNetLib;
+using System;
 using System.Collections.Concurrent;
 using System.Threading;
 
@@ -69,20 +70,20 @@ namespace Engine.Client.Network
         {
             while (isRunning)
             {
-                manager.PollEvents();
-                Thread.Sleep(15);
+                manager.PollEvents(); 
                 TickDispatchMessages();
+                Thread.Sleep(15);
             }
         }
 
         void TickDispatchMessages()
         {
-            while (queueMessages.Count > 0)
+            while (queueMessages != null &&  queueMessages.Count > 0)
             {
                 if (queueMessages.TryDequeue(out byte[] bytes))
                 {
                     PtMessagePackage package = PtMessagePackage.Read(bytes);
-                    Context.Retrieve(Context.CLIENT).Logger.Info($"{nameof(TickDispatchMessages)} messageId:{package.MessageId}");
+                    Context.Retrieve(Context.CLIENT).Logger.Info($"{nameof(TickDispatchMessages)} messageId:{(ResponseMessageId)package.MessageId}");
                     EventDispatcher<ResponseMessageId, PtMessagePackage>
                         .DispatchEvent((ResponseMessageId)package.MessageId, package);
                 }
@@ -90,20 +91,19 @@ namespace Engine.Client.Network
         }
         public void Close()
         {
-            queueMessages = null;
             isRunning = false;
+            runnerThread = null;
+            queueMessages = null;
+            manager.DisconnectAll();
+            manager.Stop();
+            manager = null;
             listener.ClearNetworkReceiveEvent();
             listener = null;
-            manager.DisconnectAll();
-            manager = null;
-            if (runnerThread != null)
-                runnerThread.Abort();
-            runnerThread = null;
             inited = false;
         }
         public void Send(ushort messageId, byte[] bytes)
         {
-            Context.Retrieve(Context.CLIENT).Logger.Info($"{nameof(Send)} messageId:{messageId}");
+            Context.Retrieve(Context.CLIENT).Logger.Info($"{nameof(Send)} messageId:{(RequestMessageId)messageId}");
             manager.SendToAll(PtMessagePackage.Write(PtMessagePackage.Build(messageId, bytes)), DeliveryMethod.ReliableOrdered);
         }
 

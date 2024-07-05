@@ -35,7 +35,7 @@ namespace Engine.Server.Modules
         }
         void OnPeerConnected(int peerId)
         {
-
+            m_Logger.Info($"{nameof(OnPeerConnected)} peerId:{peerId}");
         }
         void OnPeerDisconnected(int peerId) 
         { 

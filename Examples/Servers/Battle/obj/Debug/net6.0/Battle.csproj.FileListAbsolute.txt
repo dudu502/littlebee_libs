@@ -13,3 +13,8 @@ D:\dudu502\littlebee_libs\Examples\Servers\Battle\obj\Debug\net6.0\refint\Battle
 D:\dudu502\littlebee_libs\Examples\Servers\Battle\obj\Debug\net6.0\Battle.pdb
 D:\dudu502\littlebee_libs\Examples\Servers\Battle\obj\Debug\net6.0\Battle.genruntimeconfig.cache
 D:\dudu502\littlebee_libs\Examples\Servers\Battle\obj\Debug\net6.0\ref\Battle.dll
+D:\dudu502\littlebee_libs\Examples\Servers\Battle\bin\Debug\net6.0\Common.dll
+D:\dudu502\littlebee_libs\Examples\Servers\Battle\bin\Debug\net6.0\Server.dll
+D:\dudu502\littlebee_libs\Examples\Servers\Battle\bin\Debug\net6.0\Common.pdb
+D:\dudu502\littlebee_libs\Examples\Servers\Battle\bin\Debug\net6.0\Server.pdb
+D:\dudu502\littlebee_libs\Examples\Servers\Battle\obj\Debug\net6.0\Battle.csproj.CopyComplete

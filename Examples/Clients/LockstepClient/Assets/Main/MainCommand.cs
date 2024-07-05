@@ -61,14 +61,14 @@ public class MainCommand : MonoBehaviour
         MainContext = new Context(Context.CLIENT, new LiteNetworkClient(), new UnityLogger("Unity"));
         MainContext.SetMeta(ContextMetaId.StandaloneModePort, "50000");
         MainContext.SetModule(new GateServiceModule())
-                    .SetModule(new RoomServiceModule());
+                    .SetModule(new BattleServiceModule());
 
     }
 
     private void Start()
     {
-        //SetUserId("test1");
-        //Connect();
+        SetUserId("test1");
+        Connect();
     }
     [TerminalCommand("setuid","setuid(id)")]
     public void SetUserId(string uid)
@@ -85,7 +85,7 @@ public class MainCommand : MonoBehaviour
     [TerminalCommand("connect","connect default")]
     public void Connect()
     {
-        ConnectIP_Port_Key("127.0.0.1",9030,"GS");
+        ConnectIP_Port_Key("127.0.0.1",9030,"gate-room");
     }
 
     [TerminalCommand("create","create_room()")]
@@ -120,6 +120,12 @@ public class MainCommand : MonoBehaviour
     public void UpdateMap(uint roomId, uint mapId, byte maxPlayerCount)
     {
         MainContext.GetModule<GateServiceModule>().RequestUpdateMap(roomId, mapId, maxPlayerCount);
+    }
+
+    [TerminalCommand("launch","launch game")]
+    public void Launch()
+    {
+        MainContext.GetModule<GateServiceModule>().RequestLaunchGame();
     }
     private void Update()
     {

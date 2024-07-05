@@ -1,4 +1,5 @@
 ﻿using Engine.Common;
+using Engine.Common.Event;
 using Engine.Common.Log;
 using Engine.Common.Module;
 using Engine.Common.Network;
@@ -20,8 +21,48 @@ namespace Engine.Client.Modules
             m_Context = Context.Retrieve(Context.CLIENT);
             m_Logger = m_Context.Logger;
             m_NetworkClient = m_Context.Client;
-        }
 
+            EventDispatcher<ResponseMessageId, PtMessagePackage>.AddListener(ResponseMessageId.RS_ClientConnected, OnResponseRoomServerClientConnected);
+            EventDispatcher<ResponseMessageId, PtMessagePackage>.AddListener(ResponseMessageId.RS_EnterRoom, OnResponseEnterRoom);
+            EventDispatcher<ResponseMessageId, PtMessagePackage>.AddListener(ResponseMessageId.RS_SyncKeyframes, OnResponseSyncKeyframes);
+            EventDispatcher<ResponseMessageId, PtMessagePackage>.AddListener(ResponseMessageId.RS_InitPlayer, OnResponseInitPlayer);
+            EventDispatcher<ResponseMessageId, PtMessagePackage>.AddListener(ResponseMessageId.RS_InitSelfPlayer, OnResponseInitSelfPlayer);
+            EventDispatcher<ResponseMessageId, PtMessagePackage>.AddListener(ResponseMessageId.RS_PlayerReady, OnResponsePlayerReady);
+            EventDispatcher<ResponseMessageId, PtMessagePackage>.AddListener(ResponseMessageId.RS_AllUserState, OnResponseAllUserState);
+            EventDispatcher<ResponseMessageId, PtMessagePackage>.AddListener(ResponseMessageId.RS_HistoryKeyframes, OnResponseHistoryKeyframes);
+        }
+        void OnResponseRoomServerClientConnected(PtMessagePackage message)
+        {
+            
+        }
+        void OnResponseEnterRoom(PtMessagePackage message)
+        {
+
+        }
+        void OnResponseSyncKeyframes(PtMessagePackage message)
+        {
+
+        }
+        void OnResponseInitPlayer(PtMessagePackage message)
+        {
+
+        }
+        void OnResponseInitSelfPlayer(PtMessagePackage message)
+        {
+
+        }
+        void OnResponsePlayerReady(PtMessagePackage message)
+        {
+
+        }
+        void OnResponseAllUserState(PtMessagePackage message)
+        {
+
+        }
+        void OnResponseHistoryKeyframes(PtMessagePackage message)
+        {
+
+        }
         public void RequestEnterRoom(string userId)
         {
             m_NetworkClient.Send((ushort)RequestMessageId.RS_EnterRoom, new ByteBuffer().WriteString(userId).GetRawBytes());

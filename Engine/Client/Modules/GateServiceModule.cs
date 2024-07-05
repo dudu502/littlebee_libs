@@ -61,21 +61,12 @@ namespace Engine.Client.Modules
             EventDispatcher<LoadingType, LoadingEventId>.DispatchEvent(LoadingType.Loading, new LoadingEventId(LoadingEventId.CreateRoomServiceComplete,0.4f));
 
             // disconnect gate server and connect to room server
-
-            if (launchData.IsStandaloneMode)
-            {
-                RequestLeaveRoom();
-            }
+            m_Logger.Warn($"{nameof(OnResponseLaunchRoomInstance)} Disconnect Gate");
             m_Client.Close();
-            await Task.Yield();
-            if (launchData.IsStandaloneMode)
-            {
-                m_Client.Connect();
-            }
-            else
-            {
-                m_Client.Connect();
-            }
+            await Task.Delay(100);
+            //await Task.Yield();
+            m_Logger.Warn($"{nameof(OnResponseLaunchRoomInstance)} Connect Battle");
+            m_Client.Connect(launchData.RoomServerAddr, launchData.RoomServerPort,launchData.ConnectionKey);
         }
         void OnResponseLaunchGame(PtMessagePackage message)
         {
