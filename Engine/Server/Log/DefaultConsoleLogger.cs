@@ -1,7 +1,5 @@
 ﻿using Engine.Common.Log;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Engine.Server.Log
 {

@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Engine.Client.Ecsr.Components
+﻿namespace Engine.Client.Ecsr.Components
 {
     public abstract class AbstractComponent
     {

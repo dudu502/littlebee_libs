@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Engine.Common.Log
+﻿namespace Engine.Common.Log
 {
     public interface ILogger
     {

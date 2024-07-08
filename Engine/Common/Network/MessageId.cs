@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Engine.Common.Network
+﻿namespace Engine.Common.Network
 {
     public enum RequestMessageId : ushort
     {
