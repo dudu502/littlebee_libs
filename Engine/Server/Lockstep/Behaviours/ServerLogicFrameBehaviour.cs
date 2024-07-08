@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Engine.Server.Lockstep
+namespace Engine.Server.Lockstep.Behaviours
 {
     public class ServerLogicFrameBehaviour : ISimulativeBehaviour
     {

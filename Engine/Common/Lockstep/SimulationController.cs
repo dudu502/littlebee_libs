@@ -5,7 +5,7 @@ namespace Engine.Common.Lockstep
 {
     public class SimulationController
     {
-        Simulation m_SimulationInstance;
+        protected Simulation m_SimulationInstance;
         long m_AccumulatorTicks = 0;
         const int c_DefaultFrameMsLength = 20;
         int m_FrameMsLength = c_DefaultFrameMsLength;
@@ -16,14 +16,15 @@ namespace Engine.Common.Lockstep
         public bool IsRunning { private set; get; }
         Thread m_RunnerThread;
         DateTime m_CurrentDateTime;
-
-        public Func<Simulation> CreateSimulationFunc { get; set; }
-
+        
         public void UpdateFrameMsLength(float factor)
         {
             m_FrameMsLength = (int)(c_DefaultFrameMsLength / (factor + 0.5f));
         }
+        protected virtual void CreateSimulation()
+        {
 
+        }
         public void Start(DateTime startDateTime,
                             int history_keyframes_count = 0,
                             Action<float> process = null,

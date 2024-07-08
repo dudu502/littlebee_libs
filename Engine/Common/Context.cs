@@ -25,7 +25,6 @@ namespace Engine.Common
         private static readonly Dictionary<string, Context> s_instances = new Dictionary<string, Context>();
         public INetworkServer Server { get; private set; }
         public INetworkClient Client { get; private set; }
-
         public ILogger Logger { get;private set; }
 
         public string Name; 
@@ -72,9 +71,9 @@ namespace Engine.Common
             Logger.Info("Context SetSimulationController " + controller);
             return this;
         }
-        public SimulationController GetSimulationController()
+        public T GetSimulationController<T>() where T : SimulationController
         {
-            return simulationController;
+            return (T)simulationController;
         }
 
         public Context SetMeta(string name,string value)
