@@ -4,7 +4,7 @@ namespace Engine.Client.Lockstep
 {
     public class DefaultSimulationController:SimulationController
     {
-        protected override void CreateSimulation()
+        public override void CreateSimulation()
         {
             base.CreateSimulation();
         }

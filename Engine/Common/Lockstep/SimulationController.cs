@@ -21,7 +21,7 @@ namespace Engine.Common.Lockstep
         {
             m_FrameMsLength = (int)(c_DefaultFrameMsLength / (factor + 0.5f));
         }
-        protected virtual void CreateSimulation()
+        public virtual void CreateSimulation()
         {
 
         }

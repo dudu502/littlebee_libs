@@ -11,7 +11,7 @@ namespace Engine.Client.Modules.Data
         public Dictionary<int, PtFrames> DictKeyFrames;
         public int InitIndex = -1;
         public int WriteKeyFrameIndex = -1;
-        public ConcurrentQueue<PtFrame> QueueKeyFrames = new ConcurrentQueue<PtFrame>();
+        public ConcurrentQueue<PtFrames> QueueKeyFrames = new ConcurrentQueue<PtFrames>();
         private PtFrames keyFrameCached = new PtFrames().SetKeyFrames(new List<PtFrame>());
 
         public void AddCurrentFrameCommand(int curFrameIdx,ushort cmd,string entityId, byte[] paramsContent)
@@ -35,7 +35,7 @@ namespace Engine.Client.Modules.Data
             DictKeyFrames = null;
             InitIndex = -1;
             WriteKeyFrameIndex = -1;
-            QueueKeyFrames = new ConcurrentQueue<PtFrame>();
+            QueueKeyFrames = new ConcurrentQueue<PtFrames>();
             ClearKeyFrameCached();
         }
     }

@@ -10,6 +10,7 @@ using Engine.Common.Protocol;
 using Engine.Server.Modules.Data;
 using Engine.Common.Protocol.Pt;
 using Engine.Common.Misc;
+using Engine.Server.Lockstep;
 
 namespace Engine.Server.Modules
 {
@@ -94,7 +95,49 @@ namespace Engine.Server.Modules
         }
         void OnPlayerReady(PtMessagePackage message)
         {
-
+            using(ByteBuffer buffer = new ByteBuffer(message.Content))
+            {
+                string entityId = buffer.ReadString();  
+                if(Session.Users.TryGetValue(entityId,out var user))
+                {
+                    switch (user.StateFlag)
+                    {
+                        case UserState.EnteredRoom:
+                            user.Update(message.ExtraPeerId, UserState.BeReadyToEnterScene);
+                            bool allRdy = true;
+                            m_Logger.Info($"{nameof(OnPlayerReady)} PeerId:"+message.ExtraPeerId);
+                            foreach(UserStateObject userState in Session.Users.Values)
+                            {
+                                allRdy &= (userState.StateFlag == UserState.BeReadyToEnterScene);
+                                m_Logger.Info("UserState.StateFlag == UserState.State.ReadyForInit:userStateId" + message.ExtraPeerId + " state:" + (userState.StateFlag));
+                            }
+                            m_Logger.Info($"{nameof(OnPlayerReady)} allRdy:{allRdy}");
+                            if (allRdy)
+                            {
+                                //List<string> userEntityIds = new List<string>(Session.Users.Keys);
+                                PtStringList userEntityIds = new PtStringList().SetElement(new List<string>(Session.Users.Keys));
+                                userEntityIds.Element.Sort((a,b)=>a.CompareTo(b));
+                                m_Server.Send((ushort)ResponseMessageId.RS_AllUserState, new ByteBuffer()
+                                    .WriteByte((byte)UserState.BeReadyToEnterScene).WriteBytes(PtStringList.Write(userEntityIds)).GetRawBytes());
+                                // start simulation
+                                DefaultSimulationController simulationController = new DefaultSimulationController();
+                                simulationController.CreateSimulation();
+                                m_Context.SetSimulationController(simulationController);
+                                m_Logger.Info("Start Simulation");
+                            }
+                            break;
+                        case UserState.Re_EnteredRoom:
+                            user.Update(message.ExtraPeerId, UserState.Re_BeReadyToEnterScene);
+                            PtStringList newUserEntityIds = new PtStringList().SetElement(new List<string>(Session.Users.Keys));
+                            newUserEntityIds.Element.Sort((a, b) => a.CompareTo(b));
+                            m_Server.Send((ushort)ResponseMessageId.RS_AllUserState, new ByteBuffer()
+                                    .WriteByte((byte)UserState.Re_BeReadyToEnterScene).WriteString(user.UserId).WriteBytes(PtStringList.Write(newUserEntityIds)).GetRawBytes());
+                            break;
+                        default:
+                            break;
+                    }
+                }
+            }
         }
         void OnSyncClientKeyframes(PtMessagePackage message)
         {

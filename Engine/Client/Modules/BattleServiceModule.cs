@@ -9,6 +9,8 @@ using Engine.Common.Network;
 using Engine.Common.Network.Integration;
 using Engine.Common.Protocol;
 using Engine.Common.Protocol.Pt;
+using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 
 namespace Engine.Client.Modules
@@ -53,7 +55,7 @@ namespace Engine.Client.Modules
         }
         void OnResponseSyncKeyframes(PtMessagePackage message)
         {
-
+            m_RoomSession.QueueKeyFrames.Enqueue(PtFrames.Read(message.Content));
         }
         void OnResponseInitPlayer(PtMessagePackage message)
         {
@@ -100,9 +102,21 @@ namespace Engine.Client.Modules
                 }
             }
         }
-        void OnResponseHistoryKeyframes(PtMessagePackage message)
+        async void OnResponseHistoryKeyframes(PtMessagePackage message)
         {
-
+            using (ByteBuffer buffer = new ByteBuffer(message.Content))
+            {
+                DateTime startDate = DateTime.Now;
+                m_RoomSession.InitIndex = buffer.ReadInt32();
+                long encodingTicks = buffer.ReadInt64();
+                PtFramesList list = PtFramesList.Read(await SevenZip.Helper.DecompressBytesAsync(buffer.ReadBytes()));
+                m_RoomSession.WriteKeyFrameIndex = list.FrameIdx;
+                m_RoomSession.DictKeyFrames = new Dictionary<int, PtFrames>();
+                list.Elements.ForEach(e=>m_RoomSession.DictKeyFrames.Add(e.FrameIdx,e));
+                int offset = m_RoomSession.InitIndex == -1 ? 0 : m_RoomSession.InitIndex;
+                startDate -= DateTime.Now - startDate + new TimeSpan(encodingTicks);
+                // start simulation
+            }
         }
         public void RequestEnterRoom(string userId)
         {
