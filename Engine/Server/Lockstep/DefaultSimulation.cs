@@ -8,10 +8,5 @@ namespace Engine.Server.Lockstep
         {
             
         }
-
-        protected override void CreateEntities()
-        {
-            base.CreateEntities();
-        }
     }
 }

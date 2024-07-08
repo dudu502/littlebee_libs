@@ -87,7 +87,9 @@ namespace Engine.Server.Modules
         {
             using (ByteBuffer buffer = new ByteBuffer(message.Content))
             {
-
+                string entityId = buffer.ReadString();
+                m_Server.Send((ushort)ResponseMessageId.RS_InitPlayer, new ByteBuffer().WriteString(entityId).GetRawBytes());
+                m_Server.Send(message.ExtraPeerId, (ushort)ResponseMessageId.RS_InitSelfPlayer, null);
             }
         }
         void OnPlayerReady(PtMessagePackage message)
@@ -107,9 +109,20 @@ namespace Engine.Server.Modules
 
             Session.QueueKeyFrameCollection.Enqueue(collection);
         }
-        void OnHistoryKeyframes(PtMessagePackage message)
+        async void OnHistoryKeyframes(PtMessagePackage message)
         {
-
+            using (ByteBuffer buffer = new ByteBuffer(message.Content))
+            {
+                DateTime now = DateTime.Now;
+                int startIndex = buffer.ReadInt32();
+                byte[] keyframeRawSource = PtFramesList.Write(Session.KeyFrameList);
+                byte[] compressedKeyFrameRawSource = await SevenZip.Helper.CompressBytesAsync(keyframeRawSource);
+                long encodingTicks = (DateTime.Now - now).Ticks;
+                byte[] keyframeBytes = new ByteBuffer().WriteInt32(startIndex)
+                    .WriteInt64(encodingTicks).WriteBytes(compressedKeyFrameRawSource).GetRawBytes();
+                m_Logger.Info($"KeyFrames compress rate:{1f * compressedKeyFrameRawSource.Length / keyframeRawSource.Length} rawLength:{keyframeRawSource.Length} compressedLength:{compressedKeyFrameRawSource.Length}");
+                m_Server.Send(message.ExtraPeerId,(ushort)ResponseMessageId.RS_HistoryKeyframes,keyframeBytes);
+            }
         }
 
         public void FlushKeyFrame(int currentFrameIdx)

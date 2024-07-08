@@ -9,12 +9,12 @@ namespace Engine.Client.Ecsr.Entitas
     {
         public Guid Id { private set; get; }
         public readonly Dictionary<Type, AbstractComponent> Components = new Dictionary<Type, AbstractComponent>();
-        public Entity()
+        internal Entity()
         {
             Id = Guid.NewGuid();
         }
 
-        public Entity(Guid id)
+        internal Entity(Guid id)
         {
             Id = id;
         }

@@ -59,7 +59,8 @@ public class MainCommand : MonoBehaviour
     {
         Handler.Initialize();
         MainContext = new Context(Context.CLIENT, new LiteNetworkClient(), new UnityLogger("Unity"));
-        MainContext.SetMeta(ContextMetaId.StandaloneModePort, "50000");
+        MainContext.SetMeta(ContextMetaId.StandaloneModePort, "50000")
+                    .SetMeta(ContextMetaId.PersistentDataPath, Application.persistentDataPath) ;
         MainContext.SetModule(new GateServiceModule())
                     .SetModule(new BattleServiceModule());
 

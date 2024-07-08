@@ -16,6 +16,7 @@ namespace Engine.Common
         public const string StandaloneModePort = "standalone_mode_port";
         public const string GateServerPort = "gate_server_port";
         public const string SelectedRoomMapId = "selected_room_map_id";
+        public const string PersistentDataPath = "persistent_data_path";
     }
     public sealed class Context
     {

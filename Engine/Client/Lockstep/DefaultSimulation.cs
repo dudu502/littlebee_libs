@@ -7,6 +7,7 @@ namespace Engine.Client.Lockstep
     public class DefaultSimulation : Simulation
     {
         EntityWorld m_EntityWorld;
+
         EntityRenderSpawner m_EntityRenderSpawner;
         public DefaultSimulation(byte id) : base(id)
         {
@@ -26,10 +27,6 @@ namespace Engine.Client.Lockstep
         public EntityRenderSpawner GetRenderSpawner()
         {
             return m_EntityRenderSpawner;
-        }
-        protected override void CreateEntities()
-        {
-            base.CreateEntities();
         }
         public override void Dispose()
         {

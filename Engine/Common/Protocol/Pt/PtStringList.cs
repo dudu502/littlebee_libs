@@ -6,34 +6,34 @@ using Engine.Common.Protocol;
 
 namespace Engine.Common.Protocol.Pt
 {
-public class PtRoomList
+public class PtStringList
 {
     public byte __tag__ { get;private set;}
 
-	public List<PtRoom> Rooms{ get;private set;}
+	public List<string> Element{ get;private set;}
 	   
-    public PtRoomList SetRooms(List<PtRoom> value){Rooms=value; __tag__|=1; return this;}
+    public PtStringList SetElement(List<string> value){Element=value; __tag__|=1; return this;}
 	
-    public bool HasRooms(){return (__tag__&1)==1;}
+    public bool HasElement(){return (__tag__&1)==1;}
 	
-    public static byte[] Write(PtRoomList data)
+    public static byte[] Write(PtStringList data)
     {
         using(ByteBuffer buffer = new ByteBuffer())
         {
             buffer.WriteByte(data.__tag__);
-			if(data.HasRooms())buffer.WriteCollection(data.Rooms,element=>PtRoom.Write(element));
+			if(data.HasElement())buffer.WriteCollection(data.Element,element=>buffer.WriteString(element));
 			
             return buffer.GetRawBytes();
         }
     }
 
-    public static PtRoomList Read(byte[] bytes)
+    public static PtStringList Read(byte[] bytes)
     {
         using(ByteBuffer buffer = new ByteBuffer(bytes))
         {
-            PtRoomList data = new PtRoomList();
+            PtStringList data = new PtStringList();
             data.__tag__ = buffer.ReadByte();
-			if(data.HasRooms())data.Rooms = buffer.ReadCollection(retbytes=>PtRoom.Read(retbytes));
+			if(data.HasElement())data.Element = buffer.ReadCollection(()=>buffer.ReadString());
 			
             return data;
         }       

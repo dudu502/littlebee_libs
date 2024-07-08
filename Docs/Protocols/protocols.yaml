@@ -2,11 +2,16 @@ using_ns:
   - Engine.Common.Protocol
 ns: Engine.Common.Protocol.Pt
 pts:
+  - className: PtStringList
+    fields:
+      - type: string
+        name: Element
+        isArray: 1
   - className: PtFrame
     fields:
       - type: uint16
         name: Cmd
-      - type: uint32
+      - type: string
         name: EntityId
       - type: bytes
         name: ParamContent

@@ -1,4 +1,5 @@
 ﻿using Engine.Client.Ecsr.Components;
+using Engine.Common.Event;
 using Engine.Common.Protocol.Pt;
 using System;
 using System.Collections.Generic;
@@ -21,17 +22,33 @@ namespace Engine.Client.Ecsr.Entitas
                 EntityDict = new SortedDictionary<Guid, Entity>();
             }
         }
-
+        EntityInitializer m_EntityInitializer;
         FrameRawData m_CurrentFrameData;
         public EntityWorld(params Type[] comps)
         {
             FrameRawData.ComponentTypes.AddRange(comps);
             m_CurrentFrameData = new FrameRawData();
+            m_EntityInitializer = new EntityInitializer(this);
         }
         public int GetEntityCount()
         {
             return m_CurrentFrameData.EntityDict.Count;
         }
+
+        public Entity CreateEntity()
+        {
+            Entity entity = new Entity();
+            m_CurrentFrameData.EntityDict[entity.Id] = entity;
+            return entity;
+        }
+        public Entity CreateEntity(Guid entityId)
+        {
+            Entity entity = new Entity(entityId);
+            m_CurrentFrameData.EntityDict[entity.Id] = entity;
+            return entity;
+        }
+
+
         #region Foreach
         public void ForEach<T0>(Action<Entity, T0> action)
             where T0 : AbstractComponent

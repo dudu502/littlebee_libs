@@ -1,4 +1,6 @@
-﻿using Engine.Common;
+﻿using Engine.Client.Lockstep;
+using Engine.Client.Modules.Data;
+using Engine.Common;
 using Engine.Common.Event;
 using Engine.Common.Log;
 using Engine.Common.Misc;
@@ -16,8 +18,10 @@ namespace Engine.Client.Modules
         Context m_Context;
         INetworkClient m_NetworkClient;
         ILogger m_Logger;
+        RoomSession m_RoomSession;
         public BattleServiceModule()
         {
+            m_RoomSession = new RoomSession();
             m_Context = Context.Retrieve(Context.CLIENT);
             m_Logger = m_Context.Logger;
             m_NetworkClient = m_Context.Client;
@@ -42,6 +46,8 @@ namespace Engine.Client.Modules
             {
                 string userEntityId = buffer.ReadString();
                 string userId = buffer.ReadString();
+                m_RoomSession.EntityId = userEntityId;
+                m_RoomSession.UserId = userId;
                 m_Logger.Info($"{nameof(OnResponseEnterRoom)} userEntityId:{userEntityId} userId:{userId}");
             }
         }
@@ -65,7 +71,7 @@ namespace Engine.Client.Modules
         {
             m_Logger.Info($"{nameof(OnResponsePlayerReady)}");
         }
-        void OnResponseAllUserState(PtMessagePackage message)
+        async void OnResponseAllUserState(PtMessagePackage message)
         {
             using (ByteBuffer buffer = new ByteBuffer(message.Content))
             {
@@ -73,8 +79,14 @@ namespace Engine.Client.Modules
                 switch (state)
                 {
                     case UserState.EnteredRoom:
-                        uint mapId = buffer.ReadUInt32();
+                        uint mapId = buffer.ReadUInt32(); 
+                        // save mapId from battle server.
+                        m_Context.SetMeta(ContextMetaId.SelectedRoomMapId, mapId.ToString());
+                        // let EntityInitializer to load all entitys
 
+                        m_Context.SetSimulationController(new DefaultSimulationController());
+
+                        RequestInitPlayer();
                         break;
                     case UserState.Re_EnteredRoom:
                         uint re_mapId = buffer.ReadUInt32();
@@ -98,15 +110,16 @@ namespace Engine.Client.Modules
         }
         public void RequestInitPlayer()
         {
-
+            m_NetworkClient.Send((ushort)RequestMessageId.RS_InitPlayer, new ByteBuffer().WriteString(m_RoomSession.EntityId).GetRawBytes());
         }
         public void RequestPlayerReady()
         {
-            //m_NetworkClient.Send((ushort)RequestMessageId.RS_PlayerReady,new ByteBuffer().WriteUInt32())
+            m_NetworkClient.Send((ushort)RequestMessageId.RS_PlayerReady, new ByteBuffer().WriteString(m_RoomSession.EntityId).GetRawBytes());
         }
         public void RequestHistoryKeyframes()
         {
-
+            int startIndex = -1;
+            m_NetworkClient.Send((ushort)RequestMessageId.RS_HistoryKeyframes,new ByteBuffer().WriteInt32(startIndex).GetRawBytes());
         }
         public void RequestSyncClientKeyframes(int frameIdx,PtFrames frames)
         {

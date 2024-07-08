@@ -14,11 +14,6 @@ namespace Engine.Common.Lockstep
             m_Behaviours = new List<ISimulativeBehaviour>();
         }
 
-        protected virtual void CreateEntities()
-        {
-
-        }
-
         public byte GetSimulationId() { return m_SimulationId; }
         public void Start()
         {
