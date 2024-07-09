@@ -2,8 +2,6 @@
 using Engine.Common.Protocol.Pt;
 using System;
 using System.Collections.Generic;
-using System.Text;
-
 namespace Engine.Client.Lockstep.Behaviours
 {
     public class ReplayLogicFrameBehaviour : ISimulativeBehaviour

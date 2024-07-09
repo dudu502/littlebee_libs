@@ -8,7 +8,7 @@ namespace Engine.Server.Lockstep
         public override void CreateSimulation()
         {
             base.CreateSimulation();
-            DefaultSimulation defaultSimulation = new DefaultSimulation(0);
+            DefaultSimulation defaultSimulation = new DefaultSimulation();
             defaultSimulation.AddBehaviour(new ServerLogicFrameBehaviour());
             m_SimulationInstance = defaultSimulation;
         }

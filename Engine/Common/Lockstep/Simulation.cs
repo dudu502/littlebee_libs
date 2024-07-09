@@ -1,20 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 
 namespace Engine.Common.Lockstep
 {
+    /// <summary>
+    /// Simulate all behaviour in order.
+    /// </summary>
     public class Simulation
     {
         List<ISimulativeBehaviour> m_Behaviours;
-        byte m_SimulationId;
-        public Simulation(byte id)
+        public Simulation()
         {
-            m_SimulationId = id;
             m_Behaviours = new List<ISimulativeBehaviour>();
         }
 
-        public byte GetSimulationId() { return m_SimulationId; }
         public void Start()
         {
             foreach (ISimulativeBehaviour beh in m_Behaviours)

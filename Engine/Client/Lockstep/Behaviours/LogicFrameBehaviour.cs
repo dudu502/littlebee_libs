@@ -1,4 +1,6 @@
-﻿using Engine.Common.Lockstep;
+﻿using Engine.Client.Modules;
+using Engine.Common;
+using Engine.Common.Lockstep;
 using Engine.Common.Protocol.Pt;
 using System;
 using System.Collections.Generic;
@@ -18,10 +20,58 @@ namespace Engine.Client.Lockstep.Behaviours
         public LogicFrameBehaviour() { }
 
         public List<List<PtFrame>> GetFrames() { return m_Frames; }
+
+        BattleServiceModule battleServiceModule;
         public void Start()
         {
+            battleServiceModule = Context.Retrieve(Context.CLIENT).GetModule<BattleServiceModule>();
+            CurrentFrameIdx = battleServiceModule.GetRoomSession().InitIndex;
             m_Frames = new List<List<PtFrame>>();
+            if (CurrentFrameIdx > -1)
+            {
+                for (int i = 0; i <= CurrentFrameIdx; ++i)
+                {
+                    m_Frames.Add(m_DefaultFrame);
+                    if (battleServiceModule.GetRoomSession().DictKeyFrames != null && battleServiceModule.GetRoomSession().DictKeyFrames.TryGetValue(i, out PtFrames frames))
+                    {
+                        UpdateKeyFrameIdxInfoCollectionAtFrameIdx(frames);
+                    }
+                }
+            }
+        }
 
+        public void UpdateKeyFrameIdxInfoCollectionAtFrameIdx(PtFrames frames)
+        {
+            foreach (PtFrame frame in frames.KeyFrames)
+                UpdateKeyFrameIdxInfoAtFrameIdx(frames.FrameIdx, frame);
+        }
+
+        private void UpdateKeyFrameIdxInfoAtFrameIdx(int frameIdx, PtFrame frame)
+        {
+            if(frameIdx >= m_Frames.Count) 
+                throw new Exception("Error " + frameIdx);
+            if (m_Frames[frameIdx] == m_DefaultFrame)
+                m_Frames[frameIdx] = new List<PtFrame>();
+            List<PtFrame> frames = m_Frames[frameIdx];
+            bool updateState = false;
+            foreach(PtFrame f in frames)
+            {
+                if(IsFrameEquals(f, frame))
+                {
+                    updateState = true;
+                    f.SetParamContent(frame.ParamContent);
+                    break;
+                }
+            }
+            if (!updateState)
+                frames.Add(frame);
+        }
+
+        private bool IsFrameEquals(PtFrame a, PtFrame b)
+        {
+            if (a.EntityId == b.EntityId)
+                return a.Cmd == b.Cmd;
+            return false;
         }
 
         public void Stop()
@@ -33,6 +83,21 @@ namespace Engine.Client.Lockstep.Behaviours
         {
             ++CurrentFrameIdx;
             m_Frames.Add(m_DefaultFrame);
+
+            if(battleServiceModule.GetRoomSession() != null
+                && battleServiceModule.GetRoomSession().WriteKeyFrameIndex > CurrentFrameIdx)
+            {
+                if(battleServiceModule.GetRoomSession().DictKeyFrames.TryGetValue(CurrentFrameIdx,out PtFrames frames))
+                {
+                    ((DefaultSimulation)Sim).GetEntityWorld().RestoreKeyframes(frames);
+                    UpdateKeyFrameIdxInfoCollectionAtFrameIdx(frames);
+                }
+                else
+                {
+                    battleServiceModule.GetRoomSession().WriteKeyFrameIndex = -1;
+                    battleServiceModule.GetRoomSession().DictKeyFrames = null;
+                }
+            }
         }
     }
 }

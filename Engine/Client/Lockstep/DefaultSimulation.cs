@@ -9,7 +9,7 @@ namespace Engine.Client.Lockstep
         EntityWorld m_EntityWorld;
 
         EntityRenderSpawner m_EntityRenderSpawner;
-        public DefaultSimulation(byte id) : base(id)
+        public DefaultSimulation()
         {
         }
         public EntityWorld GetEntityWorld() 

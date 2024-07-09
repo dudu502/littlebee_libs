@@ -28,7 +28,7 @@ namespace Engine.Common.Lockstep
         public void Start(DateTime startDateTime,
                             int history_keyframes_count = 0,
                             Action<float> process = null,
-                            Action runner =null)
+                            Action runner = null)
         {
             m_CurrentDateTime = startDateTime;
             m_SimulationInstance.Start();

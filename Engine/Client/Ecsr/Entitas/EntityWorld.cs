@@ -10,7 +10,10 @@ namespace Engine.Client.Ecsr.Entitas
     {
         public class FrameRawData
         {
-            public static readonly List<Type> ComponentTypes = new List<Type>();
+            public static readonly List<Type> ComponentTypes = new List<Type>() 
+            {
+
+            };
             public SortedDictionary<Guid, Entity> EntityDict;
 
             public FrameRawData(SortedDictionary<Guid, Entity> source)
@@ -48,6 +51,10 @@ namespace Engine.Client.Ecsr.Entitas
             return entity;
         }
 
+        public bool RemoveEntity(Guid entityId)
+        {
+            return m_CurrentFrameData.EntityDict.Remove(entityId);
+        }
 
         #region Foreach
         public void ForEach<T0>(Action<Entity, T0> action)
@@ -253,10 +260,28 @@ namespace Engine.Client.Ecsr.Entitas
         #endregion
 
 
+        public FrameRawData CloneFrameData()
+        {
+            FrameRawData frameRawData = new FrameRawData();
+            foreach(Guid id in m_CurrentFrameData.EntityDict.Keys)
+                frameRawData.EntityDict[id] = m_CurrentFrameData.EntityDict[id].Clone();
+            return frameRawData;
+        }
 
+        public void RestoreWorld(FrameRawData rawData)
+        {
+            m_CurrentFrameData.EntityDict = rawData.EntityDict;
+        }
 
+        public void RestoreFrames(PtFrames frames)
+        {
+            
+        }
+        public void RollBack(FrameRawData rawData,PtFrames frames)
+        {
+            RestoreWorld(rawData);
 
-
+        }
         //public List<AbstractComponent> GetAllCloneComponents()
         //{
         //    List<AbstractComponent> components = new List<AbstractComponent>();

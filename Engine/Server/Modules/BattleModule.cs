@@ -11,6 +11,7 @@ using Engine.Server.Modules.Data;
 using Engine.Common.Protocol.Pt;
 using Engine.Common.Misc;
 using Engine.Server.Lockstep;
+using Engine.Common.Lockstep;
 
 namespace Engine.Server.Modules
 {
@@ -114,15 +115,15 @@ namespace Engine.Server.Modules
                             m_Logger.Info($"{nameof(OnPlayerReady)} allRdy:{allRdy}");
                             if (allRdy)
                             {
-                                //List<string> userEntityIds = new List<string>(Session.Users.Keys);
                                 PtStringList userEntityIds = new PtStringList().SetElement(new List<string>(Session.Users.Keys));
                                 userEntityIds.Element.Sort((a,b)=>a.CompareTo(b));
                                 m_Server.Send((ushort)ResponseMessageId.RS_AllUserState, new ByteBuffer()
                                     .WriteByte((byte)UserState.BeReadyToEnterScene).WriteBytes(PtStringList.Write(userEntityIds)).GetRawBytes());
                                 // start simulation
-                                DefaultSimulationController simulationController = new DefaultSimulationController();
+                                SimulationController simulationController = new DefaultSimulationController();
                                 simulationController.CreateSimulation();
                                 m_Context.SetSimulationController(simulationController);
+                                simulationController.Start(DateTime.Now);
                                 m_Logger.Info("Start Simulation");
                             }
                             break;

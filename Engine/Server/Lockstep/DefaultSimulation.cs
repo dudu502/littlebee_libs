@@ -4,7 +4,7 @@ namespace Engine.Server.Lockstep
 {
     public class DefaultSimulation : Simulation
     {
-        public DefaultSimulation(byte id) : base(id)
+        public DefaultSimulation()
         {
             
         }

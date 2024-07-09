@@ -2,6 +2,7 @@
 using Engine.Common.Protocol.Pt;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 
 namespace Engine.Client.Lockstep.Behaviours
@@ -25,8 +26,15 @@ namespace Engine.Client.Lockstep.Behaviours
             List<PtFrame> frames = replayLogic.GetFrameIdxInfoAtCurrentFrame();
             if (frames != null)
             {
-                
+                foreach(PtFrame frame in frames)
+                {
+                    switch(frame.Cmd)
+                    {
+                        
+                    }
+                }
             }
+            
         }
     }
 }

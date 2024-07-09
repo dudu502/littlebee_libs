@@ -20,10 +20,9 @@ namespace Engine.Client.Modules
         Context m_Context;
         INetworkClient m_NetworkClient;
         ILogger m_Logger;
-        RoomSession m_RoomSession;
+        RoomSession m_RoomSession = new RoomSession();
         public BattleServiceModule()
         {
-            m_RoomSession = new RoomSession();
             m_Context = Context.Retrieve(Context.CLIENT);
             m_Logger = m_Context.Logger;
             m_NetworkClient = m_Context.Client;
@@ -37,6 +36,7 @@ namespace Engine.Client.Modules
             EventDispatcher<ResponseMessageId, PtMessagePackage>.AddListener(ResponseMessageId.RS_AllUserState, OnResponseAllUserState);
             EventDispatcher<ResponseMessageId, PtMessagePackage>.AddListener(ResponseMessageId.RS_HistoryKeyframes, OnResponseHistoryKeyframes);
         }
+        public RoomSession GetRoomSession() => m_RoomSession;
         void OnResponseRoomServerClientConnected(PtMessagePackage message)
         {
             string userId = m_Context.GetMeta(ContextMetaId.UserId);
@@ -92,10 +92,26 @@ namespace Engine.Client.Modules
                         break;
                     case UserState.Re_EnteredRoom:
                         uint re_mapId = buffer.ReadUInt32();
+                        string re_userId = buffer.ReadString();
+                        if(re_userId == m_RoomSession.UserId)
+                        {
+
+                        }
                         break;
                     case UserState.BeReadyToEnterScene:
+                        DateTime now = DateTime.Now;
+                        PtStringList playerEntityIds = PtStringList.Read(buffer.ReadBytes());
+                        //
                         break;
                     case UserState.Re_BeReadyToEnterScene:
+                        string re_beRdyUserId = buffer.ReadString();
+                        if(re_beRdyUserId == m_RoomSession.UserId)
+                        {
+                            PtStringList re_playerEntityIds = PtStringList.Read(buffer.ReadBytes());
+                            // 
+
+                            RequestHistoryKeyframes();
+                        }
                         break;
                     default:
                         break;
@@ -135,10 +151,10 @@ namespace Engine.Client.Modules
             int startIndex = -1;
             m_NetworkClient.Send((ushort)RequestMessageId.RS_HistoryKeyframes,new ByteBuffer().WriteInt32(startIndex).GetRawBytes());
         }
-        public void RequestSyncClientKeyframes(int frameIdx,PtFrames frames)
+        public void RequestSyncClientKeyframes(int frameIdx, PtFrames frames)
         {
             frames.SetFrameIdx(frameIdx);
-            m_NetworkClient.Send((ushort)RequestMessageId.RS_SyncClientKeyframes,PtFrames.Write(frames));
+            m_NetworkClient.Send((ushort)RequestMessageId.RS_SyncClientKeyframes, PtFrames.Write(frames));
         }
 
         public override void Dispose()
