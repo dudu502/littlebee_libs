@@ -24,9 +24,9 @@ namespace Battle
                 if (Array.IndexOf(args, "-gsPort") > -1) gsPort = Convert.ToInt32(args[Array.IndexOf(args, "-gsPort") + 1]);
             }
             Context context = new Context(Context.SERVER, new LiteNetworkServer(key), new DefaultConsoleLogger(key))
-               .SetMeta(ContextMetaId.MaxConnectionCount, playerNumber.ToString())
-               .SetMeta(ContextMetaId.SelectedRoomMapId, mapId.ToString())
-               .SetMeta(ContextMetaId.GateServerPort, gsPort.ToString())
+               .SetMeta(ContextMetaId.MAX_CONNECTION_COUNT, playerNumber.ToString())
+               .SetMeta(ContextMetaId.SELECTED_ROOM_MAP_ID, mapId.ToString())
+               .SetMeta(ContextMetaId.GATE_SERVER_PORT, gsPort.ToString())
                .SetModule(new BattleModule());
             context.Server.Run(port);
             Console.ReadKey();

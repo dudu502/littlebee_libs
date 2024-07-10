@@ -63,8 +63,8 @@ namespace Engine.Client.Modules
             // disconnect gate server and connect to room server
             m_Logger.Warn($"{nameof(OnResponseLaunchRoomInstance)} Disconnect Gate");
             m_Client.Close();
-            await Task.Delay(100);
-            //await Task.Yield();
+            //await Task.Delay(100);
+            await Task.Yield();
             m_Logger.Warn($"{nameof(OnResponseLaunchRoomInstance)} Connect Battle");
             m_Client.Connect(launchData.RoomServerAddr, launchData.RoomServerPort,launchData.ConnectionKey);
         }
@@ -111,7 +111,7 @@ namespace Engine.Client.Modules
         }
         void OnResponseGateServerCliented(PtMessagePackage message)
         {
-            string userId = m_Context.GetMeta(ContextMetaId.UserId);
+            string userId = m_Context.GetMeta(ContextMetaId.USER_ID);
             if (userId == string.Empty)
                 userId = message.GetHashCode().ToString();
             m_Logger.Info(nameof(OnResponseGateServerCliented)+ " userId:"+userId);
@@ -127,7 +127,7 @@ namespace Engine.Client.Modules
         }
         public void RequestCreateRoom(uint mapId)
         {
-            string userId = m_Context.GetMeta(ContextMetaId.UserId);
+            string userId = m_Context.GetMeta(ContextMetaId.USER_ID);
             string userName = userId;
             byte teamId = 1;
             m_Client.Send((ushort)RequestMessageId.GS_CreateRoom, new ByteBuffer()
@@ -135,7 +135,7 @@ namespace Engine.Client.Modules
         }
         public void RequestJoinRoom(uint roomId)
         {
-            string userId = m_Context.GetMeta(ContextMetaId.UserId);
+            string userId = m_Context.GetMeta(ContextMetaId.USER_ID);
             string userName = userId;
             byte teamId = 1;
             m_Client.Send((ushort)RequestMessageId.GS_JoinRoom, new ByteBuffer()

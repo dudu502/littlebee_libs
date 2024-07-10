@@ -8,7 +8,7 @@ namespace Engine.Client.Lockstep
     {
         EntityWorld m_EntityWorld;
 
-        EntityRenderSpawner m_EntityRenderSpawner;
+        IEntityRenderSpawner m_EntityRenderSpawner;
         public DefaultSimulation()
         {
         }
@@ -20,11 +20,11 @@ namespace Engine.Client.Lockstep
         {
             m_EntityWorld = world;
         }
-        public void SetEntityRenderSpawner(EntityRenderSpawner renderSpawner)
+        public void SetEntityRenderSpawner(IEntityRenderSpawner renderSpawner)
         {
             m_EntityRenderSpawner = renderSpawner;
         }
-        public EntityRenderSpawner GetRenderSpawner()
+        public IEntityRenderSpawner GetRenderSpawner()
         {
             return m_EntityRenderSpawner;
         }

@@ -11,7 +11,6 @@ using Engine.Common.Protocol;
 using Engine.Common.Protocol.Pt;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 
 namespace Engine.Client.Modules
 {
@@ -39,7 +38,7 @@ namespace Engine.Client.Modules
         public RoomSession GetRoomSession() => m_RoomSession;
         void OnResponseRoomServerClientConnected(PtMessagePackage message)
         {
-            string userId = m_Context.GetMeta(ContextMetaId.UserId);
+            string userId = m_Context.GetMeta(ContextMetaId.USER_ID);
             RequestEnterRoom(userId);
         }
         void OnResponseEnterRoom(PtMessagePackage message)
@@ -83,7 +82,7 @@ namespace Engine.Client.Modules
                     case UserState.EnteredRoom:
                         uint mapId = buffer.ReadUInt32(); 
                         // save mapId from battle server.
-                        m_Context.SetMeta(ContextMetaId.SelectedRoomMapId, mapId.ToString());
+                        m_Context.SetMeta(ContextMetaId.SELECTED_ROOM_MAP_ID, mapId.ToString());
                         // let EntityInitializer to load all entitys
 
                         m_Context.SetSimulationController(new DefaultSimulationController());
@@ -128,7 +127,7 @@ namespace Engine.Client.Modules
                 PtFramesList list = PtFramesList.Read(await SevenZip.Helper.DecompressBytesAsync(buffer.ReadBytes()));
                 m_RoomSession.WriteKeyFrameIndex = list.FrameIdx;
                 m_RoomSession.DictKeyFrames = new Dictionary<int, PtFrames>();
-                list.Elements.ForEach(e=>m_RoomSession.DictKeyFrames.Add(e.FrameIdx,e));
+                list.Elements.ForEach(e => m_RoomSession.DictKeyFrames.Add(e.FrameIdx, e));
                 int offset = m_RoomSession.InitIndex == -1 ? 0 : m_RoomSession.InitIndex;
                 startDate -= DateTime.Now - startDate + new TimeSpan(encodingTicks);
                 // start simulation

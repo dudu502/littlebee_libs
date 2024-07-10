@@ -59,8 +59,8 @@ public class MainCommand : MonoBehaviour
     {
         Handler.Initialize();
         MainContext = new Context(Context.CLIENT, new LiteNetworkClient(), new UnityLogger("Unity"));
-        MainContext.SetMeta(ContextMetaId.StandaloneModePort, "50000")
-                    .SetMeta(ContextMetaId.PersistentDataPath, Application.persistentDataPath) ;
+        MainContext.SetMeta(ContextMetaId.STANDALONE_MODE_PORT, "50000")
+                    .SetMeta(ContextMetaId.PERSISTENT_DATA_PATH, Application.persistentDataPath) ;
         MainContext.SetModule(new GateServiceModule())
                     .SetModule(new BattleServiceModule());
 
@@ -74,7 +74,7 @@ public class MainCommand : MonoBehaviour
     [TerminalCommand("setuid","setuid(id)")]
     public void SetUserId(string uid)
     {
-        MainContext.SetMeta(ContextMetaId.UserId, uid);
+        MainContext.SetMeta(ContextMetaId.USER_ID, uid);
     }
 
     [TerminalCommand("connect-ip-port-key", "connect(ip,port,key)")]

@@ -13,9 +13,9 @@ namespace LockstepGate
         static void Main(string[] args)
         {
             Context context = new Context(Context.SERVER, new LiteNetworkServer(TAG), new DefaultConsoleLogger(TAG))
-                .SetMeta(ContextMetaId.RoomModuleFullPath, @"D:\dudu502\littlebee_libs\Examples\Servers\Battle\bin\Debug\net6.0\Battle.dll")
-                .SetMeta(ContextMetaId.MaxConnectionCount,"16")
-                .SetMeta(ContextMetaId.ServerAddress,"127.0.0.1")
+                .SetMeta(ContextMetaId.ROOM_MODULE_FULL_PATH, @"D:\dudu502\littlebee_libs\Examples\Servers\Battle\bin\Debug\net6.0\Battle.dll")
+                .SetMeta(ContextMetaId.MAX_CONNECTION_COUNT,"16")
+                .SetMeta(ContextMetaId.SERVER_ADDRESS,"127.0.0.1")
                 .SetModule(new RoomModule());
             context.Server.Run(9030);
             Console.ReadKey();

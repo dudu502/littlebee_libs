@@ -2,6 +2,7 @@
 {
     public abstract class AbstractComponent
     {
+        public AbstractComponent() { }
         public abstract AbstractComponent Clone();
         public abstract void CopyFrom(AbstractComponent component);
         public abstract byte[] Serialize();

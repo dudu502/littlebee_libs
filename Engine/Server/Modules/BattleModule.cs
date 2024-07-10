@@ -52,7 +52,7 @@ namespace Engine.Server.Modules
                     buffer.WriteString(userState.UserId);
                     buffer.WriteBool(userState.IsOnline);
                     m_Server.UnconnectedSend((ushort)RequestMessageId.UGS_RoomPlayerDisconnect, buffer.GetRawBytes(),
-                        new System.Net.IPEndPoint(System.Net.IPAddress.Parse("127.0.0.1"), Convert.ToInt32(m_Context.GetMeta(ContextMetaId.GateServerPort,"9030"))));
+                        new System.Net.IPEndPoint(System.Net.IPAddress.Parse("127.0.0.1"), Convert.ToInt32(m_Context.GetMeta(ContextMetaId.GATE_SERVER_PORT,"9030"))));
                 }
             }
         }
@@ -66,13 +66,13 @@ namespace Engine.Server.Modules
                 {
                     string entityId = Guid.NewGuid().ToString();
                     Session.Users[entityId] = new UserStateObject(message.ExtraPeerId, UserState.EnteredRoom, userId, entityId);
-                    bool isFull = Session.Users.Count == Convert.ToInt32(m_Context.GetMeta(ContextMetaId.MaxConnectionCount));
-                    m_Logger.Info($"{nameof(OnEnterRoom)} Player Count:{Session.Users.Count} PlayerMaxConnectCount:{m_Context.GetMeta(ContextMetaId.MaxConnectionCount)} isFull:{isFull} EntityId:{entityId}");
+                    bool isFull = Session.Users.Count == Convert.ToInt32(m_Context.GetMeta(ContextMetaId.MAX_CONNECTION_COUNT));
+                    m_Logger.Info($"{nameof(OnEnterRoom)} Player Count:{Session.Users.Count} PlayerMaxConnectCount:{m_Context.GetMeta(ContextMetaId.MAX_CONNECTION_COUNT)} isFull:{isFull} EntityId:{entityId}");
                     m_Server.Send(message.ExtraPeerId, (ushort)ResponseMessageId.RS_EnterRoom, new ByteBuffer()
                         .WriteString(entityId).WriteString(userId).GetRawBytes());
                     if (isFull)
                         m_Server.Send((ushort)ResponseMessageId.RS_AllUserState, new ByteBuffer()
-                            .WriteByte((byte)UserState.EnteredRoom).WriteUInt32(Convert.ToUInt32(m_Context.GetMeta(ContextMetaId.SelectedRoomMapId))).GetRawBytes());
+                            .WriteByte((byte)UserState.EnteredRoom).WriteUInt32(Convert.ToUInt32(m_Context.GetMeta(ContextMetaId.SELECTED_ROOM_MAP_ID))).GetRawBytes());
                 }
                 else
                 {
@@ -81,7 +81,7 @@ namespace Engine.Server.Modules
                     m_Server.Send(message.ExtraPeerId, (ushort)ResponseMessageId.RS_EnterRoom, new ByteBuffer()
                         .WriteString(userState.UserEntityId).WriteString(userId).GetRawBytes());
                     m_Server.Send((ushort)ResponseMessageId.RS_AllUserState, new ByteBuffer()
-                        .WriteByte((byte)UserState.Re_EnteredRoom).WriteUInt32(Convert.ToUInt32(m_Context.GetMeta(ContextMetaId.SelectedRoomMapId))).GetRawBytes());
+                        .WriteByte((byte)UserState.Re_EnteredRoom).WriteUInt32(Convert.ToUInt32(m_Context.GetMeta(ContextMetaId.SELECTED_ROOM_MAP_ID))).GetRawBytes());
                 }
             }
         }

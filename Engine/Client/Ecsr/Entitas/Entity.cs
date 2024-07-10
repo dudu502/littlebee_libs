@@ -10,14 +10,49 @@ namespace Engine.Client.Ecsr.Entitas
     {
         public Guid Id { private set; get; }
         public readonly Dictionary<Type, AbstractComponent> Components = new Dictionary<Type, AbstractComponent>();
-        internal Entity()
+        public Entity()
         {
             Id = Guid.NewGuid();
         }
 
-        internal Entity(Guid id)
+        public Entity(Guid id)
         {
             Id = id;
+        }
+
+        public static Entity Read(byte[] bytes)
+        {
+            using (ByteBuffer buffer = new ByteBuffer(bytes))
+            {
+                string entityId = buffer.ReadString();
+                Entity entity = new Entity(new Guid(entityId));
+                int count = buffer.ReadInt32();
+                for(int i = 0; i < count; ++i)
+                {
+                    Type componentType = Type.GetType(buffer.ReadString());
+                    AbstractComponent componentInstance = Activator.CreateInstance(componentType) as AbstractComponent;
+                    if (componentInstance != null)
+                    {
+                        componentInstance.Deserialize(buffer.ReadBytes());
+                        entity.AddComponent(componentInstance);
+                    }
+                }
+                return entity;
+            }
+        }
+        public static byte[] Write(Entity entity)
+        {
+            using(ByteBuffer buffer = new ByteBuffer())
+            {
+                buffer.WriteString(entity.Id.ToString());
+                buffer.WriteInt32(entity.Components.Count);
+                foreach(Type componentType in entity.Components.Keys)
+                {
+                    buffer.WriteString(componentType.AssemblyQualifiedName);
+                    buffer.WriteBytes(entity.Components[componentType].Serialize());
+                }
+                return buffer.GetRawBytes();
+            }
         }
         public Entity Clone()
         {

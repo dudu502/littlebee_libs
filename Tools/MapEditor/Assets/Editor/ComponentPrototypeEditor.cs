@@ -2,6 +2,7 @@ using Engine.Client.Ecsr.Components;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
 using UnityEditor;
@@ -29,51 +30,59 @@ public class ComponentPrototypeEditor : Editor
     }
     public override void OnInspectorGUI()
     {
-        base.OnInspectorGUI();
+        base.OnInspectorGUI(); 
+        GUILayout.Space(10);
         ComponentPrototype componentPrototype = (ComponentPrototype)target;
         GUILayout.BeginVertical();
-        foreach(var component in componentPrototype.Components)
+
+        var current = componentPrototype.Components.First;
+        while (current != null)
         {
-            GUILayout.Box("ECS-Component: "+component.GetType().ToString());
-            var fields = component.GetType().GetFields();
+            var next = current.Next;
+            GUILayout.BeginHorizontal();
+            GUILayout.Label("ECS-Component: " + current.Value.GetType().ToString());
+            if (GUILayout.Button("Remove", GUILayout.Width(80)))
+            {
+                componentPrototype.Components.Remove(current);
+            }
+
+            GUILayout.EndHorizontal();
+
+            var fields = current.Value.GetType().GetFields();
             foreach (var field in fields)
             {
                 GUILayout.BeginHorizontal();
                 if (field.FieldType == typeof(int))
                 {
-                    field.SetValue(component, EditorGUILayout.IntField(field.Name, (int)field.GetValue(component)));
+                    field.SetValue(current.Value, EditorGUILayout.IntField(field.Name, (int)field.GetValue(current.Value)));
                 }
                 else if (field.FieldType == typeof(float))
                 {
-                    field.SetValue(component, EditorGUILayout.FloatField(field.Name, (float)field.GetValue(component)));
+                    field.SetValue(current.Value, EditorGUILayout.FloatField(field.Name, (float)field.GetValue(current.Value)));
                 }
                 else if (field.FieldType == typeof(uint))
                 {
-                    field.SetValue(component, (uint)EditorGUILayout.IntField(field.Name, Convert.ToInt32(field.GetValue(component))));
+                    field.SetValue(current.Value, (uint)EditorGUILayout.IntField(field.Name, Convert.ToInt32(field.GetValue(current.Value))));
                 }
                 else if (field.FieldType == typeof(string))
                 {
-                    field.SetValue(component, EditorGUILayout.TextField(field.Name, (string)field.GetValue(component)));
+                    field.SetValue(current.Value, EditorGUILayout.TextField(field.Name, (string)field.GetValue(current.Value)));
                 }
                 GUILayout.EndHorizontal();
-                // Add more else if clauses for other types you may have in AbstractComponent
-
-                // Add more GUI controls for other field types if needed
             }
-            
+            current = next;
             GUILayout.Space(10);
         }
-
         GUILayout.EndVertical();
-        EditorGUILayout.Space();
-        GUILayout.BeginHorizontal();
-      
-        selectedOptionIndex = EditorGUILayout.Popup("Component Type", selectedOptionIndex, ComponentTypes.ConvertAll<string>(e=>e.ToString()).ToArray());
 
+        EditorGUILayout.Space();
+
+        GUILayout.BeginHorizontal();    
+        selectedOptionIndex = EditorGUILayout.Popup("Component Type", selectedOptionIndex, ComponentTypes.ConvertAll<string>(e=>e.ToString()).ToArray());
         if (GUILayout.Button("Add Component"))
         {
             Type componentType = ComponentTypes[selectedOptionIndex];
-            componentPrototype.Components.Add( Activator.CreateInstance(componentType) as AbstractComponent);
+            componentPrototype.Components.AddLast( Activator.CreateInstance(componentType) as AbstractComponent);
         }
         GUILayout.EndHorizontal();
     }

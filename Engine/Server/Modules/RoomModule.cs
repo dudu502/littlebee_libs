@@ -116,10 +116,10 @@ namespace Engine.Server.Modules
                             gameData.SetIsStandaloneMode(room.Players.Count == 1);
                             gameData.SetMapId(room.MapId);
                             gameData.SetConnectionKey("room-battle");
-                            gameData.SetRoomServerAddr(m_Context.GetMeta(ContextMetaId.ServerAddress));
+                            gameData.SetRoomServerAddr(m_Context.GetMeta(ContextMetaId.SERVER_ADDRESS));
                             gameData.SetRoomServerPort(GetEmptyRoomPort());
                             OnUpdateDataToRoomPlayer(room, (ushort)ResponseMessageId.GS_LaunchGame, null);
-                            await CreateRoomProcess(m_Context.GetMeta(ContextMetaId.RoomModuleFullPath), gameData, room);
+                            await CreateRoomProcess(m_Context.GetMeta(ContextMetaId.ROOM_MODULE_FULL_PATH), gameData, room);
                             // created room process 
                             OnUpdateDataToRoomPlayer(room, (ushort)ResponseMessageId.GS_LaunchRoomInstance, PtLaunchData.Write(gameData));
                             room.SetStatus(1);
@@ -141,7 +141,7 @@ namespace Engine.Server.Modules
             roomProcess.RoomId = room.RoomId;
             roomProcess.Port = launchData.RoomServerPort;
             m_Logger.Info($"{nameof(CreateRoomProcess)} dll:{dllPath}");
-            var psi = new ProcessStartInfo("dotnet"," "+m_Context.GetMeta(ContextMetaId.RoomModuleFullPath)+
+            var psi = new ProcessStartInfo("dotnet"," "+m_Context.GetMeta(ContextMetaId.ROOM_MODULE_FULL_PATH) +
                 " -key "+launchData.ConnectionKey+
                 " -port "+launchData.RoomServerPort+
                 " -gsPort "+m_Context.Server.GetActivePort()+

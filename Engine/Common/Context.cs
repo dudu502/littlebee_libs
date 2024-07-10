@@ -9,18 +9,19 @@ namespace Engine.Common
 {
     public sealed class ContextMetaId
     {
-        public const string UserId = "user_id";
-        public const string ServerAddress = "server_address";
-        public const string MaxConnectionCount = "max_connection_count";
-        public const string RoomModuleFullPath = "room_module_full_path";
-        public const string StandaloneModePort = "standalone_mode_port";
-        public const string GateServerPort = "gate_server_port";
-        public const string SelectedRoomMapId = "selected_room_map_id";
-        public const string PersistentDataPath = "persistent_data_path";
+        public const string USER_ID = "user_id";
+        public const string SERVER_ADDRESS = "server_address";
+        public const string MAX_CONNECTION_COUNT = "max_connection_count";
+        public const string ROOM_MODULE_FULL_PATH = "room_module_full_path";
+        public const string STANDALONE_MODE_PORT = "standalone_mode_port";
+        public const string GATE_SERVER_PORT = "gate_server_port";
+        public const string SELECTED_ROOM_MAP_ID = "selected_room_map_id";
+        public const string PERSISTENT_DATA_PATH = "persistent_data_path";
     }
     public sealed class Context
     {
         public const string CLIENT = "client";
+        public const string EDITOR = "editor";
         public const string SERVER = "server";
 
         private static readonly Dictionary<string, Context> s_instances = new Dictionary<string, Context>();
@@ -45,6 +46,17 @@ namespace Engine.Common
             s_instances[name] = this;
             modules = new Dictionary<Type, AbstractModule>();
         
+            Logger.Info($"Context Created Name:{name}");
+        }
+
+        public Context(string name,ILogger logger)
+        {
+            metas = new Dictionary<string, string>();
+            Logger = logger;
+            Name = name;
+            s_instances[name] = this;
+            modules = new Dictionary<Type, AbstractModule>();
+
             Logger.Info($"Context Created Name:{name}");
         }
 
