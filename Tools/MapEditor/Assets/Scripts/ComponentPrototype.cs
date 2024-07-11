@@ -82,7 +82,6 @@ public class ComponentPrototype : MonoBehaviour
     public string EntityId;
     public LinkedList<AbstractComponent> Components = new LinkedList<AbstractComponent>();
     private Entity _entity;
-    public string EntityDisplayerPath;
     void Start()
     {
 
