@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
+using TrueSync;
 using UnityEditor;
 using UnityEngine;
 
@@ -67,6 +68,24 @@ public class ComponentPrototypeEditor : Editor
                 else if (field.FieldType == typeof(string))
                 {
                     field.SetValue(current.Value, EditorGUILayout.TextField(field.Name, (string)field.GetValue(current.Value)));
+                }
+                else if (field.FieldType == typeof(TSVector2))
+                {
+                    TSVector2 vector2 = (TSVector2)field.GetValue(current.Value);
+                   
+                    GUILayout.Label(field.Name);
+                    GUILayout.BeginVertical();
+                    FP x = EditorGUILayout.FloatField("x", vector2.x.AsFloat());
+                    FP y = EditorGUILayout.FloatField("y", vector2.y.AsFloat());
+
+                    field.SetValue(current.Value, new TSVector2(x,y));
+                    GUILayout.EndVertical();
+                }
+                else if(field.FieldType == typeof(FP))
+                {
+                    FP fl = (FP)field.GetValue(current.Value);
+                    FP ff = EditorGUILayout.FloatField(field.Name, fl.AsFloat());               
+                    field.SetValue(current.Value, ff);
                 }
                 GUILayout.EndHorizontal();
             }

@@ -1,7 +1,4 @@
 ﻿using Engine.Common.Protocol;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using TrueSync;
 
 namespace Engine.Client.Ecsr.Components
@@ -9,6 +6,10 @@ namespace Engine.Client.Ecsr.Components
     public class Position : AbstractComponent
     {
         public TSVector2 Pos;
+        public Position()
+        {
+
+        }
         public override AbstractComponent Clone()
         {
             Position position = new Position();
