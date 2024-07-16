@@ -87,8 +87,6 @@ public class ComponentPrototype : MonoBehaviour
 
     }
 
-    
-
     public byte[] Write()
     {
         _entity = new Entity(Guid.NewGuid());

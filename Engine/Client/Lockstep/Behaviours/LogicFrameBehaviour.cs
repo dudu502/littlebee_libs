@@ -89,7 +89,7 @@ namespace Engine.Client.Lockstep.Behaviours
             {
                 if(battleServiceModule.GetRoomSession().DictKeyFrames.TryGetValue(CurrentFrameIdx,out PtFrames frames))
                 {
-                    ((DefaultSimulation)Sim).GetEntityWorld().RestoreKeyframes(frames);
+                    ((DefaultSimulation)Sim).GetEntityWorld().RestoreFrames(frames);
                     UpdateKeyFrameIdxInfoCollectionAtFrameIdx(frames);
                 }
                 else

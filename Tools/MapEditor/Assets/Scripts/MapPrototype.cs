@@ -62,7 +62,7 @@ public class MapPrototype : MonoBehaviour
             int componentProtoCount = buffer.ReadInt32();
             for (int i = 0; i < componentProtoCount; ++i)
             {
-
+                //buffer.ReadBytes()
 
             }
             //read all componentPrototye

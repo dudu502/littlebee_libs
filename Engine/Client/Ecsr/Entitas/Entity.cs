@@ -19,7 +19,24 @@ namespace Engine.Client.Ecsr.Entitas
         {
             Id = id;
         }
-
+        public AbstractComponent GetComponentByCommand(ushort cmd)
+        {
+            foreach (var component in Components.Values)
+            {
+                if(component.GetCommand()==cmd)
+                    return component;
+            }
+            return null;
+        }
+        public AbstractComponent GetComponent<T>()where T : AbstractComponent
+        {
+            Type type = typeof(T);
+            if(Components.TryGetValue(type,out AbstractComponent component))
+            {
+                return component;
+            }
+            return null;
+        }
         public static Entity Read(byte[] bytes)
         {
             using (ByteBuffer buffer = new ByteBuffer(bytes))

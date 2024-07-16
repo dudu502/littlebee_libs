@@ -8,7 +8,7 @@ using UnityEditor;
 using UnityEngine;
 
 [CustomEditor(typeof(MapPrototype))]
-public class MapPrototypeEditor: Editor
+public class MapPrototypeEditor : Editor
 {
     int selectedOptionIndex = 0;
     bool showComponentDetails = false;
@@ -17,11 +17,11 @@ public class MapPrototypeEditor: Editor
     {
         foreach (Assembly assembly in AppDomain.CurrentDomain.GetAssemblies())
         {
-            foreach(Type type in assembly.GetTypes())
+            foreach (Type type in assembly.GetTypes())
             {
                 bool isEntitySystem = false;
                 var interfaces = type.GetInterfaces();
-                foreach(var i in interfaces)
+                foreach (var i in interfaces)
                 {
                     if (i == typeof(IEntitySystem))
                     {
@@ -41,24 +41,24 @@ public class MapPrototypeEditor: Editor
         base.OnInspectorGUI();
         MapPrototype mapPrototype = (MapPrototype)target;
         var componentProtos = GameObject.FindObjectsOfType<ComponentPrototype>();
-        GUILayout.Label("ComponentPrototype Count: " + componentProtos.Length);
+        GUILayout.Label("ComponentPrototype Count:" + componentProtos.Length);
         showComponentDetails = EditorGUILayout.Foldout(showComponentDetails, "Show Details");
         if (showComponentDetails)
         {
-            foreach(var proto in componentProtos)
+            foreach (var proto in componentProtos)
             {
-                EditorGUILayout.ObjectField(proto.name,proto.gameObject,typeof(ComponentPrototype),true);
+                EditorGUILayout.ObjectField(proto.name, proto.gameObject, typeof(ComponentPrototype), true);
             }
         }
         GUILayout.Space(10);
         GUILayout.BeginVertical();
         var current = mapPrototype.Systems.First;
-        while(current != null)
+        while (current != null)
         {
             var next = current.Next;
             GUILayout.BeginHorizontal();
-            GUILayout.Label("ECS-System"+current.Value.ToString());
-            if(GUILayout.Button("Remove",GUILayout.Width(80)))
+            GUILayout.Label("ECS-System:" + current.Value.ToString());
+            if (GUILayout.Button("Remove", GUILayout.Width(80)))
                 mapPrototype.Systems.Remove(current);
             GUILayout.EndHorizontal();
             current = next;
@@ -68,11 +68,16 @@ public class MapPrototypeEditor: Editor
         GUILayout.Space(10);
         GUILayout.BeginHorizontal();
         selectedOptionIndex = EditorGUILayout.Popup("System Type", selectedOptionIndex, SystemTypes.ConvertAll<string>(e => e.ToString()).ToArray());
-        if(GUILayout.Button("Add Component"))
+        if (GUILayout.Button("Add Component"))
         {
             Type systemType = SystemTypes[selectedOptionIndex];
             mapPrototype.Systems.AddLast(systemType);
         }
         GUILayout.EndHorizontal();
+
+        if (GUILayout.Button("Save"))
+        {
+
+        }
     }
 }

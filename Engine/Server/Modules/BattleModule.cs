@@ -147,12 +147,20 @@ namespace Engine.Server.Modules
             {
                 switch (keyFrame.Cmd)
                 {
-                    
+                    case FrameCommand.SYNC_CREATE_ENTITY:
+                        //keyFrame.ParamContent = new ByteBuffer().WriteByte().WriteString(Guid.NewGuid().ToString()).GetRawBytes();
+                        break;
                 }
             }
 
             Session.QueueKeyFrameCollection.Enqueue(collection);
         }
+
+        //byte[] AppendEntityParamsContent()
+        //{
+
+        //}
+
         async void OnHistoryKeyframes(PtMessagePackage message)
         {
             using (ByteBuffer buffer = new ByteBuffer(message.Content))
