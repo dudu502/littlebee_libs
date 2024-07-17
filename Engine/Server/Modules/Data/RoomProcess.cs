@@ -7,7 +7,7 @@ namespace Engine.Server.Modules.Data
     {
         public Process CurrentProcess { private set; get; }
         public uint RoomId { set; get; }
-        public int Port { set; get;}
+        public int Port { set; get; }
         public PtLaunchData LaunchData { set; get; }
         public void Set(Process proc)
         {
@@ -15,7 +15,7 @@ namespace Engine.Server.Modules.Data
         }
         public void Kill()
         {
-            if(CurrentProcess != null)
+            if (CurrentProcess != null)
                 CurrentProcess.Kill();
         }
     }

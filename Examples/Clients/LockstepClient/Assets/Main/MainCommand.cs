@@ -1,3 +1,6 @@
+using Engine.Client.Ecsr.Entitas;
+using Engine.Client.Ecsr.Renders;
+using Engine.Client.Lockstep;
 using Engine.Client.Modules;
 using Engine.Client.Network;
 using Engine.Common;
@@ -52,6 +55,25 @@ public class UnityLogger : Engine.Common.Log.ILogger
         Error(LitJson.JsonMapper.ToJson(message));
     }
 }
+
+public class GameEntityRenderSpawner : EntityRenderSpawner
+{
+    /// <summary>
+    /// Called in Unity main thread.
+    /// </summary>
+    /// <param name="request"></param>
+    protected override void CreateEntityRendererImpl(CreateEntityRendererRequest request)
+    {
+        base.CreateEntityRendererImpl(request);
+        GameObject resPrefab = GameObject.Instantiate<GameObject>(Resources.Load<GameObject>(request.ResourcePath)); 
+        if(resPrefab.TryGetComponent<PlayerAppearanceRenderer>(out var component))
+        {
+            component.EntityId = request.EntityId;
+            component.World = Context.Retrieve(Context.CLIENT).GetSimulationController<DefaultSimulationController>()
+                .GetSimulation<DefaultSimulation>().GetEntityWorld();
+        }
+    }
+}
 public class MainCommand : MonoBehaviour
 {
     public Context MainContext;
@@ -63,7 +85,11 @@ public class MainCommand : MonoBehaviour
                     .SetMeta(ContextMetaId.PERSISTENT_DATA_PATH, Application.persistentDataPath) ;
         MainContext.SetModule(new GateServiceModule())
                     .SetModule(new BattleServiceModule());
-
+        DefaultSimulationController defaultSimulationController = new DefaultSimulationController();
+        MainContext.SetSimulationController(defaultSimulationController);
+        defaultSimulationController.CreateSimulation();
+        EntityWorld entityWorld = defaultSimulationController.GetSimulation<DefaultSimulation>().GetEntityWorld();
+        entityWorld.SetEntityRenderSpawner(new GameEntityRenderSpawner());
     }
 
     private void Start()

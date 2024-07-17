@@ -1,4 +1,5 @@
-﻿using Engine.Client.Lockstep;
+﻿using Engine.Client.Event;
+using Engine.Client.Lockstep;
 using Engine.Client.Modules.Data;
 using Engine.Common;
 using Engine.Common.Event;
@@ -84,9 +85,8 @@ namespace Engine.Client.Modules
                         // save mapId from battle server.
                         m_Context.SetMeta(ContextMetaId.SELECTED_ROOM_MAP_ID, mapId.ToString());
                         // let EntityInitializer to load all entitys
-
-                        m_Context.SetSimulationController(new DefaultSimulationController());
-
+                        
+                       
                         RequestInitPlayer();
                         break;
                     case UserState.Re_EnteredRoom:
@@ -131,6 +131,9 @@ namespace Engine.Client.Modules
                 int offset = m_RoomSession.InitIndex == -1 ? 0 : m_RoomSession.InitIndex;
                 startDate -= DateTime.Now - startDate + new TimeSpan(encodingTicks);
                 // start simulation
+                m_Context.GetSimulationController<DefaultSimulationController>().Start(startDate, m_RoomSession.WriteKeyFrameIndex - offset,
+                    progress=>EventDispatcher<LoadingType,LoadingEventId>.DispatchEvent(LoadingType.Loading,new LoadingEventId(LoadingEventId.SynchronizingKeyFrames, progress))
+                    , ()=>EventDispatcher<LoadingType,LoadingEventId>.DispatchEvent(LoadingType.Loading,new LoadingEventId(LoadingEventId.SynchronizingKeyFramesCompleted,1)));
             }
         }
         public void RequestEnterRoom(string userId)

@@ -36,13 +36,14 @@ namespace Engine.Common.Lockstep
             }
             return false;
         }
-        public void AddBehaviour(ISimulativeBehaviour beh)
+        public Simulation AddBehaviour(ISimulativeBehaviour beh)
         {
             if (!ContainBehaviour(beh))
             {
                 m_Behaviours.Add(beh);
                 beh.Sim = this;
             }
+            return this;
         }
         public void RemoveBehaviour(ISimulativeBehaviour beh)
         {

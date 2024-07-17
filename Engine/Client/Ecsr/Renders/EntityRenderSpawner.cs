@@ -18,21 +18,20 @@ namespace Engine.Client.Ecsr.Renders
 
     public class EntityRenderSpawner
     {
-        public Func<CreateEntityRendererRequest, object> LoadInitialize;
         /// <summary>
         /// This method is called in Simulation.Run's Thread.
         /// </summary>
         /// <param name="request"></param>
         public void CreateEntityRenderer(CreateEntityRendererRequest request)
         {
-            if (LoadInitialize != null)
+            Handler.Run((obj) =>
             {
-                Handler.Run((obj) => 
-                {
-                    var result = LoadInitialize((CreateEntityRendererRequest)obj);
-
-                },request);
-            }
+                CreateEntityRendererImpl((CreateEntityRendererRequest)obj);
+            }, request);
+        }
+        protected virtual void CreateEntityRendererImpl(CreateEntityRendererRequest request)
+        {
+            
         }
     }
 }

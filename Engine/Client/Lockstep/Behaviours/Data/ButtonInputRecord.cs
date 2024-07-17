@@ -9,8 +9,9 @@ namespace Engine.Client.Lockstep.Behaviours.Data
         None,
         Fire,
     }
-    internal class ButtonInputRecord : IInputRecord
+    public class ButtonInputRecord : IInputRecord
     {
+        public static ButtonFunction CurrentFunc = ButtonFunction.None;
         public Guid EntityId { set; get; }
         public ButtonFunction Func { set; get; }
         public void CopyFrom(IInputRecord record)

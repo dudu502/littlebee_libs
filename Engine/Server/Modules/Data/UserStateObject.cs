@@ -10,12 +10,12 @@ namespace Engine.Server.Modules.Data
         public string UserEntityId;
         public bool IsOnline = true;
 
-        public void Update(int peerId, UserState state) 
+        public void Update(int peerId, UserState state)
         {
             PeerId = peerId;
             StateFlag = state;
         }
-        public UserStateObject(int peerId,UserState state,string userId,string userEntityId)
+        public UserStateObject(int peerId, UserState state, string userId, string userEntityId)
         {
             PeerId = peerId;
             StateFlag = state;

@@ -1,7 +1,7 @@
 ﻿using System;
 namespace Engine.Client.Lockstep.Behaviours.Data
 {
-    internal interface IInputRecord
+    public interface IInputRecord
     {
         Guid EntityId { set; get; }
         int GetRecordType();

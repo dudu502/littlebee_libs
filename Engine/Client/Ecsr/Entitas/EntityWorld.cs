@@ -5,6 +5,7 @@ using Engine.Common.Misc;
 using Engine.Common.Protocol.Pt;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Engine.Client.Ecsr.Entitas
 {
@@ -12,10 +13,6 @@ namespace Engine.Client.Ecsr.Entitas
     {
         public class FrameRawData
         {
-            public static readonly List<Type> ComponentTypes = new List<Type>() 
-            {
-
-            };
             public SortedDictionary<Guid, Entity> EntityDict;
 
             public FrameRawData(SortedDictionary<Guid, Entity> source)
@@ -30,9 +27,8 @@ namespace Engine.Client.Ecsr.Entitas
         EntityInitializer m_EntityInitializer;
         FrameRawData m_CurrentFrameData;
         EntityRenderSpawner m_EntityRenderSpawner;
-        public EntityWorld(params Type[] comps)
+        public EntityWorld()
         {
-            FrameRawData.ComponentTypes.AddRange(comps);
             m_CurrentFrameData = new FrameRawData();
             m_EntityInitializer = new EntityInitializer(this);
         }
@@ -71,6 +67,160 @@ namespace Engine.Client.Ecsr.Entitas
         {
             return m_CurrentFrameData.EntityDict.Remove(entityId);
         }
+
+
+        #region Read Component
+        public void ReadComponent<T0>(Guid entityId, Action<T0> action)
+            where T0:AbstractComponent
+        {
+            if(m_CurrentFrameData.EntityDict.TryGetValue(entityId,out Entity entity))
+            {
+                if(entity.Components.TryGetValue(typeof(T0), out AbstractComponent component))
+                {
+                    action?.Invoke((T0)component);
+                }
+            }
+        }
+        public void ReadComponent<T0,T1>(Guid entityId, Action<T0,T1> action) 
+            where T0 : AbstractComponent where T1 : AbstractComponent
+        {
+            if (m_CurrentFrameData.EntityDict.TryGetValue(entityId, out Entity entity))
+            {
+                if (entity.Components.TryGetValue(typeof(T0), out AbstractComponent component0)
+                    && entity.Components.TryGetValue(typeof(T1), out AbstractComponent component1))
+                {
+                    action?.Invoke((T0)component0,(T1)component1);
+                }
+            }
+        }
+
+        public void ReadComponent<T0, T1,T2>(Guid entityId, Action<T0, T1,T2> action)
+            where T0 : AbstractComponent where T1 : AbstractComponent
+            where T2 : AbstractComponent
+        {
+            if (m_CurrentFrameData.EntityDict.TryGetValue(entityId, out Entity entity))
+            {
+                if (entity.Components.TryGetValue(typeof(T0), out AbstractComponent component0)
+                    && entity.Components.TryGetValue(typeof(T1), out AbstractComponent component1)
+                    && entity.Components.TryGetValue(typeof(T2), out AbstractComponent component2))
+                {
+                    action?.Invoke((T0)component0, (T1)component1,(T2)component2);
+                }
+            }
+        }
+
+        public void ReadComponent<T0, T1, T2,T3>(Guid entityId, Action<T0, T1, T2,T3> action)
+            where T0 : AbstractComponent where T1 : AbstractComponent
+            where T2 : AbstractComponent where T3 : AbstractComponent
+        {
+            if (m_CurrentFrameData.EntityDict.TryGetValue(entityId, out Entity entity))
+            {
+                if (entity.Components.TryGetValue(typeof(T0), out AbstractComponent component0)
+                    && entity.Components.TryGetValue(typeof(T1), out AbstractComponent component1)
+                    && entity.Components.TryGetValue(typeof(T2), out AbstractComponent component2)
+                    && entity.Components.TryGetValue(typeof(T3), out AbstractComponent component3))
+                {
+                    action?.Invoke((T0)component0, (T1)component1, (T2)component2,(T3)component3);
+                }
+            }
+        }
+
+        public void ReadComponent<T0, T1, T2, T3,T4>(Guid entityId, Action<T0, T1, T2, T3,T4> action)
+            where T0 : AbstractComponent where T1 : AbstractComponent
+            where T2 : AbstractComponent where T3 : AbstractComponent
+            where T4 : AbstractComponent
+        {
+            if (m_CurrentFrameData.EntityDict.TryGetValue(entityId, out Entity entity))
+            {
+                if (entity.Components.TryGetValue(typeof(T0), out AbstractComponent component0)
+                    && entity.Components.TryGetValue(typeof(T1), out AbstractComponent component1)
+                    && entity.Components.TryGetValue(typeof(T2), out AbstractComponent component2)
+                    && entity.Components.TryGetValue(typeof(T3), out AbstractComponent component3)
+                    && entity.Components.TryGetValue(typeof(T4), out AbstractComponent component4))
+                {
+                    action?.Invoke((T0)component0, (T1)component1, (T2)component2, (T3)component3,(T4)component4);
+                }
+            }
+        }
+        public void ReadComponent<T0, T1, T2, T3, T4,T5>(Guid entityId, Action<T0, T1, T2, T3, T4,T5> action)
+            where T0 : AbstractComponent where T1 : AbstractComponent
+            where T2 : AbstractComponent where T3 : AbstractComponent
+            where T4 : AbstractComponent where T5 : AbstractComponent
+        {
+            if (m_CurrentFrameData.EntityDict.TryGetValue(entityId, out Entity entity))
+            {
+                if (entity.Components.TryGetValue(typeof(T0), out AbstractComponent component0)
+                    && entity.Components.TryGetValue(typeof(T1), out AbstractComponent component1)
+                    && entity.Components.TryGetValue(typeof(T2), out AbstractComponent component2)
+                    && entity.Components.TryGetValue(typeof(T3), out AbstractComponent component3)
+                    && entity.Components.TryGetValue(typeof(T4), out AbstractComponent component4)
+                    && entity.Components.TryGetValue(typeof(T5), out AbstractComponent component5))
+                {
+                    action?.Invoke((T0)component0, (T1)component1, (T2)component2, (T3)component3, (T4)component4,(T5)component5);
+                }
+            }
+        }
+
+        public void ReadComponent<T0, T1, T2, T3, T4, T5,T6>(Guid entityId, Action<T0, T1, T2, T3, T4, T5,T6> action)
+            where T0 : AbstractComponent where T1 : AbstractComponent
+            where T2 : AbstractComponent where T3 : AbstractComponent
+            where T4 : AbstractComponent where T5 : AbstractComponent
+            where T6 : AbstractComponent
+        {
+
+            if (m_CurrentFrameData.EntityDict.TryGetValue(entityId, out Entity entity))
+            {
+                if (entity.Components.TryGetValue(typeof(T0), out AbstractComponent component0)
+                    && entity.Components.TryGetValue(typeof(T1), out AbstractComponent component1)
+                    && entity.Components.TryGetValue(typeof(T2), out AbstractComponent component2)
+                    && entity.Components.TryGetValue(typeof(T3), out AbstractComponent component3)
+                    && entity.Components.TryGetValue(typeof(T4), out AbstractComponent component4)
+                    && entity.Components.TryGetValue(typeof(T5), out AbstractComponent component5)
+                    && entity.Components.TryGetValue(typeof(T6), out AbstractComponent component6))
+                {
+                    action?.Invoke((T0)component0, (T1)component1, (T2)component2, (T3)component3, (T4)component4, (T5)component5,(T6)component6);
+                }
+            }
+        }
+
+        public void ReadComponent<T0, T1, T2, T3, T4, T5, T6,T7>(Guid entityId, Action<T0, T1, T2, T3, T4, T5, T6,T7> action)
+            where T0 : AbstractComponent where T1 : AbstractComponent
+            where T2 : AbstractComponent where T3 : AbstractComponent
+            where T4 : AbstractComponent where T5 : AbstractComponent
+            where T6 : AbstractComponent where T7 : AbstractComponent
+        {
+            if (m_CurrentFrameData.EntityDict.TryGetValue(entityId, out Entity entity))
+            {
+                if (entity.Components.TryGetValue(typeof(T0), out AbstractComponent component0)
+                    && entity.Components.TryGetValue(typeof(T1), out AbstractComponent component1)
+                    && entity.Components.TryGetValue(typeof(T2), out AbstractComponent component2)
+                    && entity.Components.TryGetValue(typeof(T3), out AbstractComponent component3)
+                    && entity.Components.TryGetValue(typeof(T4), out AbstractComponent component4)
+                    && entity.Components.TryGetValue(typeof(T5), out AbstractComponent component5)
+                    && entity.Components.TryGetValue(typeof(T6), out AbstractComponent component6)
+                    && entity.Components.TryGetValue(typeof(T7), out AbstractComponent component7))
+                {
+                    action?.Invoke((T0)component0, (T1)component1, (T2)component2, (T3)component3, (T4)component4, (T5)component5, (T6)component6,(T7)component7);
+                }
+            }
+        }
+
+        public void ReadComponent(Guid entityId, Action<AbstractComponent[]> action, params Type[] componentTypes)
+        {
+            if (m_CurrentFrameData.EntityDict.TryGetValue(entityId, out Entity entity))
+            {
+                AbstractComponent[] components = new AbstractComponent[componentTypes.Length];
+                for (int i = 0; i < componentTypes.Length; ++i)
+                {
+                    if(entity.Components.TryGetValue(components[i].GetType(), out AbstractComponent component))
+                    {
+                        components[i] = component;
+                    }
+                }
+                action?.Invoke(components);
+            }
+        }
+        #endregion
 
         #region Foreach
         public void ForEach<T0>(Action<Guid, T0> action)
@@ -291,14 +441,14 @@ namespace Engine.Client.Ecsr.Entitas
 
         public void RestoreFrames(PtFrames frames)
         {
-            for(int i = 0; i < frames.KeyFrames.Count; ++i)
+            for (int i = 0; i < frames.KeyFrames.Count; ++i)
             {
                 var frame = frames.KeyFrames[i];
                 switch (frame.Cmd)
                 {
                     case FrameCommand.SYNC_MOVEMENT:
                         Entity entity = GetEntity(new Guid(frame.EntityId));
-                        if (entity!=null)
+                        if (entity != null)
                         {
                             AbstractComponent component = entity.GetComponentByCommand(frame.Cmd);
                             component?.UpdateParams(frame.ParamContent);

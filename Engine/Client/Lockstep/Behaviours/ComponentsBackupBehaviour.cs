@@ -14,8 +14,10 @@ namespace Engine.Client.Lockstep.Behaviours
         LogicFrameBehaviour logicFrameBehaviour;
         BattleServiceModule battleServiceModule;
         Dictionary<int, EntityWorld.FrameRawData> dictFrameData;
+        EntityWorld world;
         public void Start()
         {
+            world = ((DefaultSimulation)Sim).GetEntityWorld();
             dictFrameData = new Dictionary<int, EntityWorld.FrameRawData>();
             logicFrameBehaviour = Sim.GetBehaviour<LogicFrameBehaviour>();
             battleServiceModule = Context.Retrieve(Context.CLIENT).GetModule<BattleServiceModule>();
@@ -57,7 +59,9 @@ namespace Engine.Client.Lockstep.Behaviours
         public void Update()
         {
             int frameIdx = logicFrameBehaviour.CurrentFrameIdx;
-            //SetFrameData(frameIdx, new EntityWorld.FrameRawData());
+            SetFrameData(frameIdx, world.CloneFrameData());
+            SendFrame(frameIdx);
+            ClearFrameDataAt(frameIdx);
         }
     }
 }

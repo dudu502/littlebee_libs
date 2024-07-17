@@ -10,14 +10,14 @@ namespace Engine.Server.Modules.Data
         public readonly ConcurrentQueue<PtFrames> QueueKeyFrameCollection = new ConcurrentQueue<PtFrames>();
         public readonly Dictionary<string, UserStateObject> Users = new Dictionary<string, UserStateObject>();
 
-        public BattleSession() 
+        public BattleSession()
         {
-            KeyFrameList.SetElements(new List<PtFrames> () );
+            KeyFrameList.SetElements(new List<PtFrames>());
         }
 
         public bool HasOnlinePlayer()
         {
-            foreach(UserStateObject userObject in Users.Values)
+            foreach (UserStateObject userObject in Users.Values)
             {
                 if (userObject.IsOnline) return true;
             }
@@ -25,9 +25,9 @@ namespace Engine.Server.Modules.Data
         }
         public UserStateObject FindUserStateByUserId(string userId)
         {
-            foreach(UserStateObject userObject in Users.Values )
+            foreach (UserStateObject userObject in Users.Values)
             {
-                if(userObject.UserId == userId)
+                if (userObject.UserId == userId)
                     return userObject;
             }
             return null;
@@ -36,7 +36,7 @@ namespace Engine.Server.Modules.Data
         {
             foreach (UserStateObject userObject in Users.Values)
             {
-                if(userObject.PeerId == peerId)
+                if (userObject.PeerId == peerId)
                     return userObject;
             }
             return null;
