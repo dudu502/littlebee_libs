@@ -90,6 +90,11 @@ namespace Engine.Server.Modules
             using (ByteBuffer buffer = new ByteBuffer(message.Content))
             {
                 string entityId = buffer.ReadString();
+                byte[] entityBytes = buffer.ReadBytes();
+                if(Session.Users.TryGetValue(entityId,out var user))
+                {
+                    user.EntityRawBytes = entityBytes;
+                }
                 m_Server.Send((ushort)ResponseMessageId.RS_InitPlayer, new ByteBuffer().WriteString(entityId).GetRawBytes());
                 m_Server.Send(message.ExtraPeerId, (ushort)ResponseMessageId.RS_InitSelfPlayer, null);
             }
@@ -115,10 +120,16 @@ namespace Engine.Server.Modules
                             m_Logger.Info($"{nameof(OnPlayerReady)} allRdy:{allRdy}");
                             if (allRdy)
                             {
-                                PtStringList userEntityIds = new PtStringList().SetElement(new List<string>(Session.Users.Keys));
-                                userEntityIds.Element.Sort((a,b)=>a.CompareTo(b));
-                                m_Server.Send((ushort)ResponseMessageId.RS_AllUserState, new ByteBuffer()
-                                    .WriteByte((byte)UserState.BeReadyToEnterScene).WriteBytes(PtStringList.Write(userEntityIds)).GetRawBytes());
+                                List<byte[]> userEntityRawBytes = Session.GetUserEntityRawBytes();
+                                using (ByteBuffer rb = new ByteBuffer())
+                                {
+                                    rb.WriteByte((byte)UserState.BeReadyToEnterScene);
+                                    rb.WriteInt32(userEntityRawBytes.Count);
+                                    for(int i=0;i<userEntityRawBytes.Count;i++)
+                                        rb.WriteBytes(userEntityRawBytes[i]);
+                                    m_Server.Send((ushort)ResponseMessageId.RS_AllUserState,rb.GetRawBytes());
+                                }
+                                
                                 // start simulation
                                 SimulationController simulationController = new DefaultSimulationController();
                                 simulationController.CreateSimulation();
@@ -128,11 +139,11 @@ namespace Engine.Server.Modules
                             }
                             break;
                         case UserState.Re_EnteredRoom:
-                            user.Update(message.ExtraPeerId, UserState.Re_BeReadyToEnterScene);
-                            PtStringList newUserEntityIds = new PtStringList().SetElement(new List<string>(Session.Users.Keys));
-                            newUserEntityIds.Element.Sort((a, b) => a.CompareTo(b));
-                            m_Server.Send((ushort)ResponseMessageId.RS_AllUserState, new ByteBuffer()
-                                    .WriteByte((byte)UserState.Re_BeReadyToEnterScene).WriteString(user.UserId).WriteBytes(PtStringList.Write(newUserEntityIds)).GetRawBytes());
+                            //user.Update(message.ExtraPeerId, UserState.Re_BeReadyToEnterScene);
+                            //PtStringList newUserEntityIds = new PtStringList().SetElement(new List<string>(Session.Users.Keys));
+                            //newUserEntityIds.Element.Sort((a, b) => a.CompareTo(b));
+                            //m_Server.Send((ushort)ResponseMessageId.RS_AllUserState, new ByteBuffer()
+                            //        .WriteByte((byte)UserState.Re_BeReadyToEnterScene).WriteString(user.UserId).WriteBytes(PtStringList.Write(newUserEntityIds)).GetRawBytes());
                             break;
                         default:
                             break;

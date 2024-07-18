@@ -10,7 +10,8 @@ namespace Engine.Client.Event
         public const byte Initializing = 5;
         public const byte LoadComplete = 6;
 
-        public const byte SynchronizingKeyFramesCompleted = 7,
+        public const byte SynchronizingKeyFramesCompleted = 7;
+        public const byte BeReadyToEnterScene = 8;
         public byte LoadingType;
         public float Progress;
         public LoadingEventId(byte type,float progress)

@@ -9,7 +9,7 @@ namespace Engine.Server.Modules.Data
         public string UserId;
         public string UserEntityId;
         public bool IsOnline = true;
-
+        public byte[] EntityRawBytes; //EntityList entityList
         public void Update(int peerId, UserState state)
         {
             PeerId = peerId;

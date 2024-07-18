@@ -14,12 +14,11 @@ namespace Engine.Client.Lockstep.Behaviours
         public List<IEntitySystem> Systems = new List<IEntitySystem>();
         protected LogicFrameBehaviour logicBehaviour;
         protected BattleServiceModule battleServiceModule; 
-        protected DefaultSimulation simulation;
+
         public virtual void Start()
         {
             battleServiceModule = Context.Retrieve(Context.CLIENT).GetModule<BattleServiceModule>();
             logicBehaviour = Sim.GetBehaviour<LogicFrameBehaviour>();
-            simulation = (DefaultSimulation)Sim;
         }
 
         public bool HasSystem(IEntitySystem system)
@@ -36,7 +35,7 @@ namespace Engine.Client.Lockstep.Behaviours
         {
             if(!HasSystem(system))
             {
-                system.World = simulation.GetEntityWorld();
+                system.World = ((DefaultSimulation)Sim).GetEntityWorld();
                 Systems.Add(system);
             }
             return this;

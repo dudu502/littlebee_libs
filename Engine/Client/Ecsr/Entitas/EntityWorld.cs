@@ -30,7 +30,14 @@ namespace Engine.Client.Ecsr.Entitas
         public EntityWorld()
         {
             m_CurrentFrameData = new FrameRawData();
-            m_EntityInitializer = new EntityInitializer(this);
+        }
+        public void SetEntityInitializer(EntityInitializer init)
+        {
+            m_EntityInitializer = init;
+        }
+        public EntityInitializer GetEntityInitializer()
+        {
+            return m_EntityInitializer;
         }
         public void SetEntityRenderSpawner(EntityRenderSpawner renderSpawner)
         {

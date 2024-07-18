@@ -1,3 +1,4 @@
+using Engine.Client.Ecsr.Components;
 using Engine.Client.Ecsr.Entitas;
 using Engine.Client.Ecsr.Renders;
 using Engine.Client.Lockstep;
@@ -55,7 +56,33 @@ public class UnityLogger : Engine.Common.Log.ILogger
         Error(LitJson.JsonMapper.ToJson(message));
     }
 }
+public class GameEntityInitializer : EntityInitializer
+{
+    public GameEntityInitializer(EntityWorld world) : base(world)
+    {
 
+    }
+
+    public override List<Entity> CreateSelfEntityComponents(Guid entityId)
+    {
+        List<Entity> entities = new List<Entity>();
+        Entity entity = new Entity();
+        Appearance appearance = new Appearance();
+        appearance.Resource = "s";
+        entity.AddComponent(appearance);
+
+        Position position = new Position();
+        position.Pos = new TrueSync.TSVector2(10, 10);
+        entity.AddComponent(position);
+
+        Movement movement = new Movement();
+        movement.Speed = 10;
+        movement.Direction = new TrueSync.TSVector2(10, 2);
+        entity.AddComponent(movement);
+        entities.Add(entity);
+        return entities;
+    }
+}
 public class GameEntityRenderSpawner : EntityRenderSpawner
 {
     /// <summary>
@@ -82,20 +109,20 @@ public class MainCommand : MonoBehaviour
         Handler.Initialize();
         MainContext = new Context(Context.CLIENT, new LiteNetworkClient(), new UnityLogger("Unity"));
         MainContext.SetMeta(ContextMetaId.STANDALONE_MODE_PORT, "50000")
-                    .SetMeta(ContextMetaId.PERSISTENT_DATA_PATH, Application.persistentDataPath) ;
+                   .SetMeta(ContextMetaId.PERSISTENT_DATA_PATH, Application.persistentDataPath);
         MainContext.SetModule(new GateServiceModule())
-                    .SetModule(new BattleServiceModule());
+                   .SetModule(new BattleServiceModule());
         DefaultSimulationController defaultSimulationController = new DefaultSimulationController();
         MainContext.SetSimulationController(defaultSimulationController);
         defaultSimulationController.CreateSimulation();
         EntityWorld entityWorld = defaultSimulationController.GetSimulation<DefaultSimulation>().GetEntityWorld();
+        entityWorld.SetEntityInitializer(new GameEntityInitializer(entityWorld));
         entityWorld.SetEntityRenderSpawner(new GameEntityRenderSpawner());
     }
 
     private void Start()
     {
-        SetUserId("test1");
-        Connect();
+        
     }
     [TerminalCommand("setuid","setuid(id)")]
     public void SetUserId(string uid)

@@ -19,6 +19,7 @@ namespace Engine.Client.Ecsr.Entitas
         {
             Id = id;
         }
+
         public AbstractComponent GetComponentByCommand(ushort cmd)
         {
             foreach (var component in Components.Values)

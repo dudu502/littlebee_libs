@@ -10,7 +10,10 @@ namespace Engine.Client.Ecsr.Systems
 
         public void Execute()
         {
-            
+            World.ForEach<FsmInfo>((id, fsm) =>
+            {
+                
+            });
         }
     }
 }

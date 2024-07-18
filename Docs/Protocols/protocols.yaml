@@ -77,4 +77,9 @@ pts:
       - type: PtRoom
         name: Rooms
         isArray: 1
+  - className: EntityList
+    fields:
+      - type: Entity
+        name: Elements
+        isArray: 1
 

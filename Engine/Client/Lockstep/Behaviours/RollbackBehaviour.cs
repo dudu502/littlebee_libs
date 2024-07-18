@@ -46,6 +46,7 @@ namespace Engine.Client.Lockstep.Behaviours
             EntityWorld.FrameRawData frawPrevRawData = backupBehaviour.GetFrameData(frameIdx - 1);
             if(frawPrevRawData != null )
             {
+                DefaultSimulation simulation = (DefaultSimulation)Sim;
                 simulation.GetEntityWorld().RollBack(frawPrevRawData, keyFrames);
 
                 while (frameIdx < logicBehaviour.CurrentFrameIdx)

@@ -1,8 +1,11 @@
-﻿using Engine.Client.Event;
+﻿using Engine.Client.Ecsr.Entitas;
+using Engine.Client.Event;
 using Engine.Client.Lockstep;
 using Engine.Client.Modules.Data;
+using Engine.Client.Protocol.Pt;
 using Engine.Common;
 using Engine.Common.Event;
+using Engine.Common.Lockstep;
 using Engine.Common.Log;
 using Engine.Common.Misc;
 using Engine.Common.Module;
@@ -10,6 +13,7 @@ using Engine.Common.Network;
 using Engine.Common.Network.Integration;
 using Engine.Common.Protocol;
 using Engine.Common.Protocol.Pt;
+using SevenZip.Buffer;
 using System;
 using System.Collections.Generic;
 
@@ -46,6 +50,7 @@ namespace Engine.Client.Modules
         {
             using (ByteBuffer buffer = new ByteBuffer(message.Content))
             {
+                //set self entity Id that created by server
                 string userEntityId = buffer.ReadString();
                 string userId = buffer.ReadString();
                 m_RoomSession.EntityId = userEntityId;
@@ -78,6 +83,7 @@ namespace Engine.Client.Modules
             using (ByteBuffer buffer = new ByteBuffer(message.Content))
             {
                 UserState state = (UserState)buffer.ReadByte();
+                m_Logger.Info($"{nameof(OnResponseAllUserState)} State:{state}");
                 switch (state)
                 {
                     case UserState.EnteredRoom:
@@ -98,19 +104,29 @@ namespace Engine.Client.Modules
                         }
                         break;
                     case UserState.BeReadyToEnterScene:
-                        DateTime now = DateTime.Now;
-                        PtStringList playerEntityIds = PtStringList.Read(buffer.ReadBytes());
-                        //
+                        DateTime now = DateTime.Now;                 
+                        int entityRawCount = buffer.ReadInt32();
+                        m_Logger.Info("BeReadyToEnterScene EntityRawCount:" + entityRawCount);
+                        List<EntityList> entities = new List<EntityList>(); 
+                        for(int i = 0; i < entityRawCount; ++i)
+                        {
+                            entities.Add(EntityList.Read(buffer.ReadBytes()));
+                        }
+
+                        //m_Context.GetSimulationController<DefaultSimulationController>().GetSimulation<DefaultSimulation>()
+                        //    .GetEntityWorld().GetEntityInitializer().CreateEntities();
+                        m_Context.GetSimulationController<DefaultSimulationController>().Start(now);
+                        EventDispatcher<LoadingType, LoadingEventId>.DispatchEvent(LoadingType.Loading, new LoadingEventId(LoadingEventId.BeReadyToEnterScene, 1));
                         break;
                     case UserState.Re_BeReadyToEnterScene:
-                        string re_beRdyUserId = buffer.ReadString();
-                        if(re_beRdyUserId == m_RoomSession.UserId)
-                        {
-                            PtStringList re_playerEntityIds = PtStringList.Read(buffer.ReadBytes());
-                            // 
+                        //string re_beRdyUserId = buffer.ReadString();
+                        //if(re_beRdyUserId == m_RoomSession.UserId)
+                        //{
+                        //    PtStringList re_playerEntityIds = PtStringList.Read(buffer.ReadBytes());
+                        //    // 
 
-                            RequestHistoryKeyframes();
-                        }
+                        //    RequestHistoryKeyframes();
+                        //}
                         break;
                     default:
                         break;
@@ -142,7 +158,12 @@ namespace Engine.Client.Modules
         }
         public void RequestInitPlayer()
         {
-            m_NetworkClient.Send((ushort)RequestMessageId.RS_InitPlayer, new ByteBuffer().WriteString(m_RoomSession.EntityId).GetRawBytes());
+            // send self player's components
+            List<Entity> entities = m_Context.GetSimulationController<DefaultSimulationController>().GetSimulation<DefaultSimulation>()
+                .GetEntityWorld().GetEntityInitializer().CreateSelfEntityComponents(new Guid(m_RoomSession.EntityId));
+            EntityList entityList = new EntityList().SetElements(entities);
+            m_NetworkClient.Send((ushort)RequestMessageId.RS_InitPlayer,
+                     new ByteBuffer().WriteString(m_RoomSession.EntityId).WriteBytes(EntityList.Write(entityList)).GetRawBytes());
         }
         public void RequestPlayerReady()
         {

@@ -2,6 +2,7 @@
 using Engine.Common.Protocol;
 using Engine.Common.Protocol.Pt;
 using System;
+using System.Collections.Generic;
 
 namespace Engine.Client.Ecsr.Entitas
 {
@@ -22,6 +23,15 @@ namespace Engine.Client.Ecsr.Entitas
 
         }
 
+        /// <summary>
+        /// Create self Entity
+        /// </summary>
+        /// <param name="entityId"></param>
+        /// <returns></returns>
+        public virtual List<Entity> CreateSelfEntityComponents(Guid entityId)
+        {
+            return null;
+        }
         public void CreateEntities(PtFrame frame)
         {
             using (ByteBuffer bytebuffer = new ByteBuffer(frame.ParamContent))
