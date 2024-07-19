@@ -82,4 +82,10 @@ pts:
       - type: Entity
         name: Elements
         isArray: 1
+  - className: PtMap
+    fields:
+      - type: string
+        name: Version
+      - type: EntityList
+        name: Entities
 

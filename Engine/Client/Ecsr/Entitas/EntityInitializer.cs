@@ -15,13 +15,15 @@ namespace Engine.Client.Ecsr.Entitas
             World = world;
         }
 
-        /// <summary>
-        /// Load component byte array
-        /// </summary>
-        /// <param name="mapBindaryRaw"></param>
-        public void CreateEntities(byte[] mapBindaryRaw)
+        public void CreateEntities(PtMap map)
         {
-
+            if (map.HasEntities())
+            {
+                foreach (Entity entity in map.Entities.Elements)
+                {
+                    World.CreateEntity(entity);
+                }
+            }
         }
 
         public void CreateEntities(List<EntityList> entityLists)
