@@ -50,7 +50,7 @@ namespace Engine.Server.Modules
                     userState.IsOnline = false;
                     buffer.WriteInt32(m_Server.GetActivePort());
                     buffer.WriteString(userState.UserId);
-                    buffer.WriteBool(userState.IsOnline);
+                    buffer.WriteBool(Session.HasOnlinePlayer());
                     m_Server.UnconnectedSend((ushort)RequestMessageId.UGS_RoomPlayerDisconnect, buffer.GetRawBytes(),
                         new System.Net.IPEndPoint(System.Net.IPAddress.Parse("127.0.0.1"), Convert.ToInt32(m_Context.GetMeta(ContextMetaId.GATE_SERVER_PORT,"9030"))));
                 }

@@ -22,6 +22,7 @@ public class PlayerAppearanceRenderer : MonoBehaviour, IEntityRender
         {
             World.ReadComponent<Appearance,Position>(EntityId, (appearance,position)=>
             {
+                transform.GetComponent<Renderer>().material.color = new Color(appearance.ShaderR/255f,appearance.ShaderG/255f,appearance.ShaderB/255f);
                 transform.position = new Vector3(position.Pos.x.AsFloat(),0,position.Pos.y.AsFloat());
             });
         }

@@ -9,11 +9,23 @@ namespace Engine.Client.Ecsr.Components
 
         public byte Status = StatusDefault;
         public string Resource;
+        public byte ShaderR = 255;
+        public byte ShaderG = 255;
+        public byte ShaderB = 255;
+        /// <summary>
+        /// Selected by EntityId
+        /// If Empty means unselected
+        /// </summary>
+        public string SelectedByEntityId = string.Empty;
         public override AbstractComponent Clone()
         {
             Appearance appearance = new Appearance();
             appearance.Status = Status;
             appearance.Resource = Resource;
+            appearance.ShaderR = ShaderR;
+            appearance.ShaderG = ShaderG;
+            appearance.ShaderB = ShaderB;
+            appearance.SelectedByEntityId = SelectedByEntityId;
             return appearance;
         }
 
@@ -21,6 +33,10 @@ namespace Engine.Client.Ecsr.Components
         {
             Status = ((Appearance)component).Status;
             Resource = ((Appearance)component).Resource;
+            ShaderR = ((Appearance)component).ShaderR;
+            ShaderG = ((Appearance)component).ShaderG;
+            ShaderB = ((Appearance)component).ShaderB;
+            SelectedByEntityId = ((Appearance)component).SelectedByEntityId;
         }
 
         public override AbstractComponent Deserialize(byte[] bytes)
@@ -29,6 +45,10 @@ namespace Engine.Client.Ecsr.Components
             {
                 Status = buffer.ReadByte();
                 Resource = buffer.ReadString();
+                ShaderR = buffer.ReadByte();
+                ShaderG = buffer.ReadByte();
+                ShaderB = buffer.ReadByte();
+                SelectedByEntityId = buffer.ReadString();
                 return this;
             }
         }
@@ -37,9 +57,13 @@ namespace Engine.Client.Ecsr.Components
         {
             using(ByteBuffer buffer = new ByteBuffer())
             {
-                buffer.WriteByte(Status);
-                buffer.WriteString(Resource);
-                return buffer.GetRawBytes();
+                return buffer.WriteByte(Status)
+                    .WriteString(Resource)
+                    .WriteByte(ShaderR)
+                    .WriteByte(ShaderG)
+                    .WriteByte(ShaderB)
+                    .WriteString(SelectedByEntityId)
+                    .GetRawBytes();
             }
         }
     }

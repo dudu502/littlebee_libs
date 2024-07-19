@@ -92,7 +92,7 @@ namespace Engine.Client.Modules
                         m_Context.SetMeta(ContextMetaId.SELECTED_ROOM_MAP_ID, mapId.ToString());
                         // let EntityInitializer to load all entitys
                         
-                       
+                        
                         RequestInitPlayer();
                         break;
                     case UserState.Re_EnteredRoom:
@@ -115,7 +115,10 @@ namespace Engine.Client.Modules
 
                         //m_Context.GetSimulationController<DefaultSimulationController>().GetSimulation<DefaultSimulation>()
                         //    .GetEntityWorld().GetEntityInitializer().CreateEntities();
+                        m_Context.GetSimulationController<DefaultSimulationController>().GetSimulation<DefaultSimulation>()
+                              .GetEntityWorld().GetEntityInitializer().CreateEntities(entities);
                         m_Context.GetSimulationController<DefaultSimulationController>().Start(now);
+                        m_Logger.Info("Start Simulation");
                         EventDispatcher<LoadingType, LoadingEventId>.DispatchEvent(LoadingType.Loading, new LoadingEventId(LoadingEventId.BeReadyToEnterScene, 1));
                         break;
                     case UserState.Re_BeReadyToEnterScene:

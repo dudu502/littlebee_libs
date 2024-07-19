@@ -1,11 +1,9 @@
 ﻿using Engine.Client.Ecsr.Components;
 using Engine.Client.Ecsr.Renders;
-using Engine.Common.Event;
 using Engine.Common.Misc;
 using Engine.Common.Protocol.Pt;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace Engine.Client.Ecsr.Entitas
 {
@@ -66,6 +64,11 @@ namespace Engine.Client.Ecsr.Entitas
         public Entity CreateEntity(Guid entityId)
         {
             Entity entity = new Entity(entityId);
+            m_CurrentFrameData.EntityDict[entity.Id] = entity;
+            return entity;
+        }
+        public Entity CreateEntity(Entity entity)
+        {
             m_CurrentFrameData.EntityDict[entity.Id] = entity;
             return entity;
         }

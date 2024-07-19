@@ -43,10 +43,10 @@ namespace Engine.Client.Ecsr.Components
         {
             using(ByteBuffer buffer = new ByteBuffer())
             {
-                buffer.WriteInt64(Speed._serializedValue);
-                buffer.WriteInt64(Direction.x._serializedValue);
-                buffer.WriteInt64(Direction.y._serializedValue);
-                return buffer.GetRawBytes();
+                return buffer.WriteInt64(Speed._serializedValue)
+                        .WriteInt64(Direction.x._serializedValue)
+                        .WriteInt64(Direction.y._serializedValue)
+                        .GetRawBytes();
             }
         }
     }

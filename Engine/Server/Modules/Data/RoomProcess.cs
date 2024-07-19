@@ -1,4 +1,5 @@
 ﻿using Engine.Common.Protocol.Pt;
+using System;
 using System.Diagnostics;
 
 namespace Engine.Server.Modules.Data
@@ -16,7 +17,9 @@ namespace Engine.Server.Modules.Data
         public void Kill()
         {
             if (CurrentProcess != null)
+            {
                 CurrentProcess.Kill();
+            }
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Engine.Client.Ecsr.Components;
+using Engine.Client.Protocol.Pt;
 using Engine.Common.Protocol;
 using Engine.Common.Protocol.Pt;
 using System;
@@ -23,6 +24,14 @@ namespace Engine.Client.Ecsr.Entitas
 
         }
 
+        public void CreateEntities(List<EntityList> entityLists)
+        {
+            foreach (EntityList entityList in entityLists)
+            {
+                foreach(Entity entity in entityList.Elements) 
+                    World.CreateEntity(entity);
+            }
+        }
         /// <summary>
         /// Create self Entity
         /// </summary>

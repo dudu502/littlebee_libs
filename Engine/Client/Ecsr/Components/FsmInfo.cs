@@ -34,8 +34,8 @@ namespace Engine.Client.Ecsr.Components
         {
             using(ByteBuffer buffer = new ByteBuffer())
             {
-                buffer.WriteByte(InfoType);
-                return buffer.GetRawBytes();
+                return buffer.WriteByte(InfoType)
+                    .GetRawBytes();
             }
         }
     }

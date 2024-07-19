@@ -45,6 +45,7 @@ namespace Engine.Server.Modules
                 int battleServerPort = buffer.ReadInt32();
                 string userId = buffer.ReadString();
                 bool hasOnlinePlayer = buffer.ReadBool();
+               
                 if (!hasOnlinePlayer)
                 {
                     PtRoom room = m_RoomList.Rooms.Find(r => r.Players.Exists(p => p.UserId == userId));
@@ -149,10 +150,12 @@ namespace Engine.Server.Modules
                 " -playernumber "+launchData.PlayerNumber);
             psi.UseShellExecute = false;
             psi.CreateNoWindow = false;
+        
             return Task.Run(() =>
             {
                 DateTime now = DateTime.Now;
                 var proc = Process.Start(psi);
+                roomProcess.Set(proc);
                 m_Logger.Info("Start Process in task"+(DateTime.Now-now).TotalMilliseconds);
             });
         }
@@ -308,6 +311,7 @@ namespace Engine.Server.Modules
         }
         void KillRoomProcessByPort(int port)
         {
+            m_Logger.Warn("KillRoomProcessByPort "+port+" contains:"+ m_DictProcessId.ContainsKey(port));
             if (m_DictProcessId.ContainsKey(port))
             {
                 m_DictProcessId[port].Kill();

@@ -38,11 +38,11 @@ namespace Engine.Client.Ecsr.Components
 
         public override byte[] Serialize()
         {
-            using(ByteBuffer buffer = new ByteBuffer())
+            using (ByteBuffer buffer = new ByteBuffer())
             {
-                buffer.WriteUInt32(Hp);
-                buffer.WriteUInt32(Mp);
-                return buffer.GetRawBytes();
+                return buffer.WriteUInt32(Hp)
+                    .WriteUInt32(Mp)
+                    .GetRawBytes();
             }
         }
     }

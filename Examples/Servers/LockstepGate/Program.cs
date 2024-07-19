@@ -18,7 +18,7 @@ namespace LockstepGate
                 .SetMeta(ContextMetaId.SERVER_ADDRESS,"127.0.0.1")
                 .SetModule(new RoomModule());
             context.Server.Run(9030);
-            Console.ReadKey();
+            Console.ReadLine();
         }
     }
 }

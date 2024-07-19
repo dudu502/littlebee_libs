@@ -14,7 +14,8 @@ namespace Engine.Client.Lockstep
             defaultSimulation.AddBehaviour(new LogicFrameBehaviour())
                             .AddBehaviour(new RollbackBehaviour())
                             .AddBehaviour(new EntityBehaviour())
-                            .AddBehaviour(new FunctionButtonInputBehaviour())
+                            .AddBehaviour(new SelectionInputBehaviour())
+                            .AddBehaviour(new ButtonInputBehaviour())
                             .AddBehaviour(new ComponentsBackupBehaviour());
 
             AppearanceSystem appearanceSystem = new AppearanceSystem();

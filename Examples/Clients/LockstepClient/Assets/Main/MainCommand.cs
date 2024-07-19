@@ -10,6 +10,7 @@ using Engine.Common.Misc;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using TrueSync;
 using UnityEngine;
 
 public class UnityLogger : Engine.Common.Log.ILogger
@@ -65,19 +66,23 @@ public class GameEntityInitializer : EntityInitializer
 
     public override List<Entity> CreateSelfEntityComponents(Guid entityId)
     {
+        TSRandom tSRandom = TSRandom.New(GetHashCode());
         List<Entity> entities = new List<Entity>();
         Entity entity = new Entity();
         Appearance appearance = new Appearance();
-        appearance.Resource = "s";
+        appearance.Resource = "Player";
+        appearance.ShaderR = (byte)tSRandom.Next(0, 255);
+        appearance.ShaderG = (byte)tSRandom.Next(0, 255);
+        appearance.ShaderB = (byte)tSRandom.Next(0, 255);
         entity.AddComponent(appearance);
 
         Position position = new Position();
-        position.Pos = new TrueSync.TSVector2(10, 10);
+        position.Pos = new TrueSync.TSVector2(0, 0);
         entity.AddComponent(position);
 
         Movement movement = new Movement();
-        movement.Speed = 10;
-        movement.Direction = new TrueSync.TSVector2(10, 2);
+        movement.Speed = 0.1f * tSRandom.Next(-1f, 1f);
+        movement.Direction = new TrueSync.TSVector2(0.1f * tSRandom.Next(-1f, 1f), 0.1f * tSRandom.Next(-1f, 1f));
         entity.AddComponent(movement);
         entities.Add(entity);
         return entities;
@@ -85,6 +90,11 @@ public class GameEntityInitializer : EntityInitializer
 }
 public class GameEntityRenderSpawner : EntityRenderSpawner
 {
+    private Transform gameContainer;
+    public GameEntityRenderSpawner(Transform container)
+    {
+        gameContainer = container;
+    }
     /// <summary>
     /// Called in Unity main thread.
     /// </summary>
@@ -98,12 +108,14 @@ public class GameEntityRenderSpawner : EntityRenderSpawner
             component.EntityId = request.EntityId;
             component.World = Context.Retrieve(Context.CLIENT).GetSimulationController<DefaultSimulationController>()
                 .GetSimulation<DefaultSimulation>().GetEntityWorld();
+            component.transform.SetParent(gameContainer);
         }
     }
 }
 public class MainCommand : MonoBehaviour
 {
     public Context MainContext;
+    public Transform GameContainer;
     private void Awake()
     {
         Handler.Initialize();
@@ -117,7 +129,7 @@ public class MainCommand : MonoBehaviour
         defaultSimulationController.CreateSimulation();
         EntityWorld entityWorld = defaultSimulationController.GetSimulation<DefaultSimulation>().GetEntityWorld();
         entityWorld.SetEntityInitializer(new GameEntityInitializer(entityWorld));
-        entityWorld.SetEntityRenderSpawner(new GameEntityRenderSpawner());
+        entityWorld.SetEntityRenderSpawner(new GameEntityRenderSpawner(GameContainer));
     }
 
     private void Start()
