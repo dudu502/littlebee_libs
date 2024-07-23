@@ -21,9 +21,11 @@ namespace Engine.Common.Lockstep
         {
             m_FrameMsLength = (int)(c_DefaultFrameMsLength / (factor + 0.5f));
         }
-        public virtual void CreateSimulation()
+        public virtual void CreateSimulation(Simulation sim, ISimulativeBehaviour[] behaviours)
         {
-
+            m_SimulationInstance = sim;
+            for(int i = 0; i < behaviours.Length; ++i)
+                sim.AddBehaviour(behaviours[i]);
         }
         public void Start(DateTime startDateTime,
                             int history_keyframes_count = 0,

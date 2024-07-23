@@ -1,4 +1,7 @@
 ﻿using Engine.Common;
+using Engine.Common.Lockstep;
+using Engine.Server.Lockstep;
+using Engine.Server.Lockstep.Behaviours;
 using Engine.Server.Log;
 using Engine.Server.Modules;
 using Engine.Server.Network;
@@ -28,6 +31,11 @@ namespace Battle
                .SetMeta(ContextMetaId.SELECTED_ROOM_MAP_ID, mapId.ToString())
                .SetMeta(ContextMetaId.GATE_SERVER_PORT, gsPort.ToString())
                .SetModule(new BattleModule());
+
+            // start simulation
+            SimulationController simulationController = new SimulationController();
+            simulationController.CreateSimulation(new Simulation(),new ISimulativeBehaviour[] { new ServerLogicFrameBehaviour() });
+            context.SetSimulationController(simulationController);
             context.Server.Run(port);
             Console.ReadKey();
         }

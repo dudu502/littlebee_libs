@@ -4,12 +4,9 @@ using Engine.Client.Ecsr.Renders;
 using System;
 using UnityEngine;
 
-public class PlayerAppearanceRenderer : MonoBehaviour, IEntityRender
+public class PlayerAppearanceRenderer : AppearanceRenderer
 {
-    public Guid EntityId { get; set; }
-    public EntityWorld World { get; set; }
-
-    // Start is called before the first frame update
+    
     void Start()
     {
         

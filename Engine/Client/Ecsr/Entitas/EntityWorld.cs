@@ -465,7 +465,7 @@ namespace Engine.Client.Ecsr.Entitas
                         }
                         break;
                     case FrameCommand.SYNC_CREATE_ENTITY:
-                        m_EntityInitializer.CreateEntities(frame);
+                        m_EntityInitializer.OnCreateEntities(frame);
                         break;
                 }
             }

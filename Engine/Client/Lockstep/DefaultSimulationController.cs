@@ -1,4 +1,5 @@
-﻿using Engine.Client.Ecsr.Systems;
+﻿using Engine.Client.Ecsr.Entitas;
+using Engine.Client.Ecsr.Systems;
 using Engine.Client.Lockstep.Behaviours;
 using Engine.Common.Lockstep;
 
@@ -6,30 +7,16 @@ namespace Engine.Client.Lockstep
 {
     public class DefaultSimulationController:SimulationController
     {
-        public override void CreateSimulation()
+        public void CreateSimulation(Simulation sim, EntityWorld world,ISimulativeBehaviour[] behaviours,
+            IEntitySystem[] systems)
         {
-            base.CreateSimulation();
-            DefaultSimulation defaultSimulation = new DefaultSimulation();
-            defaultSimulation.SetEntityWorld(new Ecsr.Entitas.EntityWorld());
-            defaultSimulation.AddBehaviour(new LogicFrameBehaviour())
-                            .AddBehaviour(new RollbackBehaviour())
-                            .AddBehaviour(new EntityBehaviour())
-                            .AddBehaviour(new SelectionInputBehaviour())
-                            .AddBehaviour(new ButtonInputBehaviour())
-                            .AddBehaviour(new ComponentsBackupBehaviour());
-
-            AppearanceSystem appearanceSystem = new AppearanceSystem();
-            FsmSystem fsmSystem = new FsmSystem();
-            MovementSystem movementSystem = new MovementSystem();
-            defaultSimulation.GetBehaviour<EntityBehaviour>()
-                            .AddSystem(appearanceSystem)
-                            .AddSystem(fsmSystem)
-                            .AddSystem(movementSystem);
-            defaultSimulation.GetBehaviour<RollbackBehaviour>()
-                            .AddSystem(appearanceSystem)
-                            .AddSystem(fsmSystem)
-                            .AddSystem(movementSystem);
-            m_SimulationInstance = defaultSimulation;
+            base.CreateSimulation(sim, behaviours);
+            GetSimulation<DefaultSimulation>().SetEntityWorld(world);
+            for(int i = 0; i < systems.Length; ++i)
+            {
+                sim.GetBehaviour<EntityBehaviour>().AddSystem(systems[i]);
+                sim.GetBehaviour<RollbackBehaviour>().AddSystem(systems[i]);
+            }
         }
     }
 }

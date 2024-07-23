@@ -1501,15 +1501,22 @@ namespace LiteNetLib
         {
             if (UnsyncedEvents)
                 return;
-            int eventsCount;
+            //int eventsCount;
+            //lock (_netEventsQueue)
+            //    eventsCount = _netEventsQueue.Count;
+            //for(int i = 0; i < eventsCount; i++)
+            //{
+            //    NetEvent evt;
+            //    lock (_netEventsQueue)
+            //        evt = _netEventsQueue.Dequeue();
+            //    ProcessEvent(evt);
+            //}
             lock (_netEventsQueue)
-                eventsCount = _netEventsQueue.Count;
-            for(int i = 0; i < eventsCount; i++)
             {
-                NetEvent evt;
-                lock (_netEventsQueue)
-                    evt = _netEventsQueue.Dequeue();
-                ProcessEvent(evt);
+                while (_netEventsQueue.Count > 0)
+                {
+                    ProcessEvent(_netEventsQueue.Dequeue());
+                }
             }
         }
 

@@ -4,6 +4,9 @@ using Engine.Common.Protocol;
 using Engine.Common.Protocol.Pt;
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Threading.Tasks;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace Engine.Client.Ecsr.Entitas
 {
@@ -15,18 +18,12 @@ namespace Engine.Client.Ecsr.Entitas
             World = world;
         }
 
-        public void CreateEntities(PtMap map)
+        public virtual void OnCreateEntities(uint mapId)
         {
-            if (map.HasEntities())
-            {
-                foreach (Entity entity in map.Entities.Elements)
-                {
-                    World.CreateEntity(entity);
-                }
-            }
+    
         }
 
-        public void CreateEntities(List<EntityList> entityLists)
+        public void OnCreateEntities(List<EntityList> entityLists)
         {
             foreach (EntityList entityList in entityLists)
             {
@@ -39,11 +36,11 @@ namespace Engine.Client.Ecsr.Entitas
         /// </summary>
         /// <param name="entityId"></param>
         /// <returns></returns>
-        public virtual List<Entity> CreateSelfEntityComponents(Guid entityId)
+        public virtual List<Entity> OnCreateSelfEntityComponents(Guid entityId)
         {
             return null;
         }
-        public void CreateEntities(PtFrame frame)
+        public void OnCreateEntities(PtFrame frame)
         {
             using (ByteBuffer bytebuffer = new ByteBuffer(frame.ParamContent))
             {

@@ -89,6 +89,8 @@ namespace Engine.Common
             return (T)simulationController;
         }
 
+        public SimulationController GetSimulationController() => simulationController;
+
         public Context SetMeta(string name,string value)
         {
             metas[name] = value;

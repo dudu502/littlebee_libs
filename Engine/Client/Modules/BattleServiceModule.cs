@@ -87,12 +87,15 @@ namespace Engine.Client.Modules
                 switch (state)
                 {
                     case UserState.EnteredRoom:
-                        uint mapId = buffer.ReadUInt32(); 
+                        uint mapId = buffer.ReadUInt32();
                         // save mapId from battle server.
+                        m_Logger.Info($"{nameof(OnResponseAllUserState)} MapId:{mapId}");
                         m_Context.SetMeta(ContextMetaId.SELECTED_ROOM_MAP_ID, mapId.ToString());
                         // let EntityInitializer to load all entitys
-                        
-                        
+                        m_Logger.Info($"{nameof(OnResponseAllUserState)} Start LoadMap:{mapId}");
+                        m_Context.GetSimulationController<DefaultSimulationController>().GetSimulation<DefaultSimulation>()
+                             .GetEntityWorld().GetEntityInitializer().OnCreateEntities(mapId);
+                        m_Logger.Info($"{nameof(OnResponseAllUserState)} MapLoaded:{mapId}");
                         RequestInitPlayer();
                         break;
                     case UserState.Re_EnteredRoom:
@@ -113,10 +116,8 @@ namespace Engine.Client.Modules
                             entities.Add(EntityList.Read(buffer.ReadBytes()));
                         }
 
-                        //m_Context.GetSimulationController<DefaultSimulationController>().GetSimulation<DefaultSimulation>()
-                        //    .GetEntityWorld().GetEntityInitializer().CreateEntities();
                         m_Context.GetSimulationController<DefaultSimulationController>().GetSimulation<DefaultSimulation>()
-                              .GetEntityWorld().GetEntityInitializer().CreateEntities(entities);
+                              .GetEntityWorld().GetEntityInitializer().OnCreateEntities(entities);
                         m_Context.GetSimulationController<DefaultSimulationController>().Start(now);
                         m_Logger.Info("Start Simulation");
                         EventDispatcher<LoadingType, LoadingEventId>.DispatchEvent(LoadingType.Loading, new LoadingEventId(LoadingEventId.BeReadyToEnterScene, 1));
@@ -163,7 +164,7 @@ namespace Engine.Client.Modules
         {
             // send self player's components
             List<Entity> entities = m_Context.GetSimulationController<DefaultSimulationController>().GetSimulation<DefaultSimulation>()
-                .GetEntityWorld().GetEntityInitializer().CreateSelfEntityComponents(new Guid(m_RoomSession.EntityId));
+                .GetEntityWorld().GetEntityInitializer().OnCreateSelfEntityComponents(new Guid(m_RoomSession.EntityId));
             EntityList entityList = new EntityList().SetElements(entities);
             m_NetworkClient.Send((ushort)RequestMessageId.RS_InitPlayer,
                      new ByteBuffer().WriteString(m_RoomSession.EntityId).WriteBytes(EntityList.Write(entityList)).GetRawBytes());

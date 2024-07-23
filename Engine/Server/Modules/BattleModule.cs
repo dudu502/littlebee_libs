@@ -131,10 +131,10 @@ namespace Engine.Server.Modules
                                 }
                                 
                                 // start simulation
-                                SimulationController simulationController = new DefaultSimulationController();
-                                simulationController.CreateSimulation();
-                                m_Context.SetSimulationController(simulationController);
-                                simulationController.Start(DateTime.Now);
+                                //SimulationController simulationController = new DefaultSimulationController();
+                                //simulationController.CreateSimulation();
+                                //m_Context.SetSimulationController(simulationController);
+                                m_Context.GetSimulationController().Start(DateTime.Now);
                                 m_Logger.Info("Start Simulation");
                             }
                             break;
