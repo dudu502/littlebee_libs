@@ -88,4 +88,10 @@ pts:
         name: Version
       - type: EntityList
         name: Entities
+  - className: Input
+    fields:
+      - type: uint16
+        name: InputType
+      - type: byte[]
+        name: ParamContent
 

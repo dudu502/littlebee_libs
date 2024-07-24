@@ -17,10 +17,13 @@ namespace Engine.Client.Modules.Data
         public void AddCurrentFrameCommand(int curFrameIdx,ushort cmd,string entityId, byte[] paramsContent)
         {
             PtFrame frame = new PtFrame().SetCmd(cmd).SetEntityId(entityId).SetParamContent(paramsContent);
+            AddCurrentFrameCommand(curFrameIdx, frame);
+        }
+        public void AddCurrentFrameCommand(int curFrameIdx,PtFrame frame)
+        {
             keyFrameCached.SetFrameIdx(curFrameIdx);
             keyFrameCached.KeyFrames.Add(frame);
         }
-
         public PtFrames GetKeyFrameCached() { return keyFrameCached; }
 
         public void ClearKeyFrameCached()

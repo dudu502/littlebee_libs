@@ -130,10 +130,6 @@ namespace Engine.Server.Modules
                                     m_Server.Send((ushort)ResponseMessageId.RS_AllUserState,rb.GetRawBytes());
                                 }
                                 
-                                // start simulation
-                                //SimulationController simulationController = new DefaultSimulationController();
-                                //simulationController.CreateSimulation();
-                                //m_Context.SetSimulationController(simulationController);
                                 m_Context.GetSimulationController().Start(DateTime.Now);
                                 m_Logger.Info("Start Simulation");
                             }

@@ -51,10 +51,10 @@ namespace Engine.Client.Ecsr.Entitas
         }
         public Entity GetEntity(Guid id)
         {
-            if(m_CurrentFrameData.EntityDict.TryGetValue(id, out Entity entity)) 
+            if (m_CurrentFrameData.EntityDict.TryGetValue(id, out Entity entity))
                 return entity;
             return null;
-        } 
+        }
         public Entity CreateEntity()
         {
             Entity entity = new Entity();
@@ -80,18 +80,19 @@ namespace Engine.Client.Ecsr.Entitas
 
 
         #region Read Component
-        public void ReadComponent<T0>(Guid entityId, Action<T0> action)
-            where T0:AbstractComponent
+        public T0 ReadComponent<T0>(Guid entityId)
+            where T0 : AbstractComponent
         {
-            if(m_CurrentFrameData.EntityDict.TryGetValue(entityId,out Entity entity))
+            if (m_CurrentFrameData.EntityDict.TryGetValue(entityId, out Entity entity))
             {
-                if(entity.Components.TryGetValue(typeof(T0), out AbstractComponent component))
+                if (entity.Components.TryGetValue(typeof(T0), out AbstractComponent component))
                 {
-                    action?.Invoke((T0)component);
+                    return (T0)component;
                 }
             }
+            return null;
         }
-        public void ReadComponent<T0,T1>(Guid entityId, Action<T0,T1> action) 
+        public (T0,T1) ReadComponent<T0,T1>(Guid entityId) 
             where T0 : AbstractComponent where T1 : AbstractComponent
         {
             if (m_CurrentFrameData.EntityDict.TryGetValue(entityId, out Entity entity))
@@ -99,12 +100,13 @@ namespace Engine.Client.Ecsr.Entitas
                 if (entity.Components.TryGetValue(typeof(T0), out AbstractComponent component0)
                     && entity.Components.TryGetValue(typeof(T1), out AbstractComponent component1))
                 {
-                    action?.Invoke((T0)component0,(T1)component1);
+                    return ((T0)component0,(T1)component1);
                 }
             }
+            return (null,null);
         }
 
-        public void ReadComponent<T0, T1,T2>(Guid entityId, Action<T0, T1,T2> action)
+        public (T0,T1,T2) ReadComponent<T0, T1,T2>(Guid entityId)
             where T0 : AbstractComponent where T1 : AbstractComponent
             where T2 : AbstractComponent
         {
@@ -114,12 +116,13 @@ namespace Engine.Client.Ecsr.Entitas
                     && entity.Components.TryGetValue(typeof(T1), out AbstractComponent component1)
                     && entity.Components.TryGetValue(typeof(T2), out AbstractComponent component2))
                 {
-                    action?.Invoke((T0)component0, (T1)component1,(T2)component2);
+                    return ((T0)component0, (T1)component1, (T2)component2);
                 }
             }
+            return (null, null, null);
         }
 
-        public void ReadComponent<T0, T1, T2,T3>(Guid entityId, Action<T0, T1, T2,T3> action)
+        public (T0,T1,T2,T3) ReadComponent<T0, T1, T2,T3>(Guid entityId)
             where T0 : AbstractComponent where T1 : AbstractComponent
             where T2 : AbstractComponent where T3 : AbstractComponent
         {
@@ -130,12 +133,13 @@ namespace Engine.Client.Ecsr.Entitas
                     && entity.Components.TryGetValue(typeof(T2), out AbstractComponent component2)
                     && entity.Components.TryGetValue(typeof(T3), out AbstractComponent component3))
                 {
-                    action?.Invoke((T0)component0, (T1)component1, (T2)component2,(T3)component3);
+                    return ((T0)component0, (T1)component1, (T2)component2, (T3)component3);
                 }
             }
+            return (null, null, null, null);
         }
 
-        public void ReadComponent<T0, T1, T2, T3,T4>(Guid entityId, Action<T0, T1, T2, T3,T4> action)
+        public (T0, T1, T2, T3, T4) ReadComponent<T0, T1, T2, T3,T4>(Guid entityId, Action<T0, T1, T2, T3,T4> action)
             where T0 : AbstractComponent where T1 : AbstractComponent
             where T2 : AbstractComponent where T3 : AbstractComponent
             where T4 : AbstractComponent
@@ -148,11 +152,12 @@ namespace Engine.Client.Ecsr.Entitas
                     && entity.Components.TryGetValue(typeof(T3), out AbstractComponent component3)
                     && entity.Components.TryGetValue(typeof(T4), out AbstractComponent component4))
                 {
-                    action?.Invoke((T0)component0, (T1)component1, (T2)component2, (T3)component3,(T4)component4);
+                    return ((T0)component0, (T1)component1, (T2)component2, (T3)component3, (T4)component4);
                 }
             }
+            return (null, null, null, null, null);
         }
-        public void ReadComponent<T0, T1, T2, T3, T4,T5>(Guid entityId, Action<T0, T1, T2, T3, T4,T5> action)
+        public (T0, T1, T2, T3, T4, T5) ReadComponent<T0, T1, T2, T3, T4,T5>(Guid entityId, Action<T0, T1, T2, T3, T4,T5> action)
             where T0 : AbstractComponent where T1 : AbstractComponent
             where T2 : AbstractComponent where T3 : AbstractComponent
             where T4 : AbstractComponent where T5 : AbstractComponent
@@ -166,12 +171,13 @@ namespace Engine.Client.Ecsr.Entitas
                     && entity.Components.TryGetValue(typeof(T4), out AbstractComponent component4)
                     && entity.Components.TryGetValue(typeof(T5), out AbstractComponent component5))
                 {
-                    action?.Invoke((T0)component0, (T1)component1, (T2)component2, (T3)component3, (T4)component4,(T5)component5);
+                    return ((T0)component0, (T1)component1, (T2)component2, (T3)component3, (T4)component4,(T5)component5);
                 }
             }
+            return (null, null, null, null, null, null);
         }
 
-        public void ReadComponent<T0, T1, T2, T3, T4, T5,T6>(Guid entityId, Action<T0, T1, T2, T3, T4, T5,T6> action)
+        public (T0, T1, T2, T3, T4, T5, T6) ReadComponent<T0, T1, T2, T3, T4, T5,T6>(Guid entityId, Action<T0, T1, T2, T3, T4, T5,T6> action)
             where T0 : AbstractComponent where T1 : AbstractComponent
             where T2 : AbstractComponent where T3 : AbstractComponent
             where T4 : AbstractComponent where T5 : AbstractComponent
@@ -188,12 +194,13 @@ namespace Engine.Client.Ecsr.Entitas
                     && entity.Components.TryGetValue(typeof(T5), out AbstractComponent component5)
                     && entity.Components.TryGetValue(typeof(T6), out AbstractComponent component6))
                 {
-                    action?.Invoke((T0)component0, (T1)component1, (T2)component2, (T3)component3, (T4)component4, (T5)component5,(T6)component6);
+                    return ((T0)component0, (T1)component1, (T2)component2, (T3)component3, (T4)component4, (T5)component5,(T6)component6);
                 }
             }
+            return (null, null, null, null, null, null, null);
         }
 
-        public void ReadComponent<T0, T1, T2, T3, T4, T5, T6,T7>(Guid entityId, Action<T0, T1, T2, T3, T4, T5, T6,T7> action)
+        public (T0, T1, T2, T3, T4, T5, T6, T7) ReadComponent<T0, T1, T2, T3, T4, T5, T6,T7>(Guid entityId, Action<T0, T1, T2, T3, T4, T5, T6,T7> action)
             where T0 : AbstractComponent where T1 : AbstractComponent
             where T2 : AbstractComponent where T3 : AbstractComponent
             where T4 : AbstractComponent where T5 : AbstractComponent
@@ -210,12 +217,13 @@ namespace Engine.Client.Ecsr.Entitas
                     && entity.Components.TryGetValue(typeof(T6), out AbstractComponent component6)
                     && entity.Components.TryGetValue(typeof(T7), out AbstractComponent component7))
                 {
-                    action?.Invoke((T0)component0, (T1)component1, (T2)component2, (T3)component3, (T4)component4, (T5)component5, (T6)component6,(T7)component7);
+                    return ((T0)component0, (T1)component1, (T2)component2, (T3)component3, (T4)component4, (T5)component5, (T6)component6,(T7)component7);
                 }
             }
+            return (null, null, null, null, null, null, null, null);
         }
 
-        public void ReadComponent(Guid entityId, Action<AbstractComponent[]> action, params Type[] componentTypes)
+        public AbstractComponent[] ReadComponent(Guid entityId, params Type[] componentTypes)
         {
             if (m_CurrentFrameData.EntityDict.TryGetValue(entityId, out Entity entity))
             {
@@ -227,8 +235,9 @@ namespace Engine.Client.Ecsr.Entitas
                         components[i] = component;
                     }
                 }
-                action?.Invoke(components);
+                return components;
             }
+            return null;
         }
         #endregion
 

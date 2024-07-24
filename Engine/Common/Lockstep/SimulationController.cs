@@ -1,10 +1,19 @@
 ﻿using System;
 using System.Threading;
+using System.Threading.Tasks;
+using static Engine.Common.Lockstep.SimulationController;
 
 namespace Engine.Common.Lockstep
 {
     public class SimulationController
     {
+        public enum RunState
+        {
+            Default,
+            Running,
+            Stopping,
+            Stopped,
+        }
         protected Simulation m_SimulationInstance;
         long m_AccumulatorTicks = 0;
         const int c_DefaultFrameMsLength = 20;
@@ -13,7 +22,7 @@ namespace Engine.Common.Lockstep
         double m_FrameLerp = 0;
         public int GetFrameMsLength() { return m_FrameMsLength; }
         public double GetFrameLerp() { return m_FrameLerp; }
-        public bool IsRunning { private set; get; }
+        public RunState State = RunState.Default;
         Thread m_RunnerThread;
         DateTime m_CurrentDateTime;
         
@@ -39,19 +48,21 @@ namespace Engine.Common.Lockstep
                 m_SimulationInstance.Run();
                 process?.Invoke(1f*i/history_keyframes_count);
             }
-            IsRunning = true;
+            State = RunState.Running;
             m_RunnerThread = new Thread(Run);
             m_RunnerThread.IsBackground = true;
             m_RunnerThread.Priority = ThreadPriority.Highest;
             m_RunnerThread.Start(runner);
         }
+
         public void Stop()
         {
-            IsRunning = false;
+            State = RunState.Stopping;
         }
         void Run(object runner)
         {
-            while (IsRunning)
+            Action action = runner as Action;
+            while (State == RunState.Running)
             {
                 DateTime now = DateTime.Now;
                 m_AccumulatorTicks += (now - m_CurrentDateTime).Ticks;
@@ -61,14 +72,15 @@ namespace Engine.Common.Lockstep
                     m_SimulationInstance.Run();
                     m_AccumulatorTicks -= FrameMsTickCount;
                 }
-                m_FrameLerp = m_AccumulatorTicks/FrameMsTickCount;
+                m_FrameLerp = m_AccumulatorTicks / FrameMsTickCount;
                 Thread.Sleep(30);
-                if (runner != null)
+                if (action != null)
                 {
-                    ((Action)runner)();
-                    runner = null;
+                    action();
+                    action = null;
                 }
             }
+            State = RunState.Stopped;
         }
         public override string ToString()
         {

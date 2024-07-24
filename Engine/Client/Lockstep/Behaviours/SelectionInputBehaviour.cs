@@ -1,9 +1,8 @@
-﻿using Engine.Client.Modules;
+﻿using Client.Lockstep.Behaviours.Data;
+using Engine.Client.Lockstep.Behaviours.Data;
+using Engine.Client.Modules;
 using Engine.Common;
 using Engine.Common.Lockstep;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Engine.Client.Lockstep.Behaviours
 {
@@ -12,22 +11,28 @@ namespace Engine.Client.Lockstep.Behaviours
         public Simulation Sim { get; set; }
         LogicFrameBehaviour logicBehaviour;
         BattleServiceModule battleServiceModule;
-        ComponentsBackupBehaviour componentsBackupBehaviour;
+
         public void Start()
         {
             battleServiceModule = Context.Retrieve(Context.CLIENT).GetModule<BattleServiceModule>();
             logicBehaviour = Sim.GetBehaviour<LogicFrameBehaviour>();
-            componentsBackupBehaviour = Sim.GetBehaviour<ComponentsBackupBehaviour>();
         }
 
         public void Stop()
         {
-            
+            battleServiceModule = null;
+            logicBehaviour = null;
         }
 
         public void Update()
         {
-            
+            if(Selection.SelectedIds.Count > 0)
+            {
+                while(Input.InputFrames.TryDequeue(out var frame))
+                {
+                    battleServiceModule.GetRoomSession().AddCurrentFrameCommand(logicBehaviour.CurrentFrameIdx,frame);
+                }
+            }
         }
     }
 }
