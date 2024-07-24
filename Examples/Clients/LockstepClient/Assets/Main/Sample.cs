@@ -1,13 +1,16 @@
 using Engine.Client.Lockstep;
 using Engine.Client.Lockstep.Behaviours;
 using Engine.Client.Modules;
+using Engine.Client.Protocol.Pt;
 using Engine.Common;
+using Engine.Common.Lockstep;
 using Engine.Common.Misc;
 using Engine.Common.Protocol.Pt;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
 
@@ -122,17 +125,35 @@ public class Sample : MonoBehaviour
         string path = Path.Combine(Application.persistentDataPath, name + ".rep");
         PtReplay rep = new PtReplay();
         rep.MapId = mapId;
-        rep.MapVerificationCodes = new byte[] { 0 };
         rep.Version = "0.0.1";
+        rep.InitEntities = MainContext.GetSimulationController().GetSimulation<DefaultSimulation>().GetEntityWorld().GetEntityInitializer().InitEntities;
         rep.Frames = MainContext.GetSimulationController().GetSimulation<DefaultSimulation>().GetBehaviour<LogicFrameBehaviour>().GetFrames();
-        File.WriteAllBytes(path, PtReplay.Write(rep));
+        File.WriteAllBytes(path,SevenZip.Helper.CompressBytesAsync(PtReplay.Write(rep)).Result);
     }
 
-    [TerminalCommand("playrep","playrep(name)")]
-    public void PlayReplay(string name)
+    [TerminalCommand("stop","stop game or replay")]
+    public void Stop()
     {
-
+        SimulationController simulationController = MainContext.GetSimulationController();
+        if (simulationController.State == SimulationController.RunState.Running)
+        {
+            simulationController.Stop();
+            Task task = Task.Run(() =>
+            {
+                while (simulationController.State != SimulationController.RunState.Stopped)
+                    Thread.Yield();
+            });
+            task.Wait();
+            simulationController.DisposeSimulation();
+            //
+            foreach (Transform child in GameContainer.transform)
+            {
+                Destroy(child.gameObject);
+            }
+        }
     }
+
+
 
     [TerminalCommand("launch", "launch game")]
     public void Launch()

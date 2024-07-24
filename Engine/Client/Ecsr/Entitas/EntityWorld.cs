@@ -1,5 +1,6 @@
 ﻿using Engine.Client.Ecsr.Components;
 using Engine.Client.Ecsr.Renders;
+using Engine.Client.Protocol.Pt;
 using Engine.Common.Misc;
 using Engine.Common.Protocol.Pt;
 using System;
@@ -25,8 +26,10 @@ namespace Engine.Client.Ecsr.Entitas
         EntityInitializer m_EntityInitializer;
         FrameRawData m_CurrentFrameData;
         EntityRenderSpawner m_EntityRenderSpawner;
+        public bool IsActive;
         public EntityWorld()
         {
+            IsActive = true;
             m_CurrentFrameData = new FrameRawData();
         }
         public void SetEntityInitializer(EntityInitializer init)
@@ -72,7 +75,11 @@ namespace Engine.Client.Ecsr.Entitas
             m_CurrentFrameData.EntityDict[entity.Id] = entity;
             return entity;
         }
-
+        public void CreateEntities(EntityList entityList)
+        {
+            foreach (Entity entity in entityList.Elements)
+                CreateEntity(entity);
+        }
         public bool RemoveEntity(Guid entityId)
         {
             return m_CurrentFrameData.EntityDict.Remove(entityId);
@@ -83,7 +90,7 @@ namespace Engine.Client.Ecsr.Entitas
         public T0 ReadComponent<T0>(Guid entityId)
             where T0 : AbstractComponent
         {
-            if (m_CurrentFrameData.EntityDict.TryGetValue(entityId, out Entity entity))
+            if (m_CurrentFrameData != null && m_CurrentFrameData.EntityDict.TryGetValue(entityId, out Entity entity))
             {
                 if (entity.Components.TryGetValue(typeof(T0), out AbstractComponent component))
                 {
@@ -95,7 +102,7 @@ namespace Engine.Client.Ecsr.Entitas
         public (T0,T1) ReadComponent<T0,T1>(Guid entityId) 
             where T0 : AbstractComponent where T1 : AbstractComponent
         {
-            if (m_CurrentFrameData.EntityDict.TryGetValue(entityId, out Entity entity))
+            if (m_CurrentFrameData != null && m_CurrentFrameData.EntityDict.TryGetValue(entityId, out Entity entity))
             {
                 if (entity.Components.TryGetValue(typeof(T0), out AbstractComponent component0)
                     && entity.Components.TryGetValue(typeof(T1), out AbstractComponent component1))
@@ -110,7 +117,7 @@ namespace Engine.Client.Ecsr.Entitas
             where T0 : AbstractComponent where T1 : AbstractComponent
             where T2 : AbstractComponent
         {
-            if (m_CurrentFrameData.EntityDict.TryGetValue(entityId, out Entity entity))
+            if (m_CurrentFrameData != null && m_CurrentFrameData.EntityDict.TryGetValue(entityId, out Entity entity))
             {
                 if (entity.Components.TryGetValue(typeof(T0), out AbstractComponent component0)
                     && entity.Components.TryGetValue(typeof(T1), out AbstractComponent component1)
@@ -126,7 +133,7 @@ namespace Engine.Client.Ecsr.Entitas
             where T0 : AbstractComponent where T1 : AbstractComponent
             where T2 : AbstractComponent where T3 : AbstractComponent
         {
-            if (m_CurrentFrameData.EntityDict.TryGetValue(entityId, out Entity entity))
+            if (m_CurrentFrameData != null && m_CurrentFrameData.EntityDict.TryGetValue(entityId, out Entity entity))
             {
                 if (entity.Components.TryGetValue(typeof(T0), out AbstractComponent component0)
                     && entity.Components.TryGetValue(typeof(T1), out AbstractComponent component1)
@@ -144,7 +151,7 @@ namespace Engine.Client.Ecsr.Entitas
             where T2 : AbstractComponent where T3 : AbstractComponent
             where T4 : AbstractComponent
         {
-            if (m_CurrentFrameData.EntityDict.TryGetValue(entityId, out Entity entity))
+            if (m_CurrentFrameData!=null&&m_CurrentFrameData.EntityDict.TryGetValue(entityId, out Entity entity))
             {
                 if (entity.Components.TryGetValue(typeof(T0), out AbstractComponent component0)
                     && entity.Components.TryGetValue(typeof(T1), out AbstractComponent component1)
@@ -162,7 +169,7 @@ namespace Engine.Client.Ecsr.Entitas
             where T2 : AbstractComponent where T3 : AbstractComponent
             where T4 : AbstractComponent where T5 : AbstractComponent
         {
-            if (m_CurrentFrameData.EntityDict.TryGetValue(entityId, out Entity entity))
+            if (m_CurrentFrameData != null && m_CurrentFrameData.EntityDict.TryGetValue(entityId, out Entity entity))
             {
                 if (entity.Components.TryGetValue(typeof(T0), out AbstractComponent component0)
                     && entity.Components.TryGetValue(typeof(T1), out AbstractComponent component1)
@@ -184,7 +191,7 @@ namespace Engine.Client.Ecsr.Entitas
             where T6 : AbstractComponent
         {
 
-            if (m_CurrentFrameData.EntityDict.TryGetValue(entityId, out Entity entity))
+            if (m_CurrentFrameData != null && m_CurrentFrameData.EntityDict.TryGetValue(entityId, out Entity entity))
             {
                 if (entity.Components.TryGetValue(typeof(T0), out AbstractComponent component0)
                     && entity.Components.TryGetValue(typeof(T1), out AbstractComponent component1)
@@ -206,7 +213,7 @@ namespace Engine.Client.Ecsr.Entitas
             where T4 : AbstractComponent where T5 : AbstractComponent
             where T6 : AbstractComponent where T7 : AbstractComponent
         {
-            if (m_CurrentFrameData.EntityDict.TryGetValue(entityId, out Entity entity))
+            if (m_CurrentFrameData != null && m_CurrentFrameData.EntityDict.TryGetValue(entityId, out Entity entity))
             {
                 if (entity.Components.TryGetValue(typeof(T0), out AbstractComponent component0)
                     && entity.Components.TryGetValue(typeof(T1), out AbstractComponent component1)
@@ -225,7 +232,7 @@ namespace Engine.Client.Ecsr.Entitas
 
         public AbstractComponent[] ReadComponent(Guid entityId, params Type[] componentTypes)
         {
-            if (m_CurrentFrameData.EntityDict.TryGetValue(entityId, out Entity entity))
+            if (m_CurrentFrameData != null && m_CurrentFrameData.EntityDict.TryGetValue(entityId, out Entity entity))
             {
                 AbstractComponent[] components = new AbstractComponent[componentTypes.Length];
                 for (int i = 0; i < componentTypes.Length; ++i)
@@ -245,6 +252,7 @@ namespace Engine.Client.Ecsr.Entitas
         public void ForEach<T0>(Action<Guid, T0> action)
             where T0 : AbstractComponent
         {
+            if (m_CurrentFrameData == null) return;
             Type componentType0 = typeof(T0);
             foreach (Entity entity in m_CurrentFrameData.EntityDict.Values)
             {
@@ -256,6 +264,7 @@ namespace Engine.Client.Ecsr.Entitas
         public void ForEach<T0, T1>(Action<Guid, T0, T1> action)
             where T0 : AbstractComponent where T1 : AbstractComponent
         {
+            if (m_CurrentFrameData == null) return;
             Type componentType0 = typeof(T0);
             Type componentType1 = typeof(T1);
             foreach (Entity entity in m_CurrentFrameData.EntityDict.Values)
@@ -272,6 +281,7 @@ namespace Engine.Client.Ecsr.Entitas
             where T0 : AbstractComponent where T1 : AbstractComponent 
             where T2 : AbstractComponent
         {
+            if (m_CurrentFrameData == null) return;
             Type componentType0 = typeof(T0);
             Type componentType1 = typeof(T1);
             Type componentType2 = typeof(T2);
@@ -290,6 +300,7 @@ namespace Engine.Client.Ecsr.Entitas
             where T0 : AbstractComponent where T1 : AbstractComponent 
             where T2 : AbstractComponent where T3 : AbstractComponent
         {
+            if (m_CurrentFrameData == null) return;
             Type componentType0 = typeof(T0);
             Type componentType1 = typeof(T1);
             Type componentType2 = typeof(T2);
@@ -311,6 +322,7 @@ namespace Engine.Client.Ecsr.Entitas
             where T2 : AbstractComponent where T3 : AbstractComponent 
             where T4 : AbstractComponent
         {
+            if (m_CurrentFrameData == null) return;
             Type componentType0 = typeof(T0);
             Type componentType1 = typeof(T1);
             Type componentType2 = typeof(T2);
@@ -335,6 +347,7 @@ namespace Engine.Client.Ecsr.Entitas
             where T2 : AbstractComponent where T3 : AbstractComponent 
             where T4 : AbstractComponent where T5 : AbstractComponent
         {
+            if (m_CurrentFrameData == null) return;
             Type componentType0 = typeof(T0);
             Type componentType1 = typeof(T1);
             Type componentType2 = typeof(T2);
@@ -362,6 +375,7 @@ namespace Engine.Client.Ecsr.Entitas
             where T4 : AbstractComponent where T5 : AbstractComponent
             where T6 : AbstractComponent
         {
+            if (m_CurrentFrameData == null) return;
             Type componentType0 = typeof(T0);
             Type componentType1 = typeof(T1);
             Type componentType2 = typeof(T2);
@@ -391,6 +405,7 @@ namespace Engine.Client.Ecsr.Entitas
             where T4 : AbstractComponent where T5 : AbstractComponent
             where T6 : AbstractComponent where T7 : AbstractComponent
         {
+            if (m_CurrentFrameData == null) return;
             Type componentType0 = typeof(T0);
             Type componentType1 = typeof(T1);
             Type componentType2 = typeof(T2);
@@ -419,6 +434,7 @@ namespace Engine.Client.Ecsr.Entitas
 
         public void ForEach(Action<Guid, AbstractComponent[]> action, params Type[] componentTypes)
         {
+            if(m_CurrentFrameData == null) return;
             AbstractComponent[] components = new AbstractComponent[componentTypes.Length];
             foreach (Entity entity in m_CurrentFrameData.EntityDict.Values)
             {
@@ -458,26 +474,32 @@ namespace Engine.Client.Ecsr.Entitas
             m_CurrentFrameData.EntityDict = rawData.EntityDict;
         }
 
-        public void RestoreFrames(PtFrames frames)
+        public void RestoreFrames(List<PtFrame> frames)
         {
-            for (int i = 0; i < frames.KeyFrames.Count; ++i)
+            foreach (PtFrame frame in frames)
             {
-                var frame = frames.KeyFrames[i];
-                switch (frame.Cmd)
+                if (frame.HasUpdaters())
                 {
-                    case FrameCommand.SYNC_MOVEMENT:
+                    foreach (PtComponentUpdater updater in frame.Updaters.Elements)
+                    {
                         Entity entity = GetEntity(new Guid(frame.EntityId));
                         if (entity != null)
                         {
-                            AbstractComponent component = entity.GetComponentByCommand(frame.Cmd);
-                            component?.UpdateParams(frame.ParamContent);
+                            Type type = Type.GetType(updater.ComponentClsName);
+                            if (type != null)
+                                entity.GetComponent(type)?.UpdateParams(updater.ParamContent);
                         }
-                        break;
-                    case FrameCommand.SYNC_CREATE_ENTITY:
-                        m_EntityInitializer.OnCreateEntities(frame);
-                        break;
+                    }
+                }
+                if (frame.HasNewEntitiesRaw())
+                {
+                    m_EntityInitializer.CreateEntities(frame.EntityId, frame.NewEntitiesRaw);
                 }
             }
+        }
+        public void RestoreFrames(PtFrames frames)
+        {
+            RestoreFrames(frames.KeyFrames);
         }
         public void RollBack(FrameRawData rawData,PtFrames frames)
         {
@@ -487,7 +509,10 @@ namespace Engine.Client.Ecsr.Entitas
 
         public void Dispose()
         {
-            
+            IsActive = false;
+            m_EntityRenderSpawner = null;
+            m_CurrentFrameData = null;
+            m_EntityInitializer = null;
         }
     }
 }

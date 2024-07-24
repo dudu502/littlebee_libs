@@ -14,11 +14,11 @@ namespace Engine.Client.Modules.Data
         public ConcurrentQueue<PtFrames> QueueKeyFrames = new ConcurrentQueue<PtFrames>();
         private PtFrames keyFrameCached = new PtFrames().SetKeyFrames(new List<PtFrame>());
 
-        public void AddCurrentFrameCommand(int curFrameIdx,ushort cmd,string entityId, byte[] paramsContent)
-        {
-            PtFrame frame = new PtFrame().SetCmd(cmd).SetEntityId(entityId).SetParamContent(paramsContent);
-            AddCurrentFrameCommand(curFrameIdx, frame);
-        }
+        //public void AddCurrentFrameCommand(int curFrameIdx,ushort cmd,string entityId, byte[] paramsContent)
+        //{
+        //    PtFrame frame = new PtFrame().SetCmd(cmd).SetEntityId(entityId).SetParamContent(paramsContent);
+        //    AddCurrentFrameCommand(curFrameIdx, frame);
+        //}
         public void AddCurrentFrameCommand(int curFrameIdx,PtFrame frame)
         {
             keyFrameCached.SetFrameIdx(curFrameIdx);

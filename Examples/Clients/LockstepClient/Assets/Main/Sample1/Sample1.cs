@@ -8,6 +8,7 @@ using Engine.Client.Modules;
 using Engine.Client.Network;
 using Engine.Client.Protocol.Pt;
 using Engine.Common;
+using Engine.Common.Lockstep;
 using Engine.Common.Log;
 using Engine.Common.Misc;
 using Engine.Common.Protocol.Pt;
@@ -26,12 +27,15 @@ public class GameEntityInitializer : EntityInitializer
 
     }
 
-    public override List<Entity> OnCreateSelfEntityComponents(Guid entityId)
+    public override EntityList OnCreateSelfEntityComponents(Guid entityId)
     {
         TSRandom tSRandom = TSRandom.New(GetHashCode());
         List<Entity> entities = new List<Entity>();
+        EntityList result = new EntityList();
+        result.SetElements(entities);
+ 
 
-        for (int i = 0; i < 3; ++i)
+        for (int i = 0; i < 100; ++i)
         {
             Entity entity = new Entity();
             Appearance appearance = new Appearance();
@@ -45,11 +49,11 @@ public class GameEntityInitializer : EntityInitializer
             circle.Radius = 0.5f;
             entity.AddComponent(circle);
             Position position = new Position();
-            position.Pos = new TrueSync.TSVector2(i, 0);
+            position.Pos = new TrueSync.TSVector2(tSRandom.Next(-10f,10f), tSRandom.Next(-7f,7f));
             entity.AddComponent(position);
 
             Movement movement = new Movement();
-            movement.Speed = 1f * tSRandom.Next(1f, 2f);
+            movement.Speed = 1f * tSRandom.Next(0.1f, 0.5f);
             movement.Direction = new TrueSync.TSVector2(0.1f * tSRandom.Next(-1f, 1f), 0.1f * tSRandom.Next(-1f, 1f));
             entity.AddComponent(movement);
 
@@ -58,18 +62,16 @@ public class GameEntityInitializer : EntityInitializer
             entities.Add(entity);
         }
 
-        return entities;
+        return result;
     }
 
-    public override void OnCreateEntities(uint mapId)
+    public override void CreateEntities(uint mapId)
     {
         var path = Path.Combine(Context.Retrieve(Context.CLIENT).GetMeta(ContextMetaId.PERSISTENT_DATA_PATH), "map", mapId + ".bytes");
-        Debug.LogWarning("OnCreateEntities "+path);
         byte[] bytes = File.ReadAllBytes(path);
         try
         {
             PtMap map = PtMap.Read(bytes); 
-            Debug.LogWarning("OnCreateEntities " + map);
             if (map.HasEntities())
             {
                 foreach (Entity entity in map.Entities.Elements)
@@ -88,8 +90,10 @@ public class GameEntityInitializer : EntityInitializer
 public class GameEntityRenderSpawner : EntityRenderSpawner
 {
     private Transform gameContainer;
-    public GameEntityRenderSpawner(Transform container)
+    private EntityWorld entityWorld;
+    public GameEntityRenderSpawner(EntityWorld world,Transform container)
     {
+        entityWorld = world;
         gameContainer = container;
     }
     /// <summary>
@@ -98,13 +102,16 @@ public class GameEntityRenderSpawner : EntityRenderSpawner
     /// <param name="request"></param>
     protected override void CreateEntityRendererImpl(CreateEntityRendererRequest request)
     {
+        Debug.LogWarning("CreateEntityRendererImpl Simulation World hash " + request);
         base.CreateEntityRendererImpl(request);
         GameObject resPrefab = GameObject.Instantiate<GameObject>(Resources.Load<GameObject>(request.ResourcePath)); 
         if(resPrefab.TryGetComponent<AppearanceRenderer>(out var component))
         {
             component.EntityId = request.EntityId;
-            component.World = Context.Retrieve(Context.CLIENT).GetSimulationController<DefaultSimulationController>()
-                .GetSimulation<DefaultSimulation>().GetEntityWorld();
+      
+            component.World = entityWorld;
+
+         
             resPrefab.transform.SetParent(gameContainer);
         }
     }
@@ -121,6 +128,7 @@ public class Sample1 : Sample
                    .SetModule(new BattleServiceModule());
         DefaultSimulationController defaultSimulationController = new DefaultSimulationController();
         MainContext.SetSimulationController(defaultSimulationController);
+        // create a default simulation.
         defaultSimulationController.CreateSimulation(new DefaultSimulation(),new EntityWorld(),
             new Engine.Common.Lockstep.ISimulativeBehaviour[] {
                 new LogicFrameBehaviour(),
@@ -133,13 +141,12 @@ public class Sample1 : Sample
             new Engine.Client.Ecsr.Systems.IEntitySystem[]
             {
                 new AppearanceSystem(),
-                new FsmSystem(),
                 new MovementSystem(),
                 new ReboundSystem(),
             });
         EntityWorld entityWorld = defaultSimulationController.GetSimulation<DefaultSimulation>().GetEntityWorld();
         entityWorld.SetEntityInitializer(new GameEntityInitializer(entityWorld));
-        entityWorld.SetEntityRenderSpawner(new GameEntityRenderSpawner(GameContainer));
+        entityWorld.SetEntityRenderSpawner(new GameEntityRenderSpawner(entityWorld,GameContainer));
     }
 
     private void Start()
@@ -157,41 +164,62 @@ public class Sample1 : Sample
             .SetElements(new List<Entity>());
         entityList.Elements.Add(new Entity()
             .AddComponent(new Position() { Pos = new TSVector2(12,0)})
-            .AddComponent(new Engine.Client.Ecsr.Components.Wall() { Width = 0.2f,Height = 18,IsRigid=true,Dir = 1})
+            .AddComponent(new Wall() { Width = 0.2f,Height = 18,IsRigid=true,Dir = 1})
             .AddComponent(new Appearance() { Resource = "Wall"}));
         entityList.Elements.Add(new Entity()
             .AddComponent(new Position() { Pos = new TSVector2(-12, 0) })
-            .AddComponent(new Engine.Client.Ecsr.Components.Wall() { Width = 0.2f, Height = 18, IsRigid = true, Dir = 2 })
+            .AddComponent(new Wall() { Width = 0.2f, Height = 18, IsRigid = true, Dir = 2 })
             .AddComponent(new Appearance() { Resource = "Wall" }));
         entityList.Elements.Add(new Entity()
             .AddComponent(new Position() { Pos = new TSVector2(0, 9) })
-            .AddComponent(new Engine.Client.Ecsr.Components.Wall() { Width = 24f, Height = 0.2f, IsRigid = true, Dir = 4 })
+            .AddComponent(new Wall() { Width = 24f, Height = 0.2f, IsRigid = true, Dir = 4 })
             .AddComponent(new Appearance() { Resource = "Wall" }));
         entityList.Elements.Add(new Entity()
            .AddComponent(new Position() { Pos = new TSVector2(0, -9) })
-           .AddComponent(new Engine.Client.Ecsr.Components.Wall() { Width = 24f, Height = 0.2f, IsRigid = true, Dir = 8 })
+           .AddComponent(new Wall() { Width = 24f, Height = 0.2f, IsRigid = true, Dir = 8 })
            .AddComponent(new Appearance() { Resource = "Wall" }));
-
-        entityList.Elements.Add(new Entity()
-           .AddComponent(new Position() { Pos = new TSVector2(7, -5) })
-           .AddComponent(new Tile() { Size = new TSVector2(3,4)})
-           .AddComponent(new Appearance() { Resource = "Tile", ShaderR = (byte)tSRandom.Next(0, 255), ShaderG = (byte)tSRandom.Next(0, 255), ShaderB = (byte)tSRandom.Next(0, 255) }));
 
         PtMap ptMap = new PtMap().SetVersion("0.0.1")
             .SetEntities(entityList);
 
         File.WriteAllBytes(path,PtMap.Write(ptMap));
     }
+    [TerminalCommand("playrep", "playrep(name)")]
+    public void PlayReplay(string name)
+    {
+        if (MainContext.GetSimulationController().State == SimulationController.RunState.Running)
+            return;
+        string path = Path.Combine(Application.persistentDataPath, name + ".rep");
+        byte[] result = SevenZip.Helper.DecompressBytesAsync(File.ReadAllBytes(path)).Result;
+        PtReplay replay = PtReplay.Read(result);
 
-    //[TerminalCommand("loadmap","load map asset")]
-    //public void LoadMap(uint mapId)
-    //{
-    //    var path = Path.Combine(Application.persistentDataPath, "map", mapId + ".bytes");
-    //    if (File.Exists(path))
-    //    {
-    //        PtMap.Read(File.ReadAllBytes(path));
-    //    }
-    //}
+        DefaultReplaySimulationController simulationController = new DefaultReplaySimulationController();
+        simulationController.CreateSimulation(new DefaultSimulation(), new EntityWorld(),
+            new ISimulativeBehaviour[]
+            {
+                new ReplayLogicFrameBehaviour(),
+                new ReplayInputBehaviour(),
+                new EntityBehaviour(),
+            },
+            new IEntitySystem[] 
+            {
+                new AppearanceSystem(),
+                new MovementSystem(),   
+                new ReboundSystem(),
+            });
+        EntityWorld entityWorld = simulationController.GetSimulation<DefaultSimulation>().GetEntityWorld();
+        entityWorld.SetEntityInitializer(new GameEntityInitializer(entityWorld));
+        entityWorld.SetEntityRenderSpawner(new GameEntityRenderSpawner(entityWorld, GameContainer));
+        // load map
+        entityWorld.GetEntityInitializer().CreateEntities(replay.MapId);
+        // load init entities;
+        entityWorld.GetEntityInitializer().InitEntities = replay.InitEntities;
+        entityWorld.GetEntityInitializer().CreateEntities(replay.InitEntities);
+        simulationController.GetSimulation().GetBehaviour<ReplayLogicFrameBehaviour>().SetFrameIdxInfos(replay.Frames);
+        simulationController.Start(DateTime.Now);
+      
+    }
+
     private void Update()
     {
         Handler.Update();

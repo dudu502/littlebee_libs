@@ -54,24 +54,21 @@ namespace Engine.Client.Lockstep.Behaviours
                 m_Frames[frameIdx] = new List<PtFrame>();
             List<PtFrame> frames = m_Frames[frameIdx];
             bool updateState = false;
-            foreach(PtFrame f in frames)
+
+            for(int i = 0; i < frames.Count; ++i)
             {
-                if(IsFrameEquals(f, frame))
+                if (frames[i].EntityId == frame.EntityId)
                 {
                     updateState = true;
-                    f.SetParamContent(frame.ParamContent);
+                    frames[i] = frame;
                     break;
                 }
             }
-            if (!updateState)
-                frames.Add(frame);
-        }
 
-        private bool IsFrameEquals(PtFrame a, PtFrame b)
-        {
-            if (a.EntityId == b.EntityId)
-                return a.Cmd == b.Cmd;
-            return false;
+            if (!updateState)
+            {
+                frames.Add(frame);
+            }
         }
 
         public void Stop()

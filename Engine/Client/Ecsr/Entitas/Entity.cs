@@ -19,24 +19,17 @@ namespace Engine.Client.Ecsr.Entitas
         {
             Id = id;
         }
-
-        public AbstractComponent GetComponentByCommand(ushort cmd)
+        public AbstractComponent GetComponent(Type type)
         {
-            foreach (var component in Components.Values)
-            {
-                if(component.GetCommand()==cmd)
-                    return component;
-            }
+            if (Components.TryGetValue(type, out AbstractComponent component))
+                return component;
             return null;
         }
+   
         public AbstractComponent GetComponent<T>()where T : AbstractComponent
         {
             Type type = typeof(T);
-            if(Components.TryGetValue(type,out AbstractComponent component))
-            {
-                return component;
-            }
-            return null;
+            return GetComponent(type);
         }
         public static Entity Read(byte[] bytes)
         {

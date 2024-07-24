@@ -150,15 +150,10 @@ namespace Engine.Server.Modules
         void OnSyncClientKeyframes(PtMessagePackage message)
         {
             PtFrames collection = PtFrames.Read(message.Content);
-            foreach(var keyFrame in collection.KeyFrames)
-            {
-                switch (keyFrame.Cmd)
-                {
-                    case FrameCommand.SYNC_CREATE_ENTITY:
-                        //keyFrame.ParamContent = new ByteBuffer().WriteByte().WriteString(Guid.NewGuid().ToString()).GetRawBytes();
-                        break;
-                }
-            }
+            //foreach(PtFrame frame in collection.KeyFrames)
+            //{
+                
+            //}
 
             Session.QueueKeyFrameCollection.Enqueue(collection);
         }

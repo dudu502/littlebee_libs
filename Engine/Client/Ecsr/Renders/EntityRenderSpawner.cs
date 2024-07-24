@@ -14,6 +14,11 @@ namespace Engine.Client.Ecsr.Renders
             ResourcePath = resource;
             Status = status;
         }
+
+        public override string ToString()
+        {
+            return $"EntityId:{EntityId} ResourcePath:{ResourcePath} Status:{Status}";
+        }
     }
 
     public class EntityRenderSpawner

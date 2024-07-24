@@ -13,17 +13,18 @@ namespace Engine.Client.Ecsr.Entitas
     public class EntityInitializer
     {
         public EntityWorld World { get; private set; }
+        public List<EntityList> InitEntities;
         public EntityInitializer(EntityWorld world)
         {
             World = world;
         }
 
-        public virtual void OnCreateEntities(uint mapId)
+        public virtual void CreateEntities(uint mapId)
         {
     
         }
 
-        public void OnCreateEntities(List<EntityList> entityLists)
+        public void CreateEntities(List<EntityList> entityLists)
         {
             foreach (EntityList entityList in entityLists)
             {
@@ -36,24 +37,18 @@ namespace Engine.Client.Ecsr.Entitas
         /// </summary>
         /// <param name="entityId"></param>
         /// <returns></returns>
-        public virtual List<Entity> OnCreateSelfEntityComponents(Guid entityId)
+        public virtual EntityList OnCreateSelfEntityComponents(Guid entityId)
         {
             return null;
         }
-        public void OnCreateEntities(PtFrame frame)
+        public void CreateEntities(string entityId, byte[] raw)
         {
-            using (ByteBuffer bytebuffer = new ByteBuffer(frame.ParamContent))
+            EntityList entityList = EntityList.Read(raw);
+            if(entityList != null)
             {
-                int count = bytebuffer.ReadInt32();
-                for (int i = 0; i < count; ++i)
-                {
-                    Type componentType = Type.GetType(bytebuffer.ReadString());
-                    AbstractComponent component = Activator.CreateInstance(componentType) as AbstractComponent;
-                    component.Deserialize(bytebuffer.ReadBytes());
-                    Entity entity = World.CreateEntity(new Guid(frame.EntityId));
-                    entity.AddComponent(component);
-                }
+                World.CreateEntities(entityList);
             }
         }
+        
     }
 }

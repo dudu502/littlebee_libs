@@ -1,4 +1,4 @@
-//Creation time:2024/7/19 17:43:52
+//Creation time:2024/7/24 11:30:45
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -10,26 +10,26 @@ public class PtFrame
 {
     public byte __tag__ { get;private set;}
 
-	public ushort Cmd{ get;private set;}
 	public string EntityId{ get;private set;}
-	public byte[] ParamContent{ get;private set;}
+	public PtComponentUpdaterList Updaters{ get;private set;}
+	public byte[] NewEntitiesRaw{ get;private set;}
 	   
-    public PtFrame SetCmd(ushort value){Cmd=value; __tag__|=1; return this;}
-	public PtFrame SetEntityId(string value){EntityId=value; __tag__|=2; return this;}
-	public PtFrame SetParamContent(byte[] value){ParamContent=value; __tag__|=4; return this;}
+    public PtFrame SetEntityId(string value){EntityId=value; __tag__|=1; return this;}
+	public PtFrame SetUpdaters(PtComponentUpdaterList value){Updaters=value; __tag__|=2; return this;}
+	public PtFrame SetNewEntitiesRaw(byte[] value){NewEntitiesRaw=value; __tag__|=4; return this;}
 	
-    public bool HasCmd(){return (__tag__&1)==1;}
-	public bool HasEntityId(){return (__tag__&2)==2;}
-	public bool HasParamContent(){return (__tag__&4)==4;}
+    public bool HasEntityId(){return (__tag__&1)==1;}
+	public bool HasUpdaters(){return (__tag__&2)==2;}
+	public bool HasNewEntitiesRaw(){return (__tag__&4)==4;}
 	
     public static byte[] Write(PtFrame data)
     {
         using(ByteBuffer buffer = new ByteBuffer())
         {
             buffer.WriteByte(data.__tag__);
-			if(data.HasCmd())buffer.WriteUInt16(data.Cmd);
 			if(data.HasEntityId())buffer.WriteString(data.EntityId);
-			if(data.HasParamContent())buffer.WriteBytes(data.ParamContent);
+			if(data.HasUpdaters())buffer.WriteBytes(PtComponentUpdaterList.Write(data.Updaters));
+			if(data.HasNewEntitiesRaw())buffer.WriteBytes(data.NewEntitiesRaw);
 			
             return buffer.GetRawBytes();
         }
@@ -41,9 +41,9 @@ public class PtFrame
         {
             PtFrame data = new PtFrame();
             data.__tag__ = buffer.ReadByte();
-			if(data.HasCmd())data.Cmd = buffer.ReadUInt16();
 			if(data.HasEntityId())data.EntityId = buffer.ReadString();
-			if(data.HasParamContent())data.ParamContent = buffer.ReadBytes();
+			if(data.HasUpdaters())data.Updaters = PtComponentUpdaterList.Read(buffer.ReadBytes());
+			if(data.HasNewEntitiesRaw())data.NewEntitiesRaw = buffer.ReadBytes();
 			
             return data;
         }       

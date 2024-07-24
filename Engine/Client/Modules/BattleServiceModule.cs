@@ -16,6 +16,7 @@ using Engine.Common.Protocol.Pt;
 using SevenZip.Buffer;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Engine.Client.Modules
 {
@@ -94,7 +95,7 @@ namespace Engine.Client.Modules
                         // let EntityInitializer to load all entitys
                         m_Logger.Info($"{nameof(OnResponseAllUserState)} Start LoadMap:{mapId}");
                         m_Context.GetSimulationController<DefaultSimulationController>().GetSimulation<DefaultSimulation>()
-                             .GetEntityWorld().GetEntityInitializer().OnCreateEntities(mapId);
+                             .GetEntityWorld().GetEntityInitializer().CreateEntities(mapId);
                         m_Logger.Info($"{nameof(OnResponseAllUserState)} MapLoaded:{mapId}");
                         RequestInitPlayer();
                         break;
@@ -110,14 +111,23 @@ namespace Engine.Client.Modules
                         DateTime now = DateTime.Now;                 
                         int entityRawCount = buffer.ReadInt32();
                         m_Logger.Info("BeReadyToEnterScene EntityRawCount:" + entityRawCount);
-                        List<EntityList> entities = new List<EntityList>(); 
-                        for(int i = 0; i < entityRawCount; ++i)
+                        EntityInitializer entityInitializer = m_Context.GetSimulationController<DefaultSimulationController>().GetSimulation<DefaultSimulation>()
+                             .GetEntityWorld().GetEntityInitializer();
+                        List<EntityList> entities = new List<EntityList>();
+                        entityInitializer.InitEntities = new List<EntityList>();
+                        for (int i = 0; i < entityRawCount; ++i)
                         {
-                            entities.Add(EntityList.Read(buffer.ReadBytes()));
+                            var bytes = buffer.ReadBytes();
+                            await Task.Run(() =>
+                            {
+                                entityInitializer.InitEntities.Add(EntityList.Read(bytes));
+                                entities.Add(EntityList.Read(bytes));
+                            });
                         }
 
-                        m_Context.GetSimulationController<DefaultSimulationController>().GetSimulation<DefaultSimulation>()
-                              .GetEntityWorld().GetEntityInitializer().OnCreateEntities(entities);
+                        // Create all init entities and components
+                        entityInitializer.CreateEntities(entities);
+
                         m_Context.GetSimulationController<DefaultSimulationController>().Start(now);
                         m_Logger.Info("Start Simulation");
                         EventDispatcher<LoadingType, LoadingEventId>.DispatchEvent(LoadingType.Loading, new LoadingEventId(LoadingEventId.BeReadyToEnterScene, 1));
@@ -163,9 +173,9 @@ namespace Engine.Client.Modules
         public void RequestInitPlayer()
         {
             // send self player's components
-            List<Entity> entities = m_Context.GetSimulationController<DefaultSimulationController>().GetSimulation<DefaultSimulation>()
+            EntityList entityList = m_Context.GetSimulationController<DefaultSimulationController>().GetSimulation<DefaultSimulation>()
                 .GetEntityWorld().GetEntityInitializer().OnCreateSelfEntityComponents(new Guid(m_RoomSession.EntityId));
-            EntityList entityList = new EntityList().SetElements(entities);
+            
             m_NetworkClient.Send((ushort)RequestMessageId.RS_InitPlayer,
                      new ByteBuffer().WriteString(m_RoomSession.EntityId).WriteBytes(EntityList.Write(entityList)).GetRawBytes());
         }

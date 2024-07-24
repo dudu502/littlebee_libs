@@ -19,10 +19,11 @@ public class PlayerAppearanceRenderer : AppearanceRenderer
         if (EntityId != Guid.Empty && World != null)
         {
             var result = World.ReadComponent<Appearance, Engine.Client.Ecsr.Components.Position>(EntityId);
-            transform.GetComponent<Renderer>().material.color = new Color(result.Item1.ShaderR / 255f, result.Item1.ShaderG / 255f, result.Item1.ShaderB / 255f);
-            transform.position = new Vector3(result.Item2.Pos.x.AsFloat(), 0, result.Item2.Pos.y.AsFloat());
-
-           
+            if (World.IsActive)
+            {
+                transform.GetComponent<Renderer>().material.color = new Color(result.Item1.ShaderR / 255f, result.Item1.ShaderG / 255f, result.Item1.ShaderB / 255f);
+                transform.position = new Vector3(result.Item2.Pos.x.AsFloat(), 0, result.Item2.Pos.y.AsFloat());
+            }
         }
     }
 }

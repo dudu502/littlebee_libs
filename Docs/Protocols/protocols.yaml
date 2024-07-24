@@ -9,12 +9,12 @@ pts:
         isArray: 1
   - className: PtFrame
     fields:
-      - type: uint16
-        name: Cmd
       - type: string
         name: EntityId
+      - type: PtComponentUpdaterList
+        name: Updaters
       - type: bytes
-        name: ParamContent
+        name: NewEntitiesRaw
   - className: PtFrames
     fields:
       - type: int32
@@ -88,10 +88,15 @@ pts:
         name: Version
       - type: EntityList
         name: Entities
-  - className: Input
+  - className: PtComponentUpdater
     fields:
-      - type: uint16
-        name: InputType
-      - type: byte[]
+      - type: string
+        name: ComponentClsName
+      - type: bytes
         name: ParamContent
+  - className: PtComponentUpdaterList
+    fields:
+      - type: PtComponentUpdater
+        name: Elements
+        isArray: 1
 

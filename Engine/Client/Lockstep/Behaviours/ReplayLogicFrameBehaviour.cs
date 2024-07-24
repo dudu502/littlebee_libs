@@ -25,7 +25,7 @@ namespace Engine.Client.Lockstep.Behaviours
         }
         public void Stop()
         {
-            
+            m_Frames = null;
         }
 
         public void Update()

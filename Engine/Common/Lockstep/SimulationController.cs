@@ -90,5 +90,16 @@ namespace Engine.Common.Lockstep
         {
             return (S)m_SimulationInstance;
         }
+
+        public Simulation GetSimulation()
+        {
+            return m_SimulationInstance;
+        }
+
+        public void DisposeSimulation()
+        {
+            m_SimulationInstance?.Dispose();
+            m_SimulationInstance = null;
+        }
     }
 }

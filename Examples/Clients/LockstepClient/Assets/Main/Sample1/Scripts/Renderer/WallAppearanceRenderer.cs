@@ -10,6 +10,7 @@ using UnityEngine.UIElements;
 public class WallAppearanceRenderer : AppearanceRenderer
 {
     // Start is called before the first frame update
+    public bool showLog;
     void Start()
     {
         
@@ -19,7 +20,11 @@ public class WallAppearanceRenderer : AppearanceRenderer
     void Update()
     {
         var result = World.ReadComponent<Appearance, Engine.Client.Ecsr.Components.Position, Wall>(EntityId);
-        transform.position = new Vector3(result.Item2.Pos.x.AsFloat(),0,result.Item2.Pos.y.AsFloat());
-        transform.localScale = new Vector3(result.Item3.Width.AsFloat(),1,result.Item3.Height.AsFloat());
+        if(showLog)Debug.LogWarning("Simulation World != null " + (World != null) +" active:"+ World.IsActive);
+        if (World.IsActive)
+        {
+            transform.position = new Vector3(result.Item2.Pos.x.AsFloat(), 0, result.Item2.Pos.y.AsFloat());
+            transform.localScale = new Vector3(result.Item3.Width.AsFloat(), 1, result.Item3.Height.AsFloat());
+        }
     }
 }
