@@ -17,7 +17,6 @@ public class MouseInputController : MonoBehaviour
         {
             RaycastHit hit;
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            Debug.LogWarning("Mouse Click");
             if (Physics.Raycast(ray, out hit, Mathf.Infinity, selectableLayer))
             {
                 SelectableObject selectable = hit.collider.GetComponent<SelectableObject>();

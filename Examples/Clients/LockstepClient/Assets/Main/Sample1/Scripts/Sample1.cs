@@ -70,7 +70,7 @@ public class Sample1 : Sample
 
         public override void CreateEntities(uint mapId)
         {
-            var path = Path.Combine(Context.Retrieve(Context.CLIENT).GetMeta(ContextMetaId.PERSISTENT_DATA_PATH), "map", mapId + ".bytes");
+            var path = Path.Combine(Context.Retrieve(Context.CLIENT).GetMeta(ContextMetaId.PERSISTENT_DATA_PATH), "map", mapId + ".map");
             byte[] bytes = File.ReadAllBytes(path);
             try
             {
@@ -152,7 +152,7 @@ public class Sample1 : Sample
     public override void DrawMap(uint mapId)
     {
         TSRandom tSRandom = TSRandom.New(GetHashCode());
-        var path = Path.Combine(Application.persistentDataPath, "map", mapId + ".bytes");
+        var path = Path.Combine(Application.persistentDataPath, "map", mapId + ".map");
         EntityList entityList = new EntityList()
             .SetElements(new List<Entity>());
         entityList.Elements.Add(new Entity()

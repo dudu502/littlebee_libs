@@ -86,10 +86,10 @@ public class Sample : MonoBehaviour
         ConnectIP_Port_Key("127.0.0.1", 9030, "gate-room");
     }
 
-    [TerminalCommand("create", "create_room()")]
-    public void CreateRoom()
+    [TerminalCommand("create", "create(uint mapId)")]
+    public void CreateRoom(uint mapId)
     {
-        MainContext.GetModule<GateServiceModule>().RequestCreateRoom(1);
+        MainContext.GetModule<GateServiceModule>().RequestCreateRoom(mapId);
     }
 
     [TerminalCommand("join", "join(roomId)")]
