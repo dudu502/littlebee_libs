@@ -149,9 +149,7 @@ public class Sample1 : Sample
         
     }
 
-
-    [TerminalCommand("drawmap","save map asset")]
-    public void DrawMap(uint mapId)
+    public override void DrawMap(uint mapId)
     {
         TSRandom tSRandom = TSRandom.New(GetHashCode());
         var path = Path.Combine(Application.persistentDataPath, "map", mapId + ".bytes");
@@ -179,8 +177,8 @@ public class Sample1 : Sample
 
         File.WriteAllBytes(path,PtMap.Write(ptMap));
     }
-    [TerminalCommand("playrep", "playrep(name)")]
-    public void PlayReplay(string name)
+
+    public override void PlayReplay(string name)
     {
         if (MainContext.GetSimulationController().State == SimulationController.RunState.Running)
             return;
@@ -189,6 +187,7 @@ public class Sample1 : Sample
         PtReplay replay = PtReplay.Read(result);
 
         DefaultReplaySimulationController simulationController = new DefaultReplaySimulationController();
+        MainContext.SetSimulationController(simulationController);
         simulationController.CreateSimulation(new DefaultSimulation(), new EntityWorld(),
             new ISimulativeBehaviour[]
             {
@@ -212,11 +211,10 @@ public class Sample1 : Sample
         entityWorld.GetEntityInitializer().CreateEntities(replay.InitEntities);
         simulationController.GetSimulation().GetBehaviour<ReplayLogicFrameBehaviour>().SetFrameIdxInfos(replay.Frames);
         simulationController.Start(DateTime.Now);
-      
     }
 
-    private void Update()
+    protected override void Update()
     {
-        Handler.Update();
+        base.Update();
     }
 }

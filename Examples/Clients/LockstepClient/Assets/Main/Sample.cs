@@ -131,7 +131,16 @@ public class Sample : MonoBehaviour
         rep.Frames = MainContext.GetSimulationController().GetSimulation<DefaultSimulation>().GetBehaviour<LogicFrameBehaviour>().GetFrames();
         File.WriteAllBytes(path,SevenZip.Helper.CompressBytesAsync(PtReplay.Write(rep)).Result);
     }
+    [TerminalCommand("drawmap", "save map asset")]
+    public virtual void DrawMap(uint mapId)
+    {
 
+    }
+    [TerminalCommand("playrep", "playrep(name)")]
+    public virtual void PlayReplay(string name)
+    {
+
+    }
     [TerminalCommand("stop","stop game or replay")]
     public void Stop()
     {
@@ -181,9 +190,9 @@ public class Sample : MonoBehaviour
     {
         MainContext.GetModule<GateServiceModule>().RequestLaunchGame();
     }
-    // Update is called once per frame
-    void Update()
+
+    protected virtual void Update()
     {
-  
+        Handler.Update();
     }
 }
