@@ -1,10 +1,6 @@
 ﻿using Engine.Client.Ecsr.Entitas;
 using Engine.Client.Ecsr.Renders;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
 
 public class AppearanceRenderer : MonoBehaviour, IEntityRender
