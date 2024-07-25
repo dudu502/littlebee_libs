@@ -298,6 +298,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   GameContainer: {fileID: 559774405}
+  ShowGuiDebug: 1
 --- !u!1 &1304598604
 GameObject:
   m_ObjectHideFlags: 0

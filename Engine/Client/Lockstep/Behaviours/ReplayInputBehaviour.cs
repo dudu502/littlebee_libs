@@ -25,7 +25,8 @@ namespace Engine.Client.Lockstep.Behaviours
         public void Update()
         {
             List<PtFrame> frames = replayLogic.GetFrameIdxInfoAtCurrentFrame();
-            //DefaultSimulation.GetEntityWorld().RestoreFrames(frames);
+            if(frames != null)
+                DefaultSimulation.GetEntityWorld().RestoreFrames(frames);
         }
     }
 }

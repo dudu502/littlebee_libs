@@ -23,12 +23,7 @@ namespace Engine.Common.Misc
             }
         }
 
-        private static ConcurrentQueue<CallBack> iNs;
-
-        public static void Initialize()
-        {
-            iNs = new ConcurrentQueue<CallBack>();
-        }
+        private static ConcurrentQueue<CallBack> iNs = new ConcurrentQueue<CallBack>();
 
         public static void Run(Action<object> action,object data)
         {

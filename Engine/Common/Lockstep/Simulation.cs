@@ -67,7 +67,7 @@ namespace Engine.Common.Lockstep
 
         public override string ToString()
         {
-            return $"ISimulativeBehaviour Count:{m_Behaviours.Count} [{string.Join(",",m_Behaviours.Select(b=>b.GetType().ToString()))}]";
+            return $"ISimulativeBehaviour Count:{m_Behaviours.Count} ";
         }
     }
 }

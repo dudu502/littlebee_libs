@@ -20,7 +20,10 @@ namespace Engine.Client.Lockstep
         {
             m_EntityWorld = world;
         }
-   
+        public override string ToString()
+        {
+            return base.ToString()+$" World:{m_EntityWorld}";
+        }
         public override void Dispose()
         {
             m_EntityWorld.Dispose();

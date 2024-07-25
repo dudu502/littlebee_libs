@@ -63,6 +63,7 @@ public class Sample : MonoBehaviour
 
     public Context MainContext;
     public Transform GameContainer;
+
     void Start()
     {
  
@@ -153,6 +154,26 @@ public class Sample : MonoBehaviour
         }
     }
 
+    protected GUIContent content = new GUIContent();
+    protected bool toggleValue;
+    private void OnGUI()
+    {
+        GUILayout.BeginArea(new Rect(Screen.width-120-24,24, 120, 24));
+        toggleValue = GUILayout.Toggle(toggleValue, "Enable Gui Info?");
+        GUILayout.EndArea(); 
+        if (toggleValue)
+        {
+            if (MainContext != null)
+            {
+                content.text = MainContext.ToString();
+                GUI.skin.label.fontSize = 16;
+                Vector2 size = GUI.skin.label.CalcSize(content);
+                float xPosition = Screen.width - size.x - 10;
+                float yPosition = 10;
+                GUI.Label(new Rect(xPosition, yPosition, size.x, size.y), content);
+            }
+        }
+    }
 
 
     [TerminalCommand("launch", "launch game")]

@@ -26,7 +26,7 @@ namespace Engine.Client.Ecsr.Entitas
         EntityInitializer m_EntityInitializer;
         FrameRawData m_CurrentFrameData;
         EntityRenderSpawner m_EntityRenderSpawner;
-        public bool IsActive;
+        public bool IsActive { private set; get; }
         public EntityWorld()
         {
             IsActive = true;
@@ -513,6 +513,14 @@ namespace Engine.Client.Ecsr.Entitas
             m_EntityRenderSpawner = null;
             m_CurrentFrameData = null;
             m_EntityInitializer = null;
+        }
+
+        public override string ToString()
+        {
+            int entityCount = 0;
+            if (m_CurrentFrameData != null && m_CurrentFrameData.EntityDict != null)
+                entityCount = m_CurrentFrameData.EntityDict.Count;
+            return $"Entity Count:{entityCount}";
         }
     }
 }

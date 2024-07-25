@@ -130,5 +130,23 @@ namespace Engine.Common
             }
             return this;
         }
+
+        public override string ToString()
+        {
+            string context = $"Context Id:{Name}\n";
+            foreach (var module in modules.Keys)
+            {
+                context += $"Module:{module.Name}\n";
+            }
+            foreach (var metaKey in metas.Keys)
+            {
+                context += $"Meta:[{metaKey}:{metas[metaKey]}]\n";
+            }
+            if (simulationController != null)
+            {
+                context += $"Sim:{simulationController}";
+            }
+            return context;
+        }
     }
 }

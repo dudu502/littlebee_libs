@@ -84,7 +84,7 @@ namespace Engine.Common.Lockstep
         }
         public override string ToString()
         {
-            return $"DefaultFrameMsLentgh:{c_DefaultFrameMsLength} Simulation:{m_SimulationInstance}";
+            return $"DefaultFrameMsLentgh:{c_DefaultFrameMsLength} Simulation:{m_SimulationInstance}\n";
         }
         public S GetSimulation<S>() where S:Simulation
         {

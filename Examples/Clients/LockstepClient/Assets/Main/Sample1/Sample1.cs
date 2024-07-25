@@ -102,16 +102,12 @@ public class GameEntityRenderSpawner : EntityRenderSpawner
     /// <param name="request"></param>
     protected override void CreateEntityRendererImpl(CreateEntityRendererRequest request)
     {
-        Debug.LogWarning("CreateEntityRendererImpl Simulation World hash " + request);
         base.CreateEntityRendererImpl(request);
         GameObject resPrefab = GameObject.Instantiate<GameObject>(Resources.Load<GameObject>(request.ResourcePath)); 
         if(resPrefab.TryGetComponent<AppearanceRenderer>(out var component))
         {
-            component.EntityId = request.EntityId;
-      
-            component.World = entityWorld;
-
-         
+            component.EntityId = request.EntityId;    
+            component.World = entityWorld;       
             resPrefab.transform.SetParent(gameContainer);
         }
     }
@@ -120,7 +116,6 @@ public class Sample1 : Sample
 {
     private void Awake()
     {
-        Handler.Initialize();
         MainContext = new Context(Context.CLIENT, new LiteNetworkClient(), new UnityLogger("Unity"));
         MainContext.SetMeta(ContextMetaId.STANDALONE_MODE_PORT, "50000")
                    .SetMeta(ContextMetaId.PERSISTENT_DATA_PATH, Application.persistentDataPath);
