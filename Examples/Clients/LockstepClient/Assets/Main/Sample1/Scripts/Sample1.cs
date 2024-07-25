@@ -129,8 +129,6 @@ public class Sample1 : Sample
                 new LogicFrameBehaviour(),
                 new RollbackBehaviour(),
                 new EntityBehaviour(),
-                new SelectionInputBehaviour(),
-                new ButtonInputBehaviour(),
                 new ComponentsBackupBehaviour(),
             },
             new IEntitySystem[]
