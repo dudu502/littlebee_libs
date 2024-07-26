@@ -63,5 +63,9 @@ namespace Engine.Client.Lockstep.Behaviours
             SendFrame(frameIdx);
             ClearFrameDataAt(frameIdx);
         }
+        public override string ToString()
+        {
+            return $"{nameof(ComponentsBackupBehaviour)}";
+        }
     }
 }

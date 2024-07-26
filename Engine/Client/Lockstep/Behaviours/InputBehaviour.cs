@@ -29,5 +29,9 @@ namespace Engine.Client.Lockstep.Behaviours
                 battleServiceModule.GetRoomSession().AddCurrentFrameCommand(logicFrameBehaviour.CurrentFrameIdx, frame);
             }
         }
+        public override string ToString()
+        {
+            return $"{nameof(InputBehaviour)}";
+        }
     }
 }

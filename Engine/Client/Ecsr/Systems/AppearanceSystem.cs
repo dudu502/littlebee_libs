@@ -18,7 +18,7 @@ namespace Engine.Client.Ecsr.Systems
             {
                 if(component.Status == Appearance.StatusDefault)
                 {
-                    component.Status = Appearance.StatusStartLoading;
+                    component.SetStatus(Appearance.StatusStartLoading);
                     World.GetRenderSpawner().CreateEntityRenderer(new Renders.CreateEntityRendererRequest(id,component.Status,component.Resource));
                 }
             });

@@ -21,7 +21,10 @@ namespace Engine.Client.Lockstep.Behaviours
         {
                 
         }
-
+        public override string ToString()
+        {
+            return $"{nameof(ReplayInputBehaviour)}";
+        }
         public void Update()
         {
             List<PtFrame> frames = replayLogic.GetFrameIdxInfoAtCurrentFrame();

@@ -135,7 +135,7 @@ namespace Engine.Server.Modules
                             }
                             break;
                         case UserState.Re_EnteredRoom:
-                            //user.Update(message.ExtraPeerId, UserState.Re_BeReadyToEnterScene);
+                            user.Update(message.ExtraPeerId, UserState.Re_BeReadyToEnterScene);
                             //PtStringList newUserEntityIds = new PtStringList().SetElement(new List<string>(Session.Users.Keys));
                             //newUserEntityIds.Element.Sort((a, b) => a.CompareTo(b));
                             //m_Server.Send((ushort)ResponseMessageId.RS_AllUserState, new ByteBuffer()
@@ -150,18 +150,8 @@ namespace Engine.Server.Modules
         void OnSyncClientKeyframes(PtMessagePackage message)
         {
             PtFrames collection = PtFrames.Read(message.Content);
-            //foreach(PtFrame frame in collection.KeyFrames)
-            //{
-                
-            //}
-
             Session.QueueKeyFrameCollection.Enqueue(collection);
         }
-
-        //byte[] AppendEntityParamsContent()
-        //{
-
-        //}
 
         async void OnHistoryKeyframes(PtMessagePackage message)
         {

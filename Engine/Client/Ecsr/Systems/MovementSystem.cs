@@ -11,7 +11,7 @@ namespace Engine.Client.Ecsr.Systems
         {
             World.ForEach<Movement, Position>((id, movement, Position) =>
             {
-                Position.Pos += movement.Direction * movement.Speed;
+                Position.SetPos(Position.Pos + movement.Direction * movement.Speed);
             });
         }
     }

@@ -4,7 +4,10 @@ namespace Engine.Client.Ecsr.Components
 {
     public class Counter : AbstractComponent
     {
-        public int Count;
+        private byte __tag__;
+        public int Count { get; private set; }
+        public Counter SetCount(int count) { Count = count; __tag__ |= 1; return this; }
+        public bool HasCount() => (__tag__ & 1) == 1;
         public Counter()
         {
 
@@ -12,12 +15,14 @@ namespace Engine.Client.Ecsr.Components
         public override AbstractComponent Clone()
         {
             Counter counter = new Counter();
+            counter.__tag__ = __tag__;
             counter.Count = Count;
             return counter;
         }
 
         public override void CopyFrom(AbstractComponent component)
         {
+            __tag__ = ((Counter)component).__tag__;
             Count = ((Counter)component).Count;
         }
 
@@ -25,7 +30,9 @@ namespace Engine.Client.Ecsr.Components
         {
             using(ByteBuffer buffer = new ByteBuffer(bytes)) 
             {
-                Count = buffer.ReadInt32();
+                __tag__ = buffer.ReadByte();
+                if(HasCount())
+                    Count = buffer.ReadInt32();
                 return this;
             }
         }
@@ -34,8 +41,9 @@ namespace Engine.Client.Ecsr.Components
         {
             using(ByteBuffer buffer = new ByteBuffer())
             {
-                return buffer.WriteInt32(Count)
-                    .GetRawBytes();
+                buffer.WriteByte(__tag__);
+                if (HasCount()) buffer.WriteInt32(Count);
+                return buffer.GetRawBytes();
             }
         }
     }

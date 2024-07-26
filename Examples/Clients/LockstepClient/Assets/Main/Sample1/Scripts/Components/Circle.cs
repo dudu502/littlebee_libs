@@ -5,11 +5,17 @@ namespace Engine.Client.Ecsr.Components
 {
     public class Circle : AbstractComponent
     {
-        public FP Radius;
-        public bool IsRigid;
+        byte __tag__;
+        public FP Radius { get; private set; }
+        public bool IsRigid { get; private set; }
+        public Circle SetRadius(FP radius) { Radius = radius; __tag__ |= 1; return this; }
+        public Circle SetIsRigid(bool value) { IsRigid = value; __tag__ |= 2; return this; }
+        public bool HasRadius() => (__tag__ & 1) == 1;
+        public bool HasIsRigid() => (__tag__ & 2) == 2;
         public override AbstractComponent Clone()
         {
             Circle c = new Circle();
+            c.__tag__ = __tag__;
             c.Radius = Radius;
             c.IsRigid = IsRigid;
             return c;
@@ -17,18 +23,27 @@ namespace Engine.Client.Ecsr.Components
 
         public override void CopyFrom(AbstractComponent component)
         {
+            __tag__ = ((Circle)component).__tag__;
             Radius = ((Circle)component).Radius;
             IsRigid = ((Circle)component).IsRigid;
         }
 
         public override AbstractComponent Deserialize(byte[] bytes)
         {
-            using(ByteBuffer buffer = new ByteBuffer(bytes))
+            using (ByteBuffer buffer = new ByteBuffer(bytes))
             {
-                FP r;
-                r._serializedValue = buffer.ReadInt64();
-                Radius = r;
-                IsRigid = buffer.ReadBool();
+                __tag__ = buffer.ReadByte();
+                if (HasRadius())
+                {
+                    FP r;
+                    r._serializedValue = buffer.ReadInt64();
+                    Radius = r;
+                }
+                if (HasIsRigid())
+                {
+                    IsRigid = buffer.ReadBool();
+                }
+           
                 return this;
             }
         }
@@ -37,9 +52,10 @@ namespace Engine.Client.Ecsr.Components
         {
             using (ByteBuffer buffer = new ByteBuffer())
             {
-                return buffer.WriteInt64(Radius._serializedValue)
-                    .WriteBool(IsRigid)
-                    .GetRawBytes();
+                buffer.WriteByte(__tag__);
+                if (HasRadius()) buffer.WriteInt64(Radius._serializedValue);
+                if (HasIsRigid()) buffer.WriteBool(IsRigid);
+                return buffer.GetRawBytes();
             }
         }
     }

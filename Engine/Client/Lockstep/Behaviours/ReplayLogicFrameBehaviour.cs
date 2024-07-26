@@ -17,6 +17,10 @@ namespace Engine.Client.Lockstep.Behaviours
         {
             m_Frames = infos;
         }
+        public override string ToString()
+        {
+            return $"{nameof(ReplayLogicFrameBehaviour)} FrameIdx:{CurrentFrameIdx}";
+        }
         public List<PtFrame> GetFrameIdxInfoAtCurrentFrame()
         {
             if (CurrentFrameIdx < m_Frames.Count)

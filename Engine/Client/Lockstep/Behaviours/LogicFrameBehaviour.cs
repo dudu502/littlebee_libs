@@ -70,7 +70,10 @@ namespace Engine.Client.Lockstep.Behaviours
                 frames.Add(frame);
             }
         }
-
+        public override string ToString()
+        {
+            return $"{nameof(LogicFrameBehaviour)} FrameIdx:{CurrentFrameIdx}";
+        }
         public void Stop()
         {
             

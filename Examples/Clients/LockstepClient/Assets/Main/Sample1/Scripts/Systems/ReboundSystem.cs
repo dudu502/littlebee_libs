@@ -15,9 +15,9 @@ public class ReboundSystem : IEntitySystem
         {
             var cmove = World.GetEntity(id).Components[typeof(Movement)] as Movement;
             var cPos = World.GetEntity(id).Components[typeof(Position)] as Position;
-            
+
             World.ForEach<Wall>((wId, wall) =>
-            {                
+            {
                 var wPos = World.GetEntity(wId).Components[typeof(Position)] as Position;
                 var wW = wall.Width;
                 var wH = wall.Height;
@@ -26,25 +26,25 @@ public class ReboundSystem : IEntitySystem
                 {
                     var d = cmove.Direction;
                     d.x *= -1;
-                    cmove.Direction = d;
+                    cmove.SetDirection(d);
                 }
                 if ((wall.Dir & 2) == 2 && (cPos.Pos.x - cRad) <= wPos.Pos.x + wW / 2)
                 {
                     var d = cmove.Direction;
                     d.x *= -1;
-                    cmove.Direction = d;
+                    cmove.SetDirection(d);
                 }
                 if ((wall.Dir & 4) == 4 && (cPos.Pos.y + cRad) >= wPos.Pos.y - wH / 2)
                 {
                     var d = cmove.Direction;
                     d.y *= -1;
-                    cmove.Direction = d;
+                    cmove.SetDirection(d);
                 }
                 if ((wall.Dir & 8) == 8 && (cPos.Pos.y - cRad) <= wPos.Pos.y + wH / 2)
                 {
                     var d = cmove.Direction;
                     d.y *= -1;
-                    cmove.Direction = d;
+                    cmove.SetDirection(d);
                 }
             });
         });

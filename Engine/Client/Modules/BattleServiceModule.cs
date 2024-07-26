@@ -124,7 +124,6 @@ namespace Engine.Client.Modules
                                 entities.Add(EntityList.Read(bytes));
                             });
                         }
-
                         // Create all init entities and components
                         entityInitializer.CreateEntities(entities);
 

@@ -18,6 +18,8 @@ using Engine.Common.Protocol.Pt;
 using System;
 using System.Collections.Generic;
 using TrueSync;
+using static TMPro.SpriteAssetUtilities.TexturePacker_JsonArray;
+
 
 public class Sample2 : Sample
 {
@@ -34,18 +36,22 @@ public class Sample2 : Sample
             result.SetElements(new List<Entity>());
 
             Entity entity = new Entity();
+            BasicAttributes attributes = new BasicAttributes();
+            attributes.SetEntityId(entityId.ToString());
+            attributes.SetSelectable(true);
+            entity.AddComponent(attributes);
             Appearance appearance = new Appearance();
-            appearance.Resource = "Player";
-            appearance.ShaderR = (byte)tSRandom.Next(0, 255);
-            appearance.ShaderG = (byte)tSRandom.Next(0, 255);
-            appearance.ShaderB = (byte)tSRandom.Next(0, 255);
+            appearance.SetResource("SelectablePlayer");
+            appearance.SetShaderR ( 255);
+            appearance.SetShaderG(255);
+            appearance.SetShaderB(255);
             entity.AddComponent(appearance);
             Position position = new Position();
-            position.Pos = new TrueSync.TSVector2(tSRandom.Next(-10f, 10f), tSRandom.Next(-7f, 7f));
+            position.SetPos(new TrueSync.TSVector2(tSRandom.Next(-10f, 10f), tSRandom.Next(-7f, 7f)));
             entity.AddComponent(position);
             Movement movement = new Movement();
-            movement.Speed = 0.2f;
-            movement.Direction = TSVector2.zero;
+            movement.SetSpeed(0.2f);
+            movement.SetDirection(TSVector2.zero);
             entity.AddComponent(movement);
             result.Elements.Add(entity);
 
@@ -164,10 +170,132 @@ public class Sample2 : Sample
 
     public override void PlayReplay(string name)
     {
-        base.PlayReplay(name);
+        if (MainContext.GetSimulationController().State == SimulationController.RunState.Running)
+            return;
+        string path = Path.Combine(Application.persistentDataPath, name + ".rep");
+        byte[] result = SevenZip.Helper.DecompressBytesAsync(File.ReadAllBytes(path)).Result;
+        PtReplay replay = PtReplay.Read(result);
+
+        DefaultReplaySimulationController simulationController = new DefaultReplaySimulationController();
+        MainContext.SetSimulationController(simulationController);
+        simulationController.CreateSimulation(new DefaultSimulation(), new EntityWorld(),
+            new ISimulativeBehaviour[]
+            {
+                new ReplayLogicFrameBehaviour(),
+                new ReplayInputBehaviour(),
+                new EntityBehaviour(),
+            },
+            new IEntitySystem[]
+            {
+                new AppearanceSystem(),
+                new MovementSystem(),
+            });
+        EntityWorld entityWorld = simulationController.GetSimulation<DefaultSimulation>().GetEntityWorld();
+        entityWorld.SetEntityInitializer(new SampleEntityInitializer(entityWorld));
+        entityWorld.SetEntityRenderSpawner(new SampleEntityRenderSpawner(entityWorld, GameContainer));
+        // load map
+        entityWorld.GetEntityInitializer().CreateEntities(replay.MapId);
+        // load init entities;
+        entityWorld.GetEntityInitializer().InitEntities = replay.InitEntities;
+        entityWorld.GetEntityInitializer().CreateEntities(replay.InitEntities);
+        simulationController.GetSimulation().GetBehaviour<ReplayLogicFrameBehaviour>().SetFrameIdxInfos(replay.Frames);
+        simulationController.Start(DateTime.Now);
     }
+
+    List<PtFrame> ptFrames = new List<PtFrame>();
     protected override void Update()
     {
         base.Update();
+
+        UpdateInputs();
+        
+    }
+    void UpdateInputs()
+    {
+        if (MainContext == null) return;
+        if (MainContext.GetSimulationController() == null) return;
+        if (MainContext.GetSimulationController().GetSimulation<DefaultSimulation>() == null) return;
+        if (MainContext.GetSimulationController().GetSimulation<DefaultSimulation>().GetEntityWorld() == null) return;
+        EntityWorld entityWorld = MainContext.GetSimulationController().GetSimulation<DefaultSimulation>().GetEntityWorld();
+        ptFrames.Clear();
+        if (Selection.SelectedIds.Count > 0)
+        {
+            bool hasCommand = false;
+            var dir = new TSVector2(0, 0);
+            if (Input.GetKeyDown(KeyCode.W))
+            {
+                dir.Set(0, 1);
+                hasCommand = true;
+            }
+
+            if (Input.GetKeyUp(KeyCode.W))
+            {
+                dir.Set(0, 0);
+                hasCommand = true;
+            }
+
+            if (Input.GetKeyDown(KeyCode.S))
+            {
+                dir.Set(0, -1);
+                hasCommand = true;
+            }
+            if (Input.GetKeyUp(KeyCode.S))
+            {
+                dir.Set(0, 0);
+                hasCommand = true;
+            }
+
+            if (Input.GetKeyDown(KeyCode.A))
+            {
+                dir.Set(-1, 0);
+                hasCommand = true;
+            }
+            if (Input.GetKeyUp(KeyCode.A))
+            {
+                dir.Set(0, 0);
+                hasCommand = true;
+            }
+
+            if (Input.GetKeyDown(KeyCode.D))
+            {
+                dir.Set(1, 0);
+                hasCommand = true;
+            }
+            if (Input.GetKeyUp(KeyCode.D))
+            {
+                dir.Set(0, 0);
+                hasCommand = true;
+            }
+
+            if (hasCommand)
+            {
+                Debug.LogWarning("hasCommand" + hasCommand);
+                foreach (Guid entityId in Selection.SelectedIds)
+                {
+                    var comps = entityWorld.ReadComponent<BasicAttributes, Movement>(entityId);
+                    if (comps.Item1 != null && comps.Item1.Selectable && comps.Item2 != null)
+                    {
+                        Movement deltaMovement = new Movement().SetDirection(dir).SetSpeed(0.4f);
+
+                        PtFrame frame = new PtFrame().SetEntityId(entityId.ToString());
+                        if (frame.Updaters == null)
+                            frame.SetUpdaters(new PtComponentUpdaterList().SetElements(new List<PtComponentUpdater>()));
+                        frame.Updaters.Elements.Add(new PtComponentUpdater()
+                                                                    .SetComponentClsName(typeof(Movement).AssemblyQualifiedName)
+                                                                    .SetParamContent(deltaMovement.Serialize()));
+                        ptFrames.Add(frame);
+                    }
+                }
+            }
+            if (ptFrames.Count > 0)
+            {
+                Debug.LogError("Send InputFrame");
+                foreach (var frame in ptFrames)
+                {
+                 
+                    Engine.Client.Lockstep.Behaviours.Data.Input.InputFrames.Enqueue(frame);
+                }              
+            }
+        }
     }
 }

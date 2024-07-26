@@ -32,6 +32,7 @@ public class Sample1 : Sample
 
         public override EntityList OnCreateSelfEntityComponents(Guid entityId)
         {
+            Debug.LogWarning("OnCreateSelfEntityComponents "+entityId.ToString());
             TSRandom tSRandom = TSRandom.New(GetHashCode());
             List<Entity> entities = new List<Entity>();
             EntityList result = new EntityList();
@@ -41,26 +42,27 @@ public class Sample1 : Sample
             for (int i = 0; i < 100; ++i)
             {
                 Entity entity = new Entity();
+                BasicAttributes attributes = new BasicAttributes();
+                attributes.SetEntityId(entityId.ToString());
+                entity.AddComponent(attributes);
                 Appearance appearance = new Appearance();
-                appearance.Resource = "Player";
-                appearance.ShaderR = (byte)tSRandom.Next(0, 255);
-                appearance.ShaderG = (byte)tSRandom.Next(0, 255);
-                appearance.ShaderB = (byte)tSRandom.Next(0, 255);
+                appearance.SetResource("Player");
+                appearance.SetShaderR((byte)tSRandom.Next(0, 255));
+                appearance.SetShaderG((byte)tSRandom.Next(0, 255));
+                appearance.SetShaderB((byte)tSRandom.Next(0, 255));
                 entity.AddComponent(appearance);
                 Circle circle = new Circle();
-                circle.IsRigid = true;
-                circle.Radius = 0.5f;
+                circle.SetIsRigid(true);
+                circle.SetRadius(0.5f);
                 entity.AddComponent(circle);
                 Position position = new Position();
-                position.Pos = new TrueSync.TSVector2(tSRandom.Next(-10f, 10f), tSRandom.Next(-7f, 7f));
+                position.SetPos(new TrueSync.TSVector2(tSRandom.Next(-10f, 10f), tSRandom.Next(-7f, 7f)));
                 entity.AddComponent(position);
 
                 Movement movement = new Movement();
-                movement.Speed = 1f * tSRandom.Next(0.1f, 0.5f);
-                movement.Direction = new TrueSync.TSVector2(0.1f * tSRandom.Next(-1f, 1f), 0.1f * tSRandom.Next(-1f, 1f));
+                movement.SetSpeed(tSRandom.Next(0.1f, 0.5f));
+                movement.SetDirection(new TrueSync.TSVector2(0.1f * tSRandom.Next(-1f, 1f), 0.1f * tSRandom.Next(-1f, 1f)));
                 entity.AddComponent(movement);
-
-
 
                 entities.Add(entity);
             }
@@ -154,21 +156,21 @@ public class Sample1 : Sample
         EntityList entityList = new EntityList()
             .SetElements(new List<Entity>());
         entityList.Elements.Add(new Entity()
-            .AddComponent(new Position() { Pos = new TSVector2(12,0)})
-            .AddComponent(new Wall() { Width = 0.2f,Height = 18,IsRigid=true,Dir = 1})
-            .AddComponent(new Appearance() { Resource = "Wall"}));
+            .AddComponent(new Position().SetPos(new TSVector2(12, 0)))
+            .AddComponent(new Wall().SetWidth(0.2f).SetHeight(18).SetIsRigid(true).SetDir(1))
+            .AddComponent(new Appearance().SetResource("Wall")));
         entityList.Elements.Add(new Entity()
-            .AddComponent(new Position() { Pos = new TSVector2(-12, 0) })
-            .AddComponent(new Wall() { Width = 0.2f, Height = 18, IsRigid = true, Dir = 2 })
-            .AddComponent(new Appearance() { Resource = "Wall" }));
+            .AddComponent(new Position().SetPos(new TSVector2(-12, 0)))
+            .AddComponent(new Wall().SetWidth(0.2f).SetHeight(18).SetIsRigid(true).SetDir(2))
+            .AddComponent(new Appearance().SetResource("Wall")));
         entityList.Elements.Add(new Entity()
-            .AddComponent(new Position() { Pos = new TSVector2(0, 9) })
-            .AddComponent(new Wall() { Width = 24f, Height = 0.2f, IsRigid = true, Dir = 4 })
-            .AddComponent(new Appearance() { Resource = "Wall" }));
+            .AddComponent(new Position().SetPos(new TSVector2(0, 9)))
+            .AddComponent(new Wall().SetWidth(24f).SetHeight(0.2f).SetIsRigid(true).SetDir(4))
+            .AddComponent(new Appearance().SetResource("Wall")));
         entityList.Elements.Add(new Entity()
-           .AddComponent(new Position() { Pos = new TSVector2(0, -9) })
-           .AddComponent(new Wall() { Width = 24f, Height = 0.2f, IsRigid = true, Dir = 8 })
-           .AddComponent(new Appearance() { Resource = "Wall" }));
+           .AddComponent(new Position().SetPos(new TSVector2(0, -9)))
+           .AddComponent(new Wall().SetWidth(24f).SetHeight(0.2f).SetIsRigid(true).SetDir(8))
+           .AddComponent(new Appearance().SetResource("Wall")));
 
         PtMap ptMap = new PtMap().SetVersion("0.0.1")
             .SetEntities(entityList);

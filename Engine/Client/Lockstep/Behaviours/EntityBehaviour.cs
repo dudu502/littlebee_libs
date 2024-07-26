@@ -51,5 +51,10 @@ namespace Engine.Client.Lockstep.Behaviours
             for (int i = 0; i < systemCount; ++i)
                 Systems[i].Execute();
         }
+
+        public override string ToString()
+        {
+            return $"{nameof(EntityBehaviour)} SystemCount:{Systems.Count}";
+        }
     }
 }

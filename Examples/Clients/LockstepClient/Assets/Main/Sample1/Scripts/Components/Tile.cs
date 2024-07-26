@@ -9,16 +9,21 @@ using TrueSync;
 
 public class Tile : AbstractComponent
 {
-    public TSVector2 Size;
+    byte __tag__;
+    public TSVector2 Size { get; private set; }
+    public Tile SetSize(TSVector2 size) { Size = size; __tag__|=1; return this; }
+    public bool HasSize()=>(__tag__&1)==1;
     public override AbstractComponent Clone()
     {
         Tile tile = new Tile();
+        tile.__tag__ = __tag__;
         tile.Size = Size;
         return tile;
     }
 
     public override void CopyFrom(AbstractComponent component)
     {
+        __tag__ = ((Tile)component).__tag__;
         Size = ((Tile)component).Size;
     }
 
@@ -26,10 +31,14 @@ public class Tile : AbstractComponent
     {
         using(ByteBuffer buffer = new ByteBuffer(bytes))
         {
-            FP x, y;
-            x._serializedValue = buffer.ReadInt64();
-            y._serializedValue = buffer.ReadInt64();
-            Size = new TSVector2(x,y);
+            __tag__ = buffer.ReadByte();
+            if (HasSize())
+            {
+                FP x, y;
+                x._serializedValue = buffer.ReadInt64();
+                y._serializedValue = buffer.ReadInt64();
+                Size = new TSVector2(x, y);
+            }
             return this;
         }
     }
@@ -38,9 +47,14 @@ public class Tile : AbstractComponent
     {
         using(ByteBuffer buffer = new ByteBuffer())
         {
-            return buffer.WriteInt64(Size.x._serializedValue)
-                .WriteInt64(Size.y._serializedValue)
-                .GetRawBytes();
+            buffer.WriteByte(__tag__);
+            if (HasSize())
+            {
+                buffer.WriteInt64(Size.x._serializedValue)
+                        .WriteInt64(Size.y._serializedValue);
+            }
+
+            return buffer.GetRawBytes();
         }
     }
 }

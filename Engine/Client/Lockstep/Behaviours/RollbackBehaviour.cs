@@ -36,7 +36,10 @@ namespace Engine.Client.Lockstep.Behaviours
                 }
             }
         }
-
+        public override string ToString()
+        {
+            return $"{nameof(RollbackBehaviour)}";
+        }
         bool RollImpl(PtFrames keyFrames)
         {
             if (keyFrames == null || keyFrames.FrameIdx == 0) return false;
