@@ -1,6 +1,6 @@
 # 帧同步开发框架
 
-这是一个基于netstandart2.0的帧同步游戏开发SDK，提供服务器，客户端部分。目前主要的代码示例用Unity编写客户端，netcore控制台程序为服务端。
+这是一个基于netstandart2.0的帧同步游戏开发SDK，提供服务器，客户端部分。目前主要的代码案例用Unity编写客户端，netcore控制台程序为服务端。
 
 ## 项目结构如下
 
@@ -132,7 +132,7 @@ static void Main(string[] args)
 - *必须设置的内置Meta数据，设置Gate服务端的端口*
 - *添加模块BattleModule，该模块处理帧同步的具体细节*
 
-客户端部分的代码也和服务端的类似，都是通过Context主类来设置的，下面是案例代码：
+客户端部分的代码也和服务端的类似，都是通过Context主类来设置的，下面是案例1代码：
 ```csharp
 void Awake(){
   MainContext = new Context(Context.CLIENT, new LiteNetworkClient(), new UnityLogger("Unity"));
@@ -160,11 +160,13 @@ void Awake(){
   entityWorld.SetEntityRenderSpawner(new GameEntityRenderSpawner(entityWorld,GameContainer));
 }
 ```
-这个项目引用了 https://github.com/omid3098/OpenTerminal 库用来显示测试命令方便调试API，按下键盘'`'打开命令行。
+这个案例项目引用了 https://github.com/omid3098/OpenTerminal 库用来显示测试命令方便调试API，按下键盘'`'打开命令行。
+### 案例1视频
 
 https://github.com/user-attachments/assets/75d00d10-824e-459d-87e1-5000da1ee7cf
 
-
+这个案例展示了多个实体在两个客户端中同步运行的结果。
+### 案例测试API
 | OpenTerminal命令   | SDK中的API   | 备注   |  
 |:--------|:---------|:--------|  
 |setuid   |  contextInst.SetMeta(ContextMetaId.USER_ID, uid); | 设置Context中的用户数据  |  
