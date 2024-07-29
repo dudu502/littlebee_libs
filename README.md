@@ -160,6 +160,19 @@ void Awake(){
   entityWorld.SetEntityRenderSpawner(new GameEntityRenderSpawner(entityWorld,GameContainer));
 }
 ```
+- *必须设置的内置Meta数据，设置程序数据目录*
+- *设置GateServiceModule，用于连接Gate服务端*
+- *设置BattleServiceModule，用于连接Battle服务端，帧同步的细节在这里定义*
+- *设置模拟器Simulation控制器，并在控制器内设置模拟器和ECSR配置*
+- *Behaviour设置*
+  - *（必须）逻辑帧号管理和处理*
+  - *（必须）回滚*
+  - *（必须）ECSR逻辑执行*
+  - *（必须）备份和发送*
+- *ECSR中S配置*
+  - *（可选）物体加载和现实系统*
+  - *（可选）移动系统*
+  - *（可选）反弹系统，可以在案例1视频中看到球与墙面的反弹*
 这个案例项目引用了 https://github.com/omid3098/OpenTerminal 库用来显示测试命令方便调试API，按下键盘'`'打开命令行。
 ### 案例1视频
 
