@@ -21,7 +21,6 @@ namespace Engine.Common
     public sealed class Context
     {
         public const string CLIENT = "client";
-        public const string EDITOR = "editor";
         public const string SERVER = "server";
 
         private static readonly Dictionary<string, Context> s_instances = new Dictionary<string, Context>();
