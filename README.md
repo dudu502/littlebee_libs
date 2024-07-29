@@ -132,6 +132,34 @@ static void Main(string[] args)
 - *必须设置的内置Meta数据，设置Gate服务端的端口*
 - *添加模块BattleModule，该模块处理帧同步的具体细节*
 
+客户端部分的代码也和服务端的类似，都是通过Context主类来设置的，下面是案例代码：
+```csharp
+void Awake(){
+  MainContext = new Context(Context.CLIENT, new LiteNetworkClient(), new UnityLogger("Unity"));
+  MainContext.SetMeta(ContextMetaId.STANDALONE_MODE_PORT, "50000")
+              .SetMeta(ContextMetaId.PERSISTENT_DATA_PATH, Application.persistentDataPath);
+  MainContext.SetModule(new GateServiceModule())
+              .SetModule(new BattleServiceModule());
+  DefaultSimulationController defaultSimulationController = new DefaultSimulationController();
+  MainContext.SetSimulationController(defaultSimulationController);
+  defaultSimulationController.CreateSimulation(new DefaultSimulation(),new EntityWorld(),
+      new ISimulativeBehaviour[] {
+          new LogicFrameBehaviour(),
+          new RollbackBehaviour(),
+          new EntityBehaviour(),
+          new ComponentsBackupBehaviour(),
+      },
+      new IEntitySystem[]
+      {
+          new AppearanceSystem(),
+          new MovementSystem(),
+          new ReboundSystem(),
+      });
+  EntityWorld entityWorld = defaultSimulationController.GetSimulation<DefaultSimulation>().GetEntityWorld();
+  entityWorld.SetEntityInitializer(new GameEntityInitializer(entityWorld));
+  entityWorld.SetEntityRenderSpawner(new GameEntityRenderSpawner(entityWorld,GameContainer));
+}
+```
 这个项目引用了 https://github.com/omid3098/OpenTerminal 库用来显示测试命令方便调试API，按下键盘'`'打开命令行。
 
 

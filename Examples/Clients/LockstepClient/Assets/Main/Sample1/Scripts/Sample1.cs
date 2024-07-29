@@ -126,7 +126,6 @@ public class Sample1 : Sample
                    .SetModule(new BattleServiceModule());
         DefaultSimulationController defaultSimulationController = new DefaultSimulationController();
         MainContext.SetSimulationController(defaultSimulationController);
-        // create a default simulation.
         defaultSimulationController.CreateSimulation(new DefaultSimulation(),new EntityWorld(),
             new ISimulativeBehaviour[] {
                 new LogicFrameBehaviour(),
