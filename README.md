@@ -24,16 +24,34 @@ public const string SERVER = "server";
 ```
 在构造方法里传入name来指定对应的Context，对应的获取方法：
 ```csharp
-Context.Retrieve(name)；
+Context.Retrieve(name);
 ```
 
 ```mermaid  
-classDiagram 
+classDiagram
+    class INetworkServer{
+      +UnconnectedSend(ushort messageId,byte[] data, IPEndPoint ep)
+      +Send(int clientId,ushort messageId,byte[] data)
+      +Send(int[] clientIds,ushort messageId,byte[] data)
+      +Send(ushort messageId,byte[] data)
+      +Run(int port)
+      +int GetActivePort()
+    }
+    class INetworkClient{
+      +Send(ushort messageId,byte[] data)
+      +Connect()
+      +Connect(string ip,int port,string key)
+      +Close()
+      int GetActivePort()
+    }
     class Context {  
         +INetworkServer Server  
         +INetworkClient Client  
         +ILogger Logger  
         +string name
+        +Context(string name,INetworkClient client,ILogger logger)
+        +Context(string name,INetworkServer server,ILogger logger)
+        +Context(string name,ILogger logger)
         +static Retrieve(string name)
         +Context SetSimulationController(SimulationController controller)
         +SimulationController GetSimulationController()
@@ -43,3 +61,18 @@ classDiagram
         +M GetModule<M>()
         +Context RemoveModule(Type type)
     }  
+```   
+ContextMetaId中定义的内置类型如下，通过Context.SetMeta和Context.GetMeta来存储和读取类型。
+```csharp
+public sealed class ContextMetaId
+{
+    public const string USER_ID = "user_id";
+    public const string SERVER_ADDRESS = "server_address";
+    public const string MAX_CONNECTION_COUNT = "max_connection_count";
+    public const string ROOM_MODULE_FULL_PATH = "room_module_full_path";
+    public const string STANDALONE_MODE_PORT = "standalone_mode_port";
+    public const string GATE_SERVER_PORT = "gate_server_port";
+    public const string SELECTED_ROOM_MAP_ID = "selected_room_map_id";
+    public const string PERSISTENT_DATA_PATH = "persistent_data_path";
+}
+```
