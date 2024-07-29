@@ -184,7 +184,7 @@ https://github.com/user-attachments/assets/75d00d10-824e-459d-87e1-5000da1ee7cf
 
 ### 案例2视频
 
-
+https://github.com/user-attachments/assets/66622bac-50d7-44ad-8afa-cac510a5132b
 
 这个案例展示用户可以控制物体运动，并且在多个客户端中都能同步物体运动的变化。
 
