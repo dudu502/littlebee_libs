@@ -76,7 +76,7 @@ public sealed class ContextMetaId
     public const string PERSISTENT_DATA_PATH = "persistent_data_path";
 }
 ```
-服务端代码案例
+### 服务端代码案例
 服务器分Gate和Battle两部分，如下是Gate服务端的代码案例：
 ```csharp
 const string TAG = "gate-room";
@@ -132,6 +132,7 @@ static void Main(string[] args)
 - *必须设置的内置Meta数据，设置Gate服务端的端口*
 - *添加模块BattleModule，该模块处理帧同步的具体细节*
 
+### 服务端代码案例
 客户端部分的代码也和服务端的类似，都是通过Context主类来设置的，下面是案例1代码：
 ```csharp
 void Awake(){
@@ -173,6 +174,7 @@ void Awake(){
   - *（可选）物体加载和现实系统*
   - *（可选）移动系统*
   - *（可选）反弹系统，可以在案例1视频中看到球与墙面的反弹*
+
 这个案例项目引用了 https://github.com/omid3098/OpenTerminal 库用来显示测试命令方便调试API，按下键盘'`'打开命令行。
 ### 案例1视频
 
