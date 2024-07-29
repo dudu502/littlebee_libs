@@ -18,23 +18,22 @@
 ## 说明
 ### API
 
-```markdown  
-@startuml  
-class Animal {  
-    +String name  
-    +int age  
-    +eat()  
-    +sleep()  
-}  
+```mermaid  
+classDiagram  
+    class Animal {  
+        +String name  
+        +int age  
+        +eat()  
+        +sleep()  
+    }  
 
-class Dog {  
-    +bark()  
-}  
+    class Dog {  
+        +bark()  
+    }  
 
-class Cat {  
-    +meow()  
-}  
+    class Cat {  
+        +meow()  
+    }  
 
-Animal <|-- Dog  
-Animal <|-- Cat  
-@enduml  
+    Animal <|-- Dog  
+    Animal <|-- Cat  
