@@ -19,21 +19,18 @@
 ### API
 
 ```mermaid  
-classDiagram  
-    class Animal {  
-        +String name  
-        +int age  
-        +eat()  
-        +sleep()  
+classDiagram 
+    class Context {  
+        +INetworkServer Server  
+        +INetworkClient Client  
+        +ILogger Logger  
+        +string name
+        +static Retrieve(string name)
+        +Context SetSimulationController(SimulationController controller)
+        +SimulationController GetSimulationController()
+        +GetMeta(string name,string defaultValue)
+        +SetMeta(string name,string value)
+        +Context SetModule(AbstractModule module)
+        +M GetModule<M>()
+        +Context RemoveModule(Type type)
     }  
-
-    class Dog {  
-        +bark()  
-    }  
-
-    class Cat {  
-        +meow()  
-    }  
-
-    Animal <|-- Dog  
-    Animal <|-- Cat  
