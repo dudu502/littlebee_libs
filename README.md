@@ -132,7 +132,7 @@ static void Main(string[] args)
 - *必须设置的内置Meta数据，设置Gate服务端的端口*
 - *添加模块BattleModule，该模块处理帧同步的具体细节*
 
-### 服务端代码案例
+### 客户端代码案例
 客户端部分的代码也和服务端的类似，都是通过Context主类来设置的，下面是案例1代码：
 ```csharp
 void Awake(){
@@ -218,3 +218,11 @@ https://github.com/user-attachments/assets/66622bac-50d7-44ad-8afa-cac510a5132b
 ![回放时间轴概图细节](https://github.com/dudu502/littlebee_libs/blob/main/Res/Timeline3.png)
 
 通过这几张图结合具体做什么类型的游戏，我们可以设置自定义System和Component来处理相关逻辑。
+
+
+# 项目任务  
+- [✔] SDK基本功能部分 
+- [✔] 两个简单案例
+- [TODO] 一个简单RTS游戏（包含主角，野怪，敌人）的打斗 
+- [×] 物理引擎同步
+ 
