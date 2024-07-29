@@ -198,3 +198,6 @@ https://github.com/user-attachments/assets/75d00d10-824e-459d-87e1-5000da1ee7cf
 |drawmap   | 请查看Sample.cs及其子类中DrawMap方法| 绘制地图  |  
 |saverep   | 请查看Sample.cs及其子类中SaveReplay方法| 保存回放（录像）  |  
 |playrep   | 请查看Sample.cs及其子类中PlayReplay方法| 保存回放（录像）  |
+
+## 帧同步模拟器
+下面是三张时间轴图
