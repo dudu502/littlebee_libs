@@ -224,6 +224,10 @@ https://github.com/user-attachments/assets/66622bac-50d7-44ad-8afa-cac510a5132b
 
 # 项目任务  
 - [x] SDK基本功能部分 
+  - [x] 一致性的API
+  - [x] 网络数据接收发送
+  - [x] 地图绘制保存和加载
+  - [x] 回放保存和加载重播
 - [x] 两个简单案例
 - [ ] 断线重连 (正在做)
 - [ ] 一个简单RTS游戏（包含主角，野怪，敌人）的打斗 (正在做)
@@ -231,6 +235,5 @@ https://github.com/user-attachments/assets/66622bac-50d7-44ad-8afa-cac510a5132b
  
 
 # 引用  
-https://github.com/omid3098/OpenTerminal 
-
-https://github.com/RevenantX/LiteNetLib 
+- https://github.com/omid3098/OpenTerminal 方便的调试命令插件
+- https://github.com/RevenantX/LiteNetLib UDP网络库
