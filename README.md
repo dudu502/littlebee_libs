@@ -162,6 +162,8 @@ void Awake(){
 ```
 这个项目引用了 https://github.com/omid3098/OpenTerminal 库用来显示测试命令方便调试API，按下键盘'`'打开命令行。
 
+[Sample1 Demo]https://github.com/user-attachments/assets/75d00d10-824e-459d-87e1-5000da1ee7cf
+
 
 | OpenTerminal命令   | SDK中的API   | 备注   |  
 |:--------|:---------|:--------|  
