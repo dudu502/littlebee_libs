@@ -224,5 +224,5 @@ https://github.com/user-attachments/assets/66622bac-50d7-44ad-8afa-cac510a5132b
 - [✔] SDK基本功能部分 
 - [✔] 两个简单案例
 - [TODO] 一个简单RTS游戏（包含主角，野怪，敌人）的打斗 
-- [×] 物理引擎同步
+- [x] 物理引擎同步
  
