@@ -17,6 +17,15 @@
 
 ## 说明
 ### API
+SDK中找到Context类，这是框架的主类，在客户端和服务端中都用这个类作为程序入口，默认Context的name是：
+```csharp
+public const string CLIENT = "client";
+public const string SERVER = "server";
+```
+在构造方法里传入name来指定对应的Context，对应的获取方法：
+```csharp
+Context.Retrieve(name)；
+```
 
 ```mermaid  
 classDiagram 
