@@ -77,7 +77,9 @@ public sealed class ContextMetaId
 }
 ```
 ### 服务端代码案例
-服务器分Gate和Battle两部分，如下是Gate服务端的代码案例：
+服务器分Gate和Battle两部分，Gate服务旨在提供用户一个大厅服务，让用户登录进来，每一个用户有一个不同的uid，这个uid目前就用不同的字符串区别测试就可以，正式项目应该是数据库中的guid以确保每一个用户的id是唯一的。在这个Gate服务中提供用户创建房间，加入房间，离开房间等有关组队的服务。当多用户在房间内开启战斗的时候Gate服务会开启Battle服务的新进程让并告知这些用户去进入Battle服务。每一个战斗都会开启一个新的Battle进程。在Battle服务中具体实现了同步关键帧给所有用户的服务。
+
+如下是Gate服务端的代码案例：
 ```csharp
 const string TAG = "gate-room";
 static void Main(string[] args)
