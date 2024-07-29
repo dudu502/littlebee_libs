@@ -3,6 +3,7 @@ using Engine.Client.Lockstep.Behaviours;
 using Engine.Client.Modules;
 using Engine.Client.Protocol.Pt;
 using Engine.Common;
+using Engine.Common.Event;
 using Engine.Common.Lockstep;
 using Engine.Common.Misc;
 using Engine.Common.Protocol.Pt;
@@ -61,13 +62,25 @@ public class Sample : MonoBehaviour
         }
     }
 
-    public Context MainContext;
-    public Transform GameContainer;
+    protected Context MainContext;
 
-    void Start()
+    public Transform GameContainer;
+    public uint MapId;
+
+    protected virtual void Awake()
     {
- 
+
     }
+    protected virtual void Start()
+    {
+        EventDispatcher<SimulationEventId, int>.AddListener(SimulationEventId.TheLastFrameHasBeenPlayed, OnLastFrameHasBeenPlayed);
+    }
+
+    protected virtual void OnLastFrameHasBeenPlayed(int frameIndex)
+    {
+        Debug.LogWarning("THE LAST FRAME HAS BEEN PLAYED @"+frameIndex);
+    }
+
     [TerminalCommand("setuid", "setuid(id)")]
     public void SetUserId(string uid)
     {
@@ -86,10 +99,10 @@ public class Sample : MonoBehaviour
         ConnectIP_Port_Key("127.0.0.1", 9030, "gate-room");
     }
 
-    [TerminalCommand("create", "create(uint mapId)")]
-    public void CreateRoom(uint mapId)
+    [TerminalCommand("create", "create")]
+    public void CreateRoom()
     {
-        MainContext.GetModule<GateServiceModule>().RequestCreateRoom(mapId);
+        MainContext.GetModule<GateServiceModule>().RequestCreateRoom(MapId);
     }
 
     [TerminalCommand("join", "join(roomId)")]
@@ -120,21 +133,25 @@ public class Sample : MonoBehaviour
         MainContext.GetModule<GateServiceModule>().RequestUpdateMap(roomId, mapId, maxPlayerCount);
     }
 
-    [TerminalCommand("saverep","saverep(mapId,name)")]
-    public void SaveReplay(uint mapId,string name)
+    [TerminalCommand("saverep","saverep(repname)")]
+    public void SaveReplay(string name)
     {
         string path = Path.Combine(Application.persistentDataPath, name + ".rep");
         PtReplay rep = new PtReplay();
-        rep.MapId = mapId;
+        rep.MapId = MapId;
         rep.Version = "0.0.1";
         rep.InitEntities = MainContext.GetSimulationController().GetSimulation<DefaultSimulation>().GetEntityWorld().GetEntityInitializer().InitEntities;
         rep.Frames = MainContext.GetSimulationController().GetSimulation<DefaultSimulation>().GetBehaviour<LogicFrameBehaviour>().GetFrames();
         File.WriteAllBytes(path,SevenZip.Helper.CompressBytesAsync(PtReplay.Write(rep)).Result);
     }
     [TerminalCommand("drawmap", "save map asset")]
-    public virtual void DrawMap(uint mapId)
+    public virtual void DrawMap()
     {
-
+        var mapDirectoryPath = Path.Combine(Application.persistentDataPath, "map");
+        if (!Directory.Exists(mapDirectoryPath))
+        {
+            Directory.CreateDirectory(mapDirectoryPath);
+        }
     }
     [TerminalCommand("playrep", "playrep(name)")]
     public virtual void PlayReplay(string name)

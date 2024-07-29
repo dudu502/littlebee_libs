@@ -30,6 +30,7 @@ public class Sample2 : Sample
         }
         public override EntityList OnCreateSelfEntityComponents(Guid entityId)
         {
+            Debug.LogError("OnCreateSelfEntityComponents" + entityId) ;
             TSRandom tSRandom = TSRandom.New(GetHashCode());
 
             EntityList result = new EntityList();
@@ -50,7 +51,7 @@ public class Sample2 : Sample
             position.SetPos(new TrueSync.TSVector2(tSRandom.Next(-10f, 10f), tSRandom.Next(-7f, 7f)));
             entity.AddComponent(position);
             Movement movement = new Movement();
-            movement.SetSpeed(0.2f);
+            movement.SetSpeed(0.01f);
             movement.SetDirection(TSVector2.zero);
             entity.AddComponent(movement);
             result.Elements.Add(entity);
@@ -101,8 +102,9 @@ public class Sample2 : Sample
         }
     }
 
-    void Awake()
+    protected override void Awake()
     {
+        base.Awake();
         MainContext = new Context(Context.CLIENT, new LiteNetworkClient(), new UnityLogger("Unity"));
         MainContext.SetMeta(ContextMetaId.STANDALONE_MODE_PORT, "50000")
                    .SetMeta(ContextMetaId.PERSISTENT_DATA_PATH, Application.persistentDataPath);
@@ -128,8 +130,9 @@ public class Sample2 : Sample
         entityWorld.SetEntityInitializer(new SampleEntityInitializer(entityWorld));
         entityWorld.SetEntityRenderSpawner(new SampleEntityRenderSpawner(entityWorld, GameContainer));
     }
-    void Start()
+    protected override void Start()
     {
+        base.Start();
         EventDispatcher<SelectionEvent, SelectableObject>.AddListener(SelectionEvent.Select, OnSelectObject);
         EventDispatcher<SelectionEvent, SelectableObject>.AddListener(SelectionEvent.Deselect, OnDeselectObject);
     }
@@ -148,6 +151,12 @@ public class Sample2 : Sample
         }
     }
 
+    private float selectedObjectSpeed = 0.03f;
+    [TerminalCommand("setspeed", "setspeed(spd) set selected object speed")]
+    public void SetSpeed(float speed)
+    {
+        selectedObjectSpeed = speed;
+    }
     void OnDeselectObject(SelectableObject deselectableObject)
     {
         if(deselectableObject != null)
@@ -159,10 +168,10 @@ public class Sample2 : Sample
         }
     }
 
-    public override void DrawMap(uint mapId)
+    public override void DrawMap()
     {
-        base.DrawMap(mapId);
-        var path = Path.Combine(Application.persistentDataPath, "map", mapId + ".map");
+        base.DrawMap();
+        var path = Path.Combine(Application.persistentDataPath, "map", MapId + ".map");
         EntityList entityList = new EntityList().SetElements(new List<Entity>());
         PtMap map = new PtMap().SetVersion("0.0.1").SetEntities(entityList);
         File.WriteAllBytes(path, PtMap.Write(map));
@@ -210,6 +219,8 @@ public class Sample2 : Sample
         UpdateInputs();
         
     }
+
+
     void UpdateInputs()
     {
         if (MainContext == null) return;
@@ -269,13 +280,13 @@ public class Sample2 : Sample
 
             if (hasCommand)
             {
-                Debug.LogWarning("hasCommand" + hasCommand);
+
                 foreach (Guid entityId in Selection.SelectedIds)
                 {
                     var comps = entityWorld.ReadComponent<BasicAttributes, Movement>(entityId);
                     if (comps.Item1 != null && comps.Item1.Selectable && comps.Item2 != null)
                     {
-                        Movement deltaMovement = new Movement().SetDirection(dir).SetSpeed(0.4f);
+                        Movement deltaMovement = new Movement().SetDirection(dir).SetSpeed(selectedObjectSpeed);
 
                         PtFrame frame = new PtFrame().SetEntityId(entityId.ToString());
                         if (frame.Updaters == null)
@@ -289,7 +300,7 @@ public class Sample2 : Sample
             }
             if (ptFrames.Count > 0)
             {
-                Debug.LogError("Send InputFrame");
+    
                 foreach (var frame in ptFrames)
                 {
                  

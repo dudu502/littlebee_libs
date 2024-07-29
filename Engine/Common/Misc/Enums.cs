@@ -9,4 +9,9 @@
         Re_EnteredRoom = 3,
         Re_BeReadyToEnterScene = 4,
     }
+
+    public enum SimulationEventId
+    {
+        TheLastFrameHasBeenPlayed,
+    }
 }

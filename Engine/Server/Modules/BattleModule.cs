@@ -179,7 +179,7 @@ namespace Engine.Server.Modules
                 collection.SetFrameIdx(currentFrameIdx);
                 flushCollection.KeyFrames.AddRange(collection.KeyFrames);
             }
-            flushCollection.KeyFrames.Sort();
+            //flushCollection.KeyFrames.Sort();
             Session.KeyFrameList.Elements.Add(flushCollection);
             if (flushCollection.KeyFrames.Count > 0)
                 m_Server.Send((ushort)ResponseMessageId.RS_SyncKeyframes, PtFrames.Write(flushCollection));

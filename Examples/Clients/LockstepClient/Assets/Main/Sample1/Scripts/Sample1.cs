@@ -116,8 +116,9 @@ public class Sample1 : Sample
             }
         }
     }
-    private void Awake()
+    protected override void Awake()
     {
+        base.Awake();
         MainContext = new Context(Context.CLIENT, new LiteNetworkClient(), new UnityLogger("Unity"));
         MainContext.SetMeta(ContextMetaId.STANDALONE_MODE_PORT, "50000")
                    .SetMeta(ContextMetaId.PERSISTENT_DATA_PATH, Application.persistentDataPath);
@@ -144,15 +145,11 @@ public class Sample1 : Sample
         entityWorld.SetEntityRenderSpawner(new GameEntityRenderSpawner(entityWorld,GameContainer));
     }
 
-    private void Start()
+    public override void DrawMap()
     {
-        
-    }
-
-    public override void DrawMap(uint mapId)
-    {
+        base.DrawMap();
         TSRandom tSRandom = TSRandom.New(GetHashCode());
-        var path = Path.Combine(Application.persistentDataPath, "map", mapId + ".map");
+        var path = Path.Combine(Application.persistentDataPath, "map", MapId + ".map");
         EntityList entityList = new EntityList()
             .SetElements(new List<Entity>());
         entityList.Elements.Add(new Entity()

@@ -1,4 +1,6 @@
-﻿using Engine.Common.Lockstep;
+﻿using Engine.Common.Event;
+using Engine.Common.Lockstep;
+using Engine.Common.Misc;
 using Engine.Common.Protocol.Pt;
 using System;
 using System.Collections.Generic;
@@ -34,7 +36,12 @@ namespace Engine.Client.Lockstep.Behaviours
 
         public void Update()
         {
-            ++CurrentFrameIdx;
+            if (CurrentFrameIdx < m_Frames.Count)
+            {
+                ++CurrentFrameIdx;
+                if (CurrentFrameIdx == m_Frames.Count)
+                    EventDispatcher<SimulationEventId, int>.DispatchEvent(SimulationEventId.TheLastFrameHasBeenPlayed, CurrentFrameIdx);
+            }
         }
     }
 }
