@@ -177,7 +177,6 @@ void Awake(){
   - *（可选）移动系统*
   - *（可选）反弹系统，可以在案例1视频中看到球与墙面的反弹*
 
-这个案例项目引用了 https://github.com/omid3098/OpenTerminal 库用来显示测试命令方便调试API，按下键盘'`'打开命令行。
 ### 案例1视频
 
 https://github.com/user-attachments/assets/75d00d10-824e-459d-87e1-5000da1ee7cf
@@ -191,6 +190,8 @@ https://github.com/user-attachments/assets/66622bac-50d7-44ad-8afa-cac510a5132b
 这个案例展示用户可以控制物体运动，并且在多个客户端中都能同步物体运动的变化。
 
 ### 案例测试API
+这个案例项目引用了 https://github.com/omid3098/OpenTerminal 库用来显示测试命令方便调试API，按下键盘 '`' 打开命令行。
+
 | OpenTerminal命令   | SDK中的API   | 备注   |  
 |:--------|:---------|:--------|  
 |setuid   |  contextInst.SetMeta(ContextMetaId.USER_ID, uid); | 设置Context中的用户数据  |  
@@ -217,8 +218,12 @@ https://github.com/user-attachments/assets/66622bac-50d7-44ad-8afa-cac510a5132b
 |PtMap|string Version<br>EntityList Entities|地图数据|
 |PtReplay|string Version<br>uint MapId<br>List<EntityList> InitEntities<br>List<List<PtFrame>> Frames|录像（回放）数据|
 
+## 录像（回放）机制
+录像（回放）机制是帧同步技术中最有特点的机制，也是一个绕不开的点。SDK中也有录像的保存加载。
+
 ## 帧同步模拟器
-下面是三张时间轴图
+一下三张图分别描述了帧同步模拟器在三种不同场景下的使用情况。
+
 下图表示客户端，服务端在同一时刻的大致行为，还有回放逻辑也是对应一直的行为。
 ![客户端服务端和回放时间轴概图](https://github.com/dudu502/littlebee_libs/blob/main/Res/Timeline1.png)
 
@@ -229,9 +234,6 @@ https://github.com/user-attachments/assets/66622bac-50d7-44ad-8afa-cac510a5132b
 ![回放时间轴概图细节](https://github.com/dudu502/littlebee_libs/blob/main/Res/Timeline3.png)
 
 通过这几张图结合具体做什么类型的游戏，我们可以设置自定义System和Component来处理相关逻辑。
-
-## 录像（回放）机制
-录像（回放）机制是帧同步技术中最有特点的机制，也是一个绕不开的点。SDK中也有录像的保存加载。
 
 # 项目任务  
 - [x] SDK基本功能部分 
