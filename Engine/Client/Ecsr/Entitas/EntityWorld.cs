@@ -1,16 +1,15 @@
 ﻿using Engine.Client.Ecsr.Components;
 using Engine.Client.Ecsr.Renders;
 using Engine.Client.Protocol.Pt;
-using Engine.Common.Misc;
 using Engine.Common.Protocol.Pt;
 using System;
 using System.Collections.Generic;
 
 namespace Engine.Client.Ecsr.Entitas
 {
-    public class EntityWorld : IDisposable
+    public sealed class EntityWorld : IDisposable
     {
-        public class FrameRawData
+        public sealed class FrameRawData
         {
             public SortedDictionary<Guid, Entity> EntityDict;
 
@@ -459,7 +458,6 @@ namespace Engine.Client.Ecsr.Entitas
             }
         }
         #endregion
-
 
         public FrameRawData CloneFrameData()
         {

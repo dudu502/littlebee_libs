@@ -7,8 +7,8 @@ namespace Engine.Client.Ecsr.Components
     {
         byte __tag__;
         public TSVector2 Pos { get; private set; } = new TSVector2();
-        public Position SetPos(TSVector2 pos) { Pos = pos;__tag__ |= 1;return this; }
-        public bool HasPos()=>(__tag__ & 1)==1;
+        public Position SetPos(TSVector2 pos) { Pos = pos; __tag__ |= 1; return this; }
+        public bool HasPos() => (__tag__ & 1) == 1;
         public Position()
         {
 
@@ -29,10 +29,10 @@ namespace Engine.Client.Ecsr.Components
 
         public override byte[] Serialize()
         {
-            using(ByteBuffer buffer = new ByteBuffer())
+            using (ByteBuffer buffer = new ByteBuffer())
             {
                 buffer.WriteByte(__tag__);
-                if(HasPos())
+                if (HasPos())
                 {
                     buffer.WriteInt64(Pos.x._serializedValue)
                         .WriteInt64(Pos.y._serializedValue);

@@ -2,11 +2,10 @@
 using Engine.Common.Protocol;
 using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace Engine.Client.Ecsr.Entitas
 {
-    public class Entity
+    public sealed class Entity
     {
         public Guid Id { private set; get; }
         public readonly Dictionary<Type, AbstractComponent> Components = new Dictionary<Type, AbstractComponent>();

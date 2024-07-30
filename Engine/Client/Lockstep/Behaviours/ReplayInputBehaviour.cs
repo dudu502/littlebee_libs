@@ -1,7 +1,5 @@
-﻿using Engine.Client.Ecsr.Entitas;
-using Engine.Common.Lockstep;
+﻿using Engine.Common.Lockstep;
 using Engine.Common.Protocol.Pt;
-using System;
 using System.Collections.Generic;
 
 namespace Engine.Client.Lockstep.Behaviours

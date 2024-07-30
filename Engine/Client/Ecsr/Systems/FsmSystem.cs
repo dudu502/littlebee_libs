@@ -1,6 +1,5 @@
 ﻿using Engine.Client.Ecsr.Components;
 using Engine.Client.Ecsr.Entitas;
-using System;
 
 namespace Engine.Client.Ecsr.Systems
 {
@@ -12,7 +11,7 @@ namespace Engine.Client.Ecsr.Systems
         {
             World.ForEach<FsmInfo>((id, fsm) =>
             {
-                
+                                
             });
         }
     }

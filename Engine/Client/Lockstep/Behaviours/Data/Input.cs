@@ -9,8 +9,8 @@ namespace Engine.Client.Lockstep.Behaviours.Data
         KeyboardInput,
     }
 
-    public class Input
+    public sealed class Input
     {
-        public static ConcurrentQueue<PtFrame> InputFrames = new ConcurrentQueue<PtFrame>();
+        public static readonly ConcurrentQueue<PtFrame> InputFrames = new ConcurrentQueue<PtFrame>();
     }
 }

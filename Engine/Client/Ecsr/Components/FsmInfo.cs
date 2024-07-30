@@ -6,10 +6,10 @@ namespace Engine.Client.Ecsr.Components
     {
         byte __tag__;
 
-        public byte InfoType { get; private set; }
-        public FsmInfo SetInfoType(byte type) { InfoType = type; __tag__ |= 1;return this; }
+        public uint InfoType { get; private set; }
+        public FsmInfo SetInfoType(uint type) { InfoType = type; __tag__ |= 1; return this; }
         public bool HasInfoType() => (__tag__ & 1) == 1;
-        public FsmInfo() 
+        public FsmInfo()
         {
 
         }
@@ -32,18 +32,18 @@ namespace Engine.Client.Ecsr.Components
             using (ByteBuffer buffer = new ByteBuffer(bytes))
             {
                 __tag__ = buffer.ReadByte();
-                if(HasInfoType())
-                    InfoType = buffer.ReadByte();
+                if (HasInfoType())
+                    InfoType = buffer.ReadUInt32();
                 return this;
             }
         }
 
         public override byte[] Serialize()
         {
-            using(ByteBuffer buffer = new ByteBuffer())
+            using (ByteBuffer buffer = new ByteBuffer())
             {
                 buffer.WriteByte(__tag__);
-                if (HasInfoType()) buffer.WriteByte(InfoType);
+                if (HasInfoType()) buffer.WriteUInt32(InfoType);
 
                 return buffer.GetRawBytes();
             }

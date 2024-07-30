@@ -1,5 +1,4 @@
-﻿
-namespace Engine.Client.Event
+﻿namespace Engine.Client.Event
 {
     public struct LoadingEventId
     {

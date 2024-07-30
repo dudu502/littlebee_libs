@@ -1,12 +1,7 @@
-﻿using Engine.Client.Ecsr.Components;
-using Engine.Client.Protocol.Pt;
-using Engine.Common.Protocol;
-using Engine.Common.Protocol.Pt;
+﻿using Engine.Client.Protocol.Pt;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Threading.Tasks;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace Engine.Client.Ecsr.Entitas
 {
@@ -49,7 +44,6 @@ namespace Engine.Client.Ecsr.Entitas
             {
                 World.CreateEntities(entityList);
             }
-        }
-        
+        }   
     }
 }
