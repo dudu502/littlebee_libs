@@ -136,10 +136,15 @@ namespace Engine.Server.Modules
                             break;
                         case UserState.Re_EnteredRoom:
                             user.Update(message.ExtraPeerId, UserState.Re_BeReadyToEnterScene);
-                            //PtStringList newUserEntityIds = new PtStringList().SetElement(new List<string>(Session.Users.Keys));
-                            //newUserEntityIds.Element.Sort((a, b) => a.CompareTo(b));
-                            //m_Server.Send((ushort)ResponseMessageId.RS_AllUserState, new ByteBuffer()
-                            //        .WriteByte((byte)UserState.Re_BeReadyToEnterScene).WriteString(user.UserId).WriteBytes(PtStringList.Write(newUserEntityIds)).GetRawBytes());
+                            List<byte[]> newUserEntityRawBytes = Session.GetUserEntityRawBytes();
+                            using (ByteBuffer nrb = new ByteBuffer())
+                            {
+                                nrb.WriteByte((byte)UserState.Re_BeReadyToEnterScene);
+                                nrb.WriteInt32(newUserEntityRawBytes.Count);
+                                for(int i = 0; i < newUserEntityRawBytes.Count; i++)
+                                    nrb.WriteBytes(newUserEntityRawBytes[i]);
+                                m_Server.Send((ushort)ResponseMessageId.RS_AllUserState,nrb.GetRawBytes());
+                            }
                             break;
                         default:
                             break;
@@ -147,6 +152,7 @@ namespace Engine.Server.Modules
                 }
             }
         }
+
         void OnSyncClientKeyframes(PtMessagePackage message)
         {
             PtFrames collection = PtFrames.Read(message.Content);

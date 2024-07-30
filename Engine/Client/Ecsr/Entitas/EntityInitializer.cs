@@ -19,9 +19,10 @@ namespace Engine.Client.Ecsr.Entitas
             World = world;
         }
 
-        public virtual void CreateEntities(uint mapId)
+        public virtual Task CreateEntities(uint mapId)
         {
-    
+            // need override
+            return Task.CompletedTask;
         }
 
         public void CreateEntities(List<EntityList> entityLists)

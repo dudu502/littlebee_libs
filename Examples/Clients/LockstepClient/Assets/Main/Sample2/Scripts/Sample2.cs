@@ -19,7 +19,7 @@ using System;
 using System.Collections.Generic;
 using TrueSync;
 using static TMPro.SpriteAssetUtilities.TexturePacker_JsonArray;
-
+using System.Threading.Tasks;
 
 public class Sample2 : Sample
 {
@@ -58,25 +58,28 @@ public class Sample2 : Sample
 
             return result;
         }
-        public override void CreateEntities(uint mapId)
+        public override Task CreateEntities(uint mapId)
         {
-            var path = Path.Combine(Context.Retrieve(Context.CLIENT).GetMeta(ContextMetaId.PERSISTENT_DATA_PATH), "map", mapId + ".map");
-            byte[] bytes = File.ReadAllBytes(path);
-            try
+            return Task.Run(() =>
             {
-                PtMap map = PtMap.Read(bytes);
-                if (map.HasEntities())
+                var path = Path.Combine(Context.Retrieve(Context.CLIENT).GetMeta(ContextMetaId.PERSISTENT_DATA_PATH), "map", mapId + ".map");
+                byte[] bytes = File.ReadAllBytes(path);
+                try
                 {
-                    foreach (Entity entity in map.Entities.Elements)
+                    PtMap map = PtMap.Read(bytes);
+                    if (map.HasEntities())
                     {
-                        World.CreateEntity(entity);
+                        foreach (Entity entity in map.Entities.Elements)
+                        {
+                            World.CreateEntity(entity);
+                        }
                     }
                 }
-            }
-            catch (Exception e)
-            {
-                Debug.LogWarning(e);
-            }
+                catch (Exception e)
+                {
+                    Debug.LogWarning(e);
+                }
+            });
         }
     }
     class SampleEntityRenderSpawner : EntityRenderSpawner

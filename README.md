@@ -62,7 +62,7 @@ classDiagram
         +Context RemoveModule(Type type)
     }  
 ```   
-ContextMetaId中定义的内置类型如下，通过Context.SetMeta和Context.GetMeta来存储和读取类型。
+ContextMetaId中定义的内置类型如下，这些类型会在SDK内部使用，用户还可以通过Context.SetMeta和Context.GetMeta来存储和读取自定义类型。
 ```csharp
 public sealed class ContextMetaId
 {
@@ -77,7 +77,7 @@ public sealed class ContextMetaId
 }
 ```
 ### 服务端代码案例
-服务器分Gate和Battle两部分，Gate服务旨在提供用户一个大厅服务，让用户登录进来，每一个用户有一个不同的uid，这个uid目前就用不同的字符串区别测试就可以，正式项目应该是数据库中的guid以确保每一个用户的id是唯一的。在这个Gate服务中提供用户创建房间，加入房间，离开房间等有关组队的服务。当多用户在房间内开启战斗的时候Gate服务会开启Battle服务的新进程让并告知这些用户去进入Battle服务。每一个战斗都会开启一个新的Battle进程。在Battle服务中具体实现了同步关键帧给所有用户的服务。
+服务器分Gate和Battle两部分，Gate服务旨在提供用户一个大厅服务，让用户登录进来，每一个用户有一个不同的uid，这个uid目前仅用不同的字符串区别测试就可以，正式项目应该是数据库中的guid以确保每一个用户的id是唯一的。在这个Gate服务中提供用户创建房间，加入房间，离开房间等有关组队的服务。当多用户在房间内开启战斗的时候Gate服务会开启Battle服务的新进程让并告知这些用户去进入Battle服务。每一个战斗都会开启一个新的Battle进程。在Battle服务中具体实现了同步关键帧给所有用户的服务。
 
 如下是Gate服务端的代码案例：
 ```csharp
@@ -182,7 +182,7 @@ void Awake(){
 
 https://github.com/user-attachments/assets/75d00d10-824e-459d-87e1-5000da1ee7cf
 
-这个案例展示了多个实体在两个客户端中同步运行的结果。物体不能被控制，因此这个案例也是最简单的案例，所有物体在初始化那一刻他们的运动随逻辑帧的变化都是确定的。
+这个案例展示了多个实体在两个客户端中同步运行的结果。在运行过程中物体不能被控制，因此这个案例也是最简单的案例，所有物体在初始化那一刻他们的运动随逻辑帧的变化都是确定的。
 
 ### 案例2视频
 

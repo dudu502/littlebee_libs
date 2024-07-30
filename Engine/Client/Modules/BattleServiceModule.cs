@@ -93,10 +93,8 @@ namespace Engine.Client.Modules
                         m_Logger.Info($"{nameof(OnResponseAllUserState)} MapId:{mapId}");
                         m_Context.SetMeta(ContextMetaId.SELECTED_ROOM_MAP_ID, mapId.ToString());
                         // let EntityInitializer to load all entitys
-                        m_Logger.Info($"{nameof(OnResponseAllUserState)} Start LoadMap:{mapId}");
-                        m_Context.GetSimulationController<DefaultSimulationController>().GetSimulation<DefaultSimulation>()
+                        await m_Context.GetSimulationController<DefaultSimulationController>().GetSimulation<DefaultSimulation>()
                              .GetEntityWorld().GetEntityInitializer().CreateEntities(mapId);
-                        m_Logger.Info($"{nameof(OnResponseAllUserState)} MapLoaded:{mapId}");
                         RequestInitPlayer();
                         break;
                     case UserState.Re_EnteredRoom:
@@ -104,7 +102,10 @@ namespace Engine.Client.Modules
                         string re_userId = buffer.ReadString();
                         if(re_userId == m_RoomSession.UserId)
                         {
-
+                            m_Context.SetMeta(ContextMetaId.SELECTED_ROOM_MAP_ID, re_mapId.ToString());
+                            await m_Context.GetSimulationController<DefaultSimulationController>().GetSimulation<DefaultSimulation>()
+                                .GetEntityWorld().GetEntityInitializer().CreateEntities(re_mapId);
+                            RequestInitPlayer();
                         }
                         break;
                     case UserState.BeReadyToEnterScene:
