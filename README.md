@@ -84,6 +84,7 @@ public sealed class ContextMetaId
 const string TAG = "gate-room";
 static void Main(string[] args)
 {
+    // 使用Context.SERVER 构造Context
     Context context = new Context(Context.SERVER, new LiteNetworkServer(TAG), new DefaultConsoleLogger(TAG))
         .SetMeta(ContextMetaId.ROOM_MODULE_FULL_PATH, "battle_dll_path.dll")// the battle project's build path.
         .SetMeta(ContextMetaId.MAX_CONNECTION_COUNT,"16")
@@ -108,6 +109,7 @@ static void Main(string[] args)
     uint mapId = 1;
     ushort playerNumber = 100;
     int gsPort = 9030;
+    // 一些从Gate服务中传入的参数
     if (args.Length > 0)
     {
         if (Array.IndexOf(args, "-key") > -1) key = args[Array.IndexOf(args, "-key") + 1];
@@ -138,29 +140,30 @@ static void Main(string[] args)
 客户端部分的代码也和服务端的类似，都是通过Context主类来设置的，下面是案例1代码：
 ```csharp
 void Awake(){
+  // 用Context.CLIENT构造Context，客户端的Context还需要指定SimulationController等，因此比服务端的Context稍微复杂一些
   MainContext = new Context(Context.CLIENT, new LiteNetworkClient(), new UnityLogger("Unity"));
   MainContext.SetMeta(ContextMetaId.STANDALONE_MODE_PORT, "50000")
               .SetMeta(ContextMetaId.PERSISTENT_DATA_PATH, Application.persistentDataPath);
-  MainContext.SetModule(new GateServiceModule())
-              .SetModule(new BattleServiceModule());
+  MainContext.SetModule(new GateServiceModule())      //大厅组队相关服务
+              .SetModule(new BattleServiceModule());  //帧同步服务
   DefaultSimulationController defaultSimulationController = new DefaultSimulationController();
   MainContext.SetSimulationController(defaultSimulationController);
   defaultSimulationController.CreateSimulation(new DefaultSimulation(),new EntityWorld(),
       new ISimulativeBehaviour[] {
-          new LogicFrameBehaviour(),
-          new RollbackBehaviour(),
-          new EntityBehaviour(),
-          new ComponentsBackupBehaviour(),
+          new LogicFrameBehaviour(),        //逻辑帧累加，保存关键帧等
+          new RollbackBehaviour(),          //网络关键帧回滚
+          new EntityBehaviour(),            //执行ECS中System
+          new ComponentsBackupBehaviour(),  //关键帧备份并同步至服务
       },
       new IEntitySystem[]
       {
-          new AppearanceSystem(),
-          new MovementSystem(),
-          new ReboundSystem(),
+          new AppearanceSystem(),           //外观显示系统
+          new MovementSystem(),             //自定义移动系统，计算所有Movement组件
+          new ReboundSystem(),              //自定义反弹系统
       });
   EntityWorld entityWorld = defaultSimulationController.GetSimulation<DefaultSimulation>().GetEntityWorld();
-  entityWorld.SetEntityInitializer(new GameEntityInitializer(entityWorld));
-  entityWorld.SetEntityRenderSpawner(new GameEntityRenderSpawner(entityWorld,GameContainer));
+  entityWorld.SetEntityInitializer(new GameEntityInitializer(entityWorld));       // 用于初始化和构造Entity
+  entityWorld.SetEntityRenderSpawner(new GameEntityRenderSpawner(entityWorld,GameContainer));     //ECSR中Renderer的构造
 }
 ```
 - *必须设置的内置Meta数据，设置程序数据目录*
@@ -190,7 +193,7 @@ https://github.com/user-attachments/assets/66622bac-50d7-44ad-8afa-cac510a5132b
 这个案例展示用户可以控制物体运动，并且在多个客户端中都能同步物体运动的变化。
 
 ### 案例测试API
-这个案例项目引用了 https://github.com/omid3098/OpenTerminal 库用来显示测试命令方便调试API，按下键盘 '`' 打开命令行。
+所有的案例项目均引用了 https://github.com/omid3098/OpenTerminal 库用来显示测试命令方便调试API，按下键盘 '`' 打开命令行。
 
 | OpenTerminal命令   | SDK中的API   | 备注   |  
 |:--------|:---------|:--------|  
