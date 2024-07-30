@@ -30,7 +30,7 @@ Context.Retrieve(name);
 ```mermaid  
 classDiagram
     class INetworkServer{
-      +UnconnectedSend(ushort messageId,byte[] data, IPEndPoint ep)
+      +Send(ushort messageId,byte[] data, IPEndPoint ep)
       +Send(int clientId,ushort messageId,byte[] data)
       +Send(int[] clientIds,ushort messageId,byte[] data)
       +Send(ushort messageId,byte[] data)
@@ -208,6 +208,15 @@ https://github.com/user-attachments/assets/66622bac-50d7-44ad-8afa-cac510a5132b
 |saverep   | 请查看Sample.cs及其子类中SaveReplay方法| 保存回放（录像）  |  
 |playrep   | 请查看Sample.cs及其子类中PlayReplay方法| 保存回放（录像）  |
 
+### 数据接口
+下面列出SDK中一些关键的数据结构，这些也可以成为协议结构体，这些数据可以序列化反序列化。
+| 类名   | 字段   | 备注   |
+|:--------|:---------|:--------|  
+|PtFrame|string EntityId<br>PtComponentUpdaterList Updater<br>byte[] NewEntitiesRaw|一个关键帧数据|
+|PtFrames|int FrameIdx<br>List<PtFrame> KeyFrames|在某一帧的所有关键帧集合|
+|PtMap|string Version<br>EntityList Entities|地图数据|
+|PtReplay|string Version<br>uint MapId<br>List<EntityList> InitEntities<br>List<List<PtFrame>> Frames|录像（回放）数据|
+
 ## 帧同步模拟器
 下面是三张时间轴图
 下图表示客户端，服务端在同一时刻的大致行为，还有回放逻辑也是对应一直的行为。
@@ -221,13 +230,15 @@ https://github.com/user-attachments/assets/66622bac-50d7-44ad-8afa-cac510a5132b
 
 通过这几张图结合具体做什么类型的游戏，我们可以设置自定义System和Component来处理相关逻辑。
 
+## 录像（回放）机制
+录像（回放）机制是帧同步技术中最有特点的机制，也是一个绕不开的点。SDK中也有录像的保存加载。
 
 # 项目任务  
 - [x] SDK基本功能部分 
-  - [x] 一致性的API
-  - [x] 网络数据接收发送
+  - [x] 大厅服务和帧同步服务
+  - [x] 基于二进制的协议
   - [x] 地图绘制保存和加载
-  - [x] 回放保存和加载重播
+  - [x] 录像（回放）保存和加载重播
 - [x] 两个简单案例
 - [x] 断线重连（可以在上述两个简单案例中测试，重连的客户端用相同的uid重新加入房间即可）
 - [ ] 一个简单RTS游戏（包含主角，野怪，敌人）的打斗 (正在做)
