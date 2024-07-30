@@ -209,8 +209,17 @@ https://github.com/user-attachments/assets/66622bac-50d7-44ad-8afa-cac510a5132b
 |saverep   | 请查看Sample.cs及其子类中SaveReplay方法| 保存回放（录像）  |  
 |playrep   | 请查看Sample.cs及其子类中PlayReplay方法| 保存回放（录像）  |
 
-### 数据接口
-下面列出SDK中一些关键的数据结构，这些也可以成为协议结构体，这些数据可以序列化反序列化。
+### 数据结构
+下面列出SDK中一些关键的数据结构，这些也可以成为协议结构体，这些可以序列化和反序列化并且支持字段可选数据结构在SDK中大量使用。可以通过Docs/Protocols/中的工具生成，形如：
+```csharp
+public class PtMyData
+{
+  //Fields
+  public static byte[] Write(PtMyData value){}
+  public static PtMyData Read(byte[] bytes){}
+}
+```
+
 | 类名   | 字段   | 备注   |
 |:--------|:---------|:--------|  
 |PtFrame|string EntityId<br>PtComponentUpdaterList Updater<br>byte[] NewEntitiesRaw|一个关键帧数据|
