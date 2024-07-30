@@ -80,7 +80,6 @@ namespace Engine.Common
         public Context SetSimulationController(SimulationController controller)
         {
             simulationController = controller;
-            Logger.Info("Context SetSimulationController " + controller);
             return this;
         }
         public T GetSimulationController<T>() where T : SimulationController
