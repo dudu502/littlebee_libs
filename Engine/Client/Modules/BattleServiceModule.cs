@@ -133,14 +133,26 @@ namespace Engine.Client.Modules
                         EventDispatcher<LoadingType, LoadingEventId>.DispatchEvent(LoadingType.Loading, new LoadingEventId(LoadingEventId.BeReadyToEnterScene, 1));
                         break;
                     case UserState.Re_BeReadyToEnterScene:
-                        //string re_beRdyUserId = buffer.ReadString();
-                        //if(re_beRdyUserId == m_RoomSession.UserId)
-                        //{
-                        //    PtStringList re_playerEntityIds = PtStringList.Read(buffer.ReadBytes());
-                        //    // 
-
-                        //    RequestHistoryKeyframes();
-                        //}
+                        string re_beRdyUserId = buffer.ReadString();
+                        if(re_beRdyUserId == m_RoomSession.UserId)
+                        {        
+                            EntityInitializer re_entityInitializer = m_Context.GetSimulationController<DefaultSimulationController>().GetSimulation<DefaultSimulation>()
+                                    .GetEntityWorld().GetEntityInitializer();
+                            List<EntityList> re_entities = new List<EntityList>();
+                            re_entityInitializer.InitEntities = new List<EntityList>();
+                            int re_entityRawCount = buffer.ReadInt32();
+                            for (int i = 0; i < re_entityRawCount; ++i)
+                            {
+                                var re_bytes = buffer.ReadBytes();
+                                await Task.Run(() =>
+                                {
+                                    re_entityInitializer.InitEntities.Add(EntityList.Read(re_bytes));
+                                    re_entities.Add(EntityList.Read(re_bytes));
+                                });
+                            }
+                            re_entityInitializer.CreateEntities(re_entities);
+                            RequestHistoryKeyframes();
+                        }
                         break;
                     default:
                         break;

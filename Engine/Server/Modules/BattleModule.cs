@@ -51,7 +51,7 @@ namespace Engine.Server.Modules
                     buffer.WriteInt32(m_Server.GetActivePort());
                     buffer.WriteString(userState.UserId);
                     buffer.WriteBool(Session.HasOnlinePlayer());
-                    m_Server.UnconnectedSend((ushort)RequestMessageId.UGS_RoomPlayerDisconnect, buffer.GetRawBytes(),
+                    m_Server.Send((ushort)RequestMessageId.UGS_RoomPlayerDisconnect, buffer.GetRawBytes(),
                         new System.Net.IPEndPoint(System.Net.IPAddress.Parse("127.0.0.1"), Convert.ToInt32(m_Context.GetMeta(ContextMetaId.GATE_SERVER_PORT,"9030"))));
                 }
             }
@@ -81,7 +81,10 @@ namespace Engine.Server.Modules
                     m_Server.Send(message.ExtraPeerId, (ushort)ResponseMessageId.RS_EnterRoom, new ByteBuffer()
                         .WriteString(userState.UserEntityId).WriteString(userId).GetRawBytes());
                     m_Server.Send((ushort)ResponseMessageId.RS_AllUserState, new ByteBuffer()
-                        .WriteByte((byte)UserState.Re_EnteredRoom).WriteUInt32(Convert.ToUInt32(m_Context.GetMeta(ContextMetaId.SELECTED_ROOM_MAP_ID))).GetRawBytes());
+                        .WriteByte((byte)UserState.Re_EnteredRoom)
+                        .WriteUInt32(Convert.ToUInt32(m_Context.GetMeta(ContextMetaId.SELECTED_ROOM_MAP_ID)))
+                        .WriteString(userState.UserId)
+                        .GetRawBytes());
                 }
             }
         }
@@ -140,6 +143,7 @@ namespace Engine.Server.Modules
                             using (ByteBuffer nrb = new ByteBuffer())
                             {
                                 nrb.WriteByte((byte)UserState.Re_BeReadyToEnterScene);
+                                nrb.WriteString(user.UserId);
                                 nrb.WriteInt32(newUserEntityRawBytes.Count);
                                 for(int i = 0; i < newUserEntityRawBytes.Count; i++)
                                     nrb.WriteBytes(newUserEntityRawBytes[i]);

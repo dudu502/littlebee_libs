@@ -39,7 +39,7 @@ namespace Engine.Server.Network
                 byte[] raw = reader.GetRemainingBytes();
                 PtMessagePackage package = PtMessagePackage.Read(raw);
                 package.ExtraPeerId = peer.Id;
-                Context.Retrieve(Context.SERVER).Logger.Info($"NetworkReceiveEvent id:{peer.Id} messageId:{package.MessageId}");
+                Context.Retrieve(Context.SERVER).Logger.Info($"NetworkReceiveEvent id:{peer.Id} messageId:{(RequestMessageId)package.MessageId}");
                 EventDispatcher<RequestMessageId, PtMessagePackage>
                     .DispatchEvent((RequestMessageId)package.MessageId, package);
                 reader.Recycle();
@@ -48,7 +48,7 @@ namespace Engine.Server.Network
             {
                 byte[] raw = reader.GetRemainingBytes();
                 PtMessagePackage package = PtMessagePackage.Read(raw);
-                Context.Retrieve(Context.SERVER).Logger.Info($"NetworkReceiveUnconnectedEvent ep:{ep} messageId:{package.MessageId}");
+                Context.Retrieve(Context.SERVER).Logger.Info($"NetworkReceiveUnconnectedEvent ep:{ep} messageId:{(RequestMessageId)package.MessageId}");
                 EventDispatcher<RequestMessageId, PtMessagePackage>
                     .DispatchEvent((RequestMessageId)package.MessageId, package);
                 reader.Recycle();
@@ -72,7 +72,7 @@ namespace Engine.Server.Network
         public void Send(int clientId, ushort messageId, byte[] data)
         {
             byte[] raw = PtMessagePackage.Write(PtMessagePackage.Build(messageId, data));
-            Context.Retrieve(Context.SERVER).Logger.Info($"Send clientId:{clientId} messageId:{messageId} isInPeerList:{manager.ConnectedPeerList.Find(i => i.Id == clientId) != null}");
+            Context.Retrieve(Context.SERVER).Logger.Info($"Send clientId:{clientId} messageId:{(ResponseMessageId)messageId} isInPeerList:{manager.ConnectedPeerList.Find(i => i.Id == clientId) != null}");
             for (int i = 0; i < manager.ConnectedPeerList.Count; ++i)
             {
                 NetPeer netPeer = manager.ConnectedPeerList[i];
@@ -100,7 +100,7 @@ namespace Engine.Server.Network
             return manager.LocalPort;
         }
 
-        public void UnconnectedSend(ushort messageId, byte[] data, IPEndPoint endPoint)
+        public void Send(ushort messageId, byte[] data, IPEndPoint endPoint)
         {
             manager.SendUnconnectedMessage(PtMessagePackage.Write(PtMessagePackage.Build(messageId, data)), endPoint);
         }

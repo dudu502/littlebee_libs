@@ -32,8 +32,9 @@ public class Sample1 : Sample
 
         public override EntityList OnCreateSelfEntityComponents(Guid entityId)
         {
+            int theSeed = entityId.GetHashCode(); //短线重连构造自己物体时候需要使用相同的随机数种子
             Debug.LogWarning("OnCreateSelfEntityComponents "+entityId.ToString());
-            TSRandom tSRandom = TSRandom.New(GetHashCode());
+            TSRandom tSRandom = TSRandom.New(theSeed);
             List<Entity> entities = new List<Entity>();
             EntityList result = new EntityList();
             result.SetElements(entities);
@@ -150,7 +151,8 @@ public class Sample1 : Sample
     public override void DrawMap()
     {
         base.DrawMap();
-        TSRandom tSRandom = TSRandom.New(GetHashCode());
+        int seed = GetHashCode();
+        TSRandom tSRandom = TSRandom.New(seed);
         var path = Path.Combine(Application.persistentDataPath, "map", MapId + ".map");
         EntityList entityList = new EntityList()
             .SetElements(new List<Entity>());
