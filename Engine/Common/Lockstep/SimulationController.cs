@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Threading;
-using System.Threading.Tasks;
-using static Engine.Common.Lockstep.SimulationController;
 
 namespace Engine.Common.Lockstep
 {
@@ -43,10 +41,10 @@ namespace Engine.Common.Lockstep
         {
             m_CurrentDateTime = startDateTime;
             m_SimulationInstance.Start();
-            for(int i=0; i<history_keyframes_count; i++)
+            for (int i = 0; i < history_keyframes_count; i++)
             {
                 m_SimulationInstance.Run();
-                process?.Invoke(1f*i/history_keyframes_count);
+                process?.Invoke(1f * i / history_keyframes_count);
             }
             State = RunState.Running;
             m_RunnerThread = new Thread(Run);

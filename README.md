@@ -148,6 +148,7 @@ void Awake(){
               .SetMeta(ContextMetaId.PERSISTENT_DATA_PATH, Application.persistentDataPath);
   MainContext.SetModule(new GateServiceModule())      //大厅组队相关服务
               .SetModule(new BattleServiceModule());  //帧同步服务
+  // 构造模拟器控制器，SDK提供了一个Default版本的控制器，一般情况下用Default就可以了
   DefaultSimulationController defaultSimulationController = new DefaultSimulationController();
   MainContext.SetSimulationController(defaultSimulationController);
   defaultSimulationController.CreateSimulation(new DefaultSimulation(),new EntityWorld(),
@@ -257,7 +258,10 @@ public class PtMyData
   - [x] 基于二进制的协议
   - [x] 地图绘制保存和加载
   - [x] 录像（回放）保存和加载重播
-- [x] 两个简单案例
+  - [x] 会派发各阶段的加载事件，在案例中也做了进度条显示
+- [x] 两个帧同步的简单案例
+  - [x] 案例1：上百个物体与四个墙面碰撞
+  - [x] 案例2：多用户对物体的控制
 - [x] 断线重连（可以在上述两个简单案例中测试，重连的客户端用相同的uid重新加入房间即可）
 - [ ] 一个简单RTS游戏（包含主角，野怪，敌人）的打斗 (正在做)
 - [ ] 物理引擎同步（暂无计划）
