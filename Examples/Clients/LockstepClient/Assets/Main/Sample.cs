@@ -1,3 +1,4 @@
+using Engine.Client.Event;
 using Engine.Client.Lockstep;
 using Engine.Client.Lockstep.Behaviours;
 using Engine.Client.Modules;
@@ -13,6 +14,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using UnityEditor;
 using UnityEngine;
 
 public class Sample : MonoBehaviour
@@ -74,6 +76,7 @@ public class Sample : MonoBehaviour
     protected virtual void Start()
     {
         EventDispatcher<SimulationEventId, int>.AddListener(SimulationEventId.TheLastFrameHasBeenPlayed, OnLastFrameHasBeenPlayed);
+        EventDispatcher<LoadingType, LoadingEventId>.AddListener(LoadingType.Loading, OnLoading);
     }
 
     protected virtual void OnLastFrameHasBeenPlayed(int frameIndex)
@@ -199,8 +202,31 @@ public class Sample : MonoBehaviour
                 GUI.Label(new Rect(xPosition, yPosition, size.x, size.y), content);
             }
         }
+
+        OnGuiLoading();
+
     }
 
+    void OnGuiLoading()
+    {
+        if (loadingEventId.LoadingType != LoadingEventId.None)
+        {
+            float barWidth = Screen.width;
+            float barHeight = 20;
+            Rect progressBarRect = new Rect(0, Screen.height - barHeight - 2, barWidth, barHeight);
+
+            GUI.color = Color.gray;
+            GUI.Box(progressBarRect, "");
+
+            Rect filledBarRect = new Rect(0, Screen.height - barHeight - 2, barWidth * loadingEventId.Progress, barHeight);
+            GUI.color = Color.green;
+            GUI.Box(filledBarRect, "");
+
+            GUI.color = Color.white;
+
+            GUI.Label(progressBarRect, $"{loadingEventId.Progress * 100:0}% Complete", GUI.skin.label);
+        }
+    }
 
     [TerminalCommand("launch", "launch game")]
     public void Launch()
@@ -208,8 +234,14 @@ public class Sample : MonoBehaviour
         MainContext.GetModule<GateServiceModule>().RequestLaunchGame();
     }
 
+    LoadingEventId loadingEventId = new LoadingEventId(LoadingEventId.None, 0);
+    private void OnLoading(LoadingEventId eId)
+    {
+        loadingEventId = eId;
+    }
+
     protected virtual void Update()
     {
-        Handler.Update();
+        Handler.Update();   
     }
 }

@@ -11,6 +11,8 @@
 
         public const byte SynchronizingKeyFramesCompleted = 7;
         public const byte BeReadyToEnterScene = 8;
+
+        public const byte None = byte.MaxValue;
         public byte LoadingType;
         public float Progress;
         public LoadingEventId(byte type,float progress)
