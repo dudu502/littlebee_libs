@@ -17,7 +17,7 @@
 
 ## 说明
 ### API
-SDK中找到Context类，这是框架的主类，在客户端和服务端中都用这个类作为程序入口，默认Context的name是：
+SDK中找到Context类，这是框架的主类，这个类很重要它是整个SDK的入口，在客户端和服务端中都用这个类作为程序入口，都是相似API的用法，默认Context的name分为服务端和客户端：
 ```csharp
 public const string CLIENT = "client";
 public const string SERVER = "server";
@@ -26,7 +26,9 @@ public const string SERVER = "server";
 ```csharp
 Context.Retrieve(name);
 ```
+在SDK内或自定义游戏中均可以通过上述的方法获取Context对象。再通过Context对象可以方便获取其他对象和数据。
 
+这是Context的类关系图，Context中包含SDK所有提供给开发者的功能模块入口。
 ```mermaid  
 classDiagram
     class INetworkServer{
@@ -234,7 +236,9 @@ public class PtMyData
 录像（回放）机制是帧同步技术中最有特点的机制，也是一个绕不开的点。SDK中也有录像的保存加载。
 
 ## 帧同步模拟器
-一下三张图分别描述了帧同步模拟器在三种不同场景下的使用情况。
+帧同步模拟器是SDK中执行帧同步的关键部分，重点需要不同设备在启动后经过一段时间后所有的设备都能保持一致的帧数，这就需要在每次tick的时候通过DateTime校准，要做到这点需要解决本地时间流逝和逻辑TICK之间的关系。详细代码可以打开[SimulationController.cs](https://github.com/dudu502/littlebee_libs/blob/main/Engine/Common/Lockstep/SimulationController.cs) 文件查看。
+
+以下三张图分别描述了帧同步模拟器在三种不同场景下的使用情况。
 
 下图表示客户端，服务端在同一时刻的大致行为，还有回放逻辑也是对应一致的行为。
 ![客户端服务端和回放时间轴概图](https://github.com/dudu502/littlebee_libs/blob/main/Res/Timeline1.png)
