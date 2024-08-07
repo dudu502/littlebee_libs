@@ -2,11 +2,17 @@ using_ns:
   - Engine.Common.Protocol
 ns: Engine.Common.Protocol.Pt
 pts:
-  - className: PtStringList
-    fields:
-      - type: string
-        name: Element
+  - className: PtI32Points
+    fields: 
+      - type: PtI32Point
+        name: Elements
         isArray: 1
+  - className: PtI32Point
+    fields:
+      - type: int32
+        name: X
+      - type: int32
+        name: Y
   - className: PtFrame
     fields:
       - type: string

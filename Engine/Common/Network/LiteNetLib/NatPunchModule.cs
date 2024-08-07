@@ -1,3 +1,4 @@
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
@@ -77,8 +78,8 @@ namespace LiteNetLib
         }
 
         private readonly NetSocket _socket;
-        private readonly Queue<RequestEventData> _requestEvents = new Queue<RequestEventData>();
-        private readonly Queue<SuccessEventData> _successEvents = new Queue<SuccessEventData>();
+        private readonly ConcurrentQueue<RequestEventData> _requestEvents = new ConcurrentQueue<RequestEventData>();
+        private readonly ConcurrentQueue<SuccessEventData> _successEvents = new ConcurrentQueue<SuccessEventData>();
         private readonly NetDataReader _cacheReader = new NetDataReader();
         private readonly NetDataWriter _cacheWriter = new NetDataWriter();
         private readonly NetPacketProcessor _netPacketProcessor = new NetPacketProcessor(MaxTokenLength);
@@ -143,24 +144,22 @@ namespace LiteNetLib
         {
             if (_natPunchListener == null || (_successEvents.Count == 0 && _requestEvents.Count == 0))
                 return;
-            lock (_successEvents)
+           
+            while (_successEvents.Count > 0)
             {
-                while (_successEvents.Count > 0)
+                if(_successEvents.TryDequeue(out var evt))
                 {
-                    var evt = _successEvents.Dequeue();
                     _natPunchListener.OnNatIntroductionSuccess(
-                        evt.TargetEndPoint, 
-                        evt.Type,
-                        evt.Token);
+                              evt.TargetEndPoint,
+                              evt.Type,
+                              evt.Token);
                 }
             }
-            lock (_requestEvents)
+            
+            while (_requestEvents.Count > 0)
             {
-                while (_requestEvents.Count > 0)
-                {
-                    var evt = _requestEvents.Dequeue();
+                if(_requestEvents.TryDequeue(out var evt))
                     _natPunchListener.OnNatIntroductionRequest(evt.LocalEndPoint, evt.RemoteEndPoint, evt.Token);
-                }
             }
         }
 
@@ -190,15 +189,12 @@ namespace LiteNetLib
         //We got request and must introduce
         private void OnNatIntroductionRequest(NatIntroduceRequestPacket req, IPEndPoint senderEndPoint)
         {
-            lock (_requestEvents)
+            _requestEvents.Enqueue(new RequestEventData
             {
-                _requestEvents.Enqueue(new RequestEventData
-                {
-                    LocalEndPoint = req.Internal,
-                    RemoteEndPoint = senderEndPoint,
-                    Token = req.Token
-                });
-            }
+                LocalEndPoint = req.Internal,
+                RemoteEndPoint = senderEndPoint,
+                Token = req.Token
+            });         
         }
 
         //We got introduce and must punch
@@ -231,15 +227,12 @@ namespace LiteNetLib
                 senderEndPoint, req.Token);
 
             //Release punch success to client; enabling him to Connect() to Sender if token is ok
-            lock (_successEvents)
+            _successEvents.Enqueue(new SuccessEventData
             {
-                _successEvents.Enqueue(new SuccessEventData
-                {
-                    TargetEndPoint = senderEndPoint,
-                    Type = req.IsExternal ? NatAddressType.External : NatAddressType.Internal, 
-                    Token = req.Token
-                });
-            }
+                TargetEndPoint = senderEndPoint,
+                Type = req.IsExternal ? NatAddressType.External : NatAddressType.Internal, 
+                Token = req.Token
+            });
         }
     }
 }

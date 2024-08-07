@@ -9,7 +9,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1934325661076948966}
-  - component: {fileID: 2898785573527605027}
   - component: {fileID: 3416157055455629930}
   m_Layer: 0
   m_Name: AlienIri
@@ -34,20 +33,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &2898785573527605027
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1934325661076948967}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3e1b360d6fb6d98468508258baa06e47, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  hexsphere: {fileID: 0}
-  speed: 3
 --- !u!136 &3416157055455629930
 CapsuleCollider:
   m_ObjectHideFlags: 0

@@ -7,6 +7,16 @@ using System.Collections.Generic;
 
 namespace Engine.Client.Ecsr.Entitas
 {
+    public struct EntityComponent
+    {
+        public Guid Id;
+        public AbstractComponent Component;
+        public EntityComponent(Guid id,AbstractComponent component)
+        {
+            Id = id;
+            Component = component;
+        }
+    }
     public sealed class EntityWorld : IDisposable
     {
         public sealed class FrameRawData
@@ -246,6 +256,20 @@ namespace Engine.Client.Ecsr.Entitas
             return null;
         }
         #endregion
+
+        public void RetrieveComponents<T>(List<EntityComponent> rets) where T : AbstractComponent
+        {
+            rets.Clear();
+            Type componentType = typeof(T);
+            foreach (Entity entity in m_CurrentFrameData.EntityDict.Values)
+            {
+                foreach (Type comType in entity.Components.Keys)
+                {
+                    if (componentType == comType)
+                        rets.Add(new EntityComponent(entity.Id, entity.Components[comType]));
+                }
+            }
+        }
 
         #region Foreach
         public void ForEach<T0>(Action<Guid, T0> action)
