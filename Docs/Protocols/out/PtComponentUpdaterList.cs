@@ -1,4 +1,4 @@
-//Creation time:2024/8/6 17:35:58
+//Creation time:2024/8/9 17:51:54
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -8,7 +8,7 @@ namespace Engine.Common.Protocol.Pt
 {
 public class PtComponentUpdaterList
 {
-    public byte __tag__ { get;private set;}
+    private byte __tag__;
 
 	public List<PtComponentUpdater> Elements{ get;private set;}
 	   

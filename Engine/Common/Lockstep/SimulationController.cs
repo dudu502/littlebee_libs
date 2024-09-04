@@ -20,7 +20,7 @@ namespace Engine.Common.Lockstep
         double m_FrameLerp = 0;
         public int GetFrameMsLength() { return m_FrameMsLength; }
         public double GetFrameLerp() { return m_FrameLerp; }
-        public RunState State = RunState.Default;
+        public RunState State { get; private set; } = RunState.Default;
         Thread m_RunnerThread;
         DateTime m_CurrentDateTime;
         

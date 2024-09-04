@@ -17,7 +17,6 @@ public class PathFinder
 #endif
         public int HeapIndex { get; set; }
         public int X, Y;
-        public Node[,] Nodes;
         public bool Walkable;
         public int H, G, F;
         public Node LastNode;

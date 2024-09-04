@@ -2,6 +2,11 @@ using_ns:
   - Engine.Common.Protocol
 ns: Engine.Common.Protocol.Pt
 pts:
+  - className: PtTest
+    fields: 
+      - type: int32
+        name: Elements
+        isArray: 1
   - className: PtI32Points
     fields: 
       - type: PtI32Point

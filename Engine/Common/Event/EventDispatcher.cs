@@ -23,8 +23,8 @@ namespace Engine.Common.Event
 
         public static void DispatchEvent(EVENT_TYPE eventType, PARAMETER param)
         {
-            if (_delegates.ContainsKey(eventType))
-                _delegates[eventType]?.Invoke(param);
+            if (_delegates.TryGetValue(eventType, out var callback) && callback != null)
+                callback(param);
         }
     }
 }
