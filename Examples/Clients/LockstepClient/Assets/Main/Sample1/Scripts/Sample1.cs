@@ -132,10 +132,8 @@ public class Sample1 : Sample
         MainContext.SetSimulationController(defaultSimulationController);
         defaultSimulationController.CreateSimulation(new DefaultSimulation(),new EntityWorld(),
             new ISimulativeBehaviour[] {
-                new LogicFrameBehaviour(),
-                new RollbackBehaviour(),
+                new FrameReceiverBehaviour(),
                 new EntityBehaviour(),
-                new ComponentsBackupBehaviour(),
             },
             new IEntitySystem[]
             {
@@ -169,9 +167,9 @@ public class Sample1 : Sample
             .AddComponent(new Wall().SetWidth(24f).SetHeight(0.2f).SetIsRigid(true).SetDir(4))
             .AddComponent(new Appearance().SetResource("Wall")));
         entityList.Elements.Add(new Entity()
-           .AddComponent(new Position().SetPos(new TSVector2(0, -9)))
-           .AddComponent(new Wall().SetWidth(24f).SetHeight(0.2f).SetIsRigid(true).SetDir(8))
-           .AddComponent(new Appearance().SetResource("Wall")));
+            .AddComponent(new Position().SetPos(new TSVector2(0, -9)))
+            .AddComponent(new Wall().SetWidth(24f).SetHeight(0.2f).SetIsRigid(true).SetDir(8))
+            .AddComponent(new Appearance().SetResource("Wall")));
 
         PtMap ptMap = new PtMap().SetVersion("0.0.1")
             .SetEntities(entityList);

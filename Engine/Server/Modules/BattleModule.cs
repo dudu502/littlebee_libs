@@ -51,8 +51,8 @@ namespace Engine.Server.Modules
                     buffer.WriteInt32(m_Server.GetActivePort());
                     buffer.WriteString(userState.UserId);
                     buffer.WriteBool(Session.HasOnlinePlayer());
-                    m_Server.Send((ushort)RequestMessageId.UGS_RoomPlayerDisconnect, buffer.GetRawBytes(),
-                        new System.Net.IPEndPoint(System.Net.IPAddress.Parse("127.0.0.1"), Convert.ToInt32(m_Context.GetMeta(ContextMetaId.GATE_SERVER_PORT,"9030"))));
+                    m_Server.Send(new System.Net.IPEndPoint(System.Net.IPAddress.Parse("127.0.0.1"), Convert.ToInt32(m_Context.GetMeta(ContextMetaId.GATE_SERVER_PORT, "9030"))),
+                        (ushort)RequestMessageId.UGS_RoomPlayerDisconnect, buffer.GetRawBytes());
                 }
             }
         }
@@ -182,18 +182,20 @@ namespace Engine.Server.Modules
         public void FlushKeyFrame(int currentFrameIdx)
         {
             Session.KeyFrameList.SetFrameIdx(currentFrameIdx);
-            if (Session.QueueKeyFrameCollection.Count == 0) return;
-            PtFrames flushCollection = new PtFrames().SetFrameIdx(currentFrameIdx).SetKeyFrames(new List<PtFrame>());
-            while(Session.QueueKeyFrameCollection.TryDequeue(out PtFrames collection))
+            PtFrames flushCollection = new PtFrames().SetFrameIdx(currentFrameIdx);
+            if (Session.QueueKeyFrameCollection.Count > 0)
             {
-                collection.SetFrameIdx(currentFrameIdx);
-                flushCollection.KeyFrames.AddRange(collection.KeyFrames);
+                flushCollection.SetKeyFrames(new List<PtFrame>());
+                while (Session.QueueKeyFrameCollection.TryDequeue(out PtFrames collection))
+                {
+                    collection.SetFrameIdx(currentFrameIdx);
+                    flushCollection.KeyFrames.AddRange(collection.KeyFrames);
+                }
+                Session.KeyFrameList.Elements.Add(flushCollection);
             }
-            //flushCollection.KeyFrames.Sort();
-            Session.KeyFrameList.Elements.Add(flushCollection);
-            if (flushCollection.KeyFrames.Count > 0)
-                m_Server.Send((ushort)ResponseMessageId.RS_SyncKeyframes, PtFrames.Write(flushCollection));
+            m_Server.Send((ushort)ResponseMessageId.RS_SyncKeyframes, PtFrames.Write(flushCollection));
         }
+
         public override void Dispose()
         {
             base.Dispose();

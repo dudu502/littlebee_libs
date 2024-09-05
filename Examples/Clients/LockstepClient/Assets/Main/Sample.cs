@@ -75,13 +75,18 @@ public class Sample : MonoBehaviour
     }
     protected virtual void Start()
     {
-        EventDispatcher<SimulationEventId, int>.AddListener(SimulationEventId.TheLastFrameHasBeenPlayed, OnLastFrameHasBeenPlayed);
+        EventDispatcher<SimulationEventId, int>.AddListener(SimulationEventId.TheLastFrameHasBeenPlayed, OnLastReplayFrameHasBeenPlayed);
         EventDispatcher<LoadingType, LoadingEventId>.AddListener(LoadingType.Loading, OnLoading);
     }
 
-    protected virtual void OnLastFrameHasBeenPlayed(int frameIndex)
+    protected virtual void OnLastReplayFrameHasBeenPlayed(int frameIndex)
     {
-        Debug.LogWarning("THE LAST FRAME HAS BEEN PLAYED @"+frameIndex);
+        //Must call in handler.
+        Handler.Run((obj) =>
+        {
+            Debug.LogWarning("THE LAST FRAME HAS BEEN PLAYED @" + frameIndex);
+            Stop();
+        },null);
     }
 
     [TerminalCommand("setuid", "setuid(id)")]
@@ -144,7 +149,7 @@ public class Sample : MonoBehaviour
         rep.MapId = MapId;
         rep.Version = "0.0.1";
         rep.InitEntities = MainContext.GetSimulationController().GetSimulation<DefaultSimulation>().GetEntityWorld().GetEntityInitializer().InitEntities;
-        rep.Frames = MainContext.GetSimulationController().GetSimulation<DefaultSimulation>().GetBehaviour<LogicFrameBehaviour>().GetFrames();
+        rep.Frames = MainContext.GetSimulationController().GetSimulation<DefaultSimulation>().GetBehaviour<FrameReceiverBehaviour>().GetFrames();
         File.WriteAllBytes(path,SevenZip.Helper.CompressBytesAsync(PtReplay.Write(rep)).Result);
     }
     [TerminalCommand("drawmap", "save map asset")]

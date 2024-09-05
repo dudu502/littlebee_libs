@@ -20,7 +20,7 @@ namespace Engine.Common.Lockstep
         double m_FrameLerp = 0;
         public int GetFrameMsLength() { return m_FrameMsLength; }
         public double GetFrameLerp() { return m_FrameLerp; }
-        public RunState State { get; private set; } = RunState.Default;
+        public RunState State { get; protected set; } = RunState.Default;
         Thread m_RunnerThread;
         DateTime m_CurrentDateTime;
         
@@ -57,7 +57,7 @@ namespace Engine.Common.Lockstep
         {
             State = RunState.Stopping;
         }
-        void Run(object runner)
+        protected virtual void Run(object runner)
         {
             Action action = runner as Action;
             while (State == RunState.Running)
@@ -71,7 +71,7 @@ namespace Engine.Common.Lockstep
                     m_AccumulatorTicks -= FrameMsTickCount;
                 }
                 m_FrameLerp = m_AccumulatorTicks / FrameMsTickCount;
-                Thread.Sleep(30);
+                Thread.Sleep(10);
                 if (action != null)
                 {
                     action();
@@ -82,7 +82,7 @@ namespace Engine.Common.Lockstep
         }
         public override string ToString()
         {
-            return $"DefaultFrameMsLentgh:{c_DefaultFrameMsLength} Simulation:{m_SimulationInstance}\n";
+            return $"DefaultFrameMsLentgh:{c_DefaultFrameMsLength} CustomFrameMsLength:{m_FrameMsLength} Simulation:{m_SimulationInstance}\n";
         }
         public S GetSimulation<S>() where S:Simulation
         {

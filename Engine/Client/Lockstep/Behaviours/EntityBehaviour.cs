@@ -10,13 +10,11 @@ namespace Engine.Client.Lockstep.Behaviours
     {
         public Simulation Sim { get; set; }
         public List<IEntitySystem> Systems = new List<IEntitySystem>();
-        protected LogicFrameBehaviour logicBehaviour;
         protected BattleServiceModule battleServiceModule; 
 
         public virtual void Start()
         {
             battleServiceModule = Context.Retrieve(Context.CLIENT).GetModule<BattleServiceModule>();
-            logicBehaviour = Sim.GetBehaviour<LogicFrameBehaviour>();
         }
 
         public bool HasSystem(IEntitySystem system)

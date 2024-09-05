@@ -498,24 +498,27 @@ namespace Engine.Client.Ecsr.Entitas
 
         public void RestoreFrames(List<PtFrame> frames)
         {
-            foreach (PtFrame frame in frames)
+            if (frames != null)
             {
-                if (frame.HasUpdaters())
+                foreach (PtFrame frame in frames)
                 {
-                    foreach (PtComponentUpdater updater in frame.Updaters.Elements)
+                    if (frame.HasUpdaters())
                     {
-                        Entity entity = GetEntity(new Guid(frame.EntityId));
-                        if (entity != null)
+                        foreach (PtComponentUpdater updater in frame.Updaters.Elements)
                         {
-                            Type type = Type.GetType(updater.ComponentClsName);
-                            if (type != null)
-                                entity.GetComponent(type)?.UpdateParams(updater.ParamContent);
+                            Entity entity = GetEntity(new Guid(frame.EntityId));
+                            if (entity != null)
+                            {
+                                Type type = Type.GetType(updater.ComponentClsName);
+                                if (type != null)
+                                    entity.GetComponent(type)?.UpdateParams(updater.ParamContent);
+                            }
                         }
                     }
-                }
-                if (frame.HasNewEntitiesRaw())
-                {
-                    m_EntityInitializer.CreateEntities(frame.EntityId, frame.NewEntitiesRaw);
+                    if (frame.HasNewEntitiesRaw())
+                    {
+                        m_EntityInitializer.CreateEntities(frame.EntityId, frame.NewEntitiesRaw);
+                    }
                 }
             }
         }

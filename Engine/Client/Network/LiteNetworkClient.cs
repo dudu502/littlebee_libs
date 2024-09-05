@@ -82,7 +82,7 @@ namespace Engine.Client.Network
                 if (queueMessages.TryDequeue(out byte[] bytes))
                 {
                     PtMessagePackage package = PtMessagePackage.Read(bytes);
-                    Context.Retrieve(Context.CLIENT).Logger.Info($"{nameof(TickDispatchMessages)} messageId:{(ResponseMessageId)package.MessageId}");
+                    Context.Retrieve(Context.CLIENT).Logger.Info($"{nameof(TickDispatchMessages)} messageId:{(ResponseMessageId)package.MessageId} Length:{bytes.Length}");
                     EventDispatcher<ResponseMessageId, PtMessagePackage>
                         .DispatchEvent((ResponseMessageId)package.MessageId, package);
                 }

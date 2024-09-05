@@ -30,7 +30,7 @@ public class Sample2 : Sample
         }
         public override EntityList OnCreateSelfEntityComponents(Guid entityId)
         {
-            Debug.LogError("OnCreateSelfEntityComponents" + entityId) ;
+            Debug.LogWarning("OnCreateSelfEntityComponents" + entityId) ;
             TSRandom tSRandom = TSRandom.New(GetHashCode());
 
             EntityList result = new EntityList();
@@ -118,11 +118,10 @@ public class Sample2 : Sample
         // create a default simulation.
         defaultSimulationController.CreateSimulation(new DefaultSimulation(), new EntityWorld(),
             new ISimulativeBehaviour[] {
-                new LogicFrameBehaviour(),
-                new RollbackBehaviour(),
+                new FrameReceiverBehaviour(),
                 new EntityBehaviour(),
                 new InputBehaviour(),
-                new ComponentsBackupBehaviour(),
+                new FrameSenderBehaviour(),
             },
             new IEntitySystem[]
             {

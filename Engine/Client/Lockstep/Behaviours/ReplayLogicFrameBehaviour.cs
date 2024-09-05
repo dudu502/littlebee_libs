@@ -8,11 +8,11 @@ namespace Engine.Client.Lockstep.Behaviours
     public class ReplayLogicFrameBehaviour : ISimulativeBehaviour
     {
         public Simulation Sim { get; set; }
-        public int CurrentFrameIdx { private set; get; }
+        private int FrameIdx;
         List<List<PtFrame>> m_Frames;
         public void Start()
         {
-            CurrentFrameIdx = -1;
+            FrameIdx = -1;
         }
         public void SetFrameIdxInfos(List<List<PtFrame>> infos)
         {
@@ -20,12 +20,12 @@ namespace Engine.Client.Lockstep.Behaviours
         }
         public override string ToString()
         {
-            return $"{nameof(ReplayLogicFrameBehaviour)} FrameIdx:{CurrentFrameIdx}";
+            return $"{nameof(ReplayLogicFrameBehaviour)} FrameIdx:{FrameIdx}";
         }
         public List<PtFrame> GetFrameIdxInfoAtCurrentFrame()
         {
-            if (CurrentFrameIdx < m_Frames.Count)
-                return m_Frames[CurrentFrameIdx];
+            if (FrameIdx < m_Frames.Count)
+                return m_Frames[FrameIdx];
             return null;
         }
         public void Stop()
@@ -35,11 +35,11 @@ namespace Engine.Client.Lockstep.Behaviours
 
         public void Update()
         {
-            if (CurrentFrameIdx < m_Frames.Count)
+            if (FrameIdx < m_Frames.Count)
             {
-                ++CurrentFrameIdx;
-                if (CurrentFrameIdx == m_Frames.Count)
-                    EventDispatcher<SimulationEventId, int>.DispatchEvent(SimulationEventId.TheLastFrameHasBeenPlayed, CurrentFrameIdx);
+                ++FrameIdx;
+                if (FrameIdx == m_Frames.Count)
+                    EventDispatcher<SimulationEventId, int>.DispatchEvent(SimulationEventId.TheLastFrameHasBeenPlayed, FrameIdx);
             }
         }
     }

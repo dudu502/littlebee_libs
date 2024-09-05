@@ -22,7 +22,7 @@ public class PlayerAppearanceRenderer : AppearanceRenderer
             if (World.IsActive)
             {
                 transform.GetComponent<Renderer>().material.color = new Color(result.Item1.ShaderR / 255f, result.Item1.ShaderG / 255f, result.Item1.ShaderB / 255f);
-                transform.position = new Vector3(result.Item2.Pos.x.AsFloat(), 0, result.Item2.Pos.y.AsFloat());
+                transform.position = Vector3.Lerp(transform.position, new Vector3(result.Item2.Pos.x.AsFloat(), 0, result.Item2.Pos.y.AsFloat()),0.25f);
             }
         }
     }

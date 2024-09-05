@@ -133,10 +133,10 @@ public class Sample3 : Sample
         defaultSimulationController.CreateSimulation(new DefaultSimulation(), new EntityWorld(),
             new ISimulativeBehaviour[] 
             {
-                new LogicFrameBehaviour(),
-                new RollbackBehaviour(),
+                new FrameReceiverBehaviour(),
                 new EntityBehaviour(),
-                new ComponentsBackupBehaviour(),
+                new InputBehaviour(),
+                new FrameSenderBehaviour(),
             },
             new IEntitySystem[]
             {

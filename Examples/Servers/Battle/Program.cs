@@ -37,7 +37,7 @@ namespace Battle
             simulationController.CreateSimulation(new Simulation(),new ISimulativeBehaviour[] { new ServerLogicFrameBehaviour() });
             context.SetSimulationController(simulationController);
             context.Server.Run(port);
-            Console.ReadKey();
+            Console.ReadLine();
         }
     }
 }

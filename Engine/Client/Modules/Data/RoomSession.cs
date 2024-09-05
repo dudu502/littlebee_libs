@@ -14,9 +14,9 @@ namespace Engine.Client.Modules.Data
         public ConcurrentQueue<PtFrames> QueueKeyFrames = new ConcurrentQueue<PtFrames>();
         private PtFrames keyFrameCached = new PtFrames().SetKeyFrames(new List<PtFrame>());
 
-        public void AddCurrentFrameCommand(int curFrameIdx,PtFrame frame)
+        public void AddCurrentFrameCommand(PtFrame frame)
         {
-            keyFrameCached.SetFrameIdx(curFrameIdx);
+            keyFrameCached.SetFrameIdx(-1);
             keyFrameCached.KeyFrames.Add(frame);
         }
         public PtFrames GetKeyFrameCached() { return keyFrameCached; }

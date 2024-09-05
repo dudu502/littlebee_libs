@@ -9,11 +9,11 @@ namespace Engine.Client.Lockstep.Behaviours
     public class InputBehaviour : ISimulativeBehaviour
     {
         public Simulation Sim { get; set; }
-        BattleServiceModule battleServiceModule;
-        LogicFrameBehaviour logicFrameBehaviour;
+        private BattleServiceModule battleServiceModule;
+
         public void Start()
         {
-            logicFrameBehaviour = Sim.GetBehaviour<LogicFrameBehaviour>();
+
             battleServiceModule = Context.Retrieve(Context.CLIENT).GetModule<BattleServiceModule>();
         }
 
@@ -26,7 +26,7 @@ namespace Engine.Client.Lockstep.Behaviours
         {
             while (Input.InputFrames.TryDequeue(out PtFrame frame))
             {
-                battleServiceModule.GetRoomSession().AddCurrentFrameCommand(logicFrameBehaviour.CurrentFrameIdx, frame);
+                battleServiceModule.GetRoomSession().AddCurrentFrameCommand(frame);
             }
         }
         public override string ToString()

@@ -47,6 +47,23 @@ namespace Engine.Client.Modules
             string userId = m_Context.GetMeta(ContextMetaId.USER_ID);
             RequestEnterRoom(userId);
         }
+
+        public bool HasKeyFrames()
+        {
+            if (m_RoomSession == null) return false;
+            return m_RoomSession.QueueKeyFrames.Count > 0;
+        }
+
+        public void SendKeyFrames()
+        {
+            PtFrames frames = m_RoomSession.GetKeyFrameCached();
+            if(frames != null && frames.KeyFrames.Count > 0)
+            {
+                RequestSyncClientKeyframes(frames);
+                m_RoomSession.ClearKeyFrameCached();
+            }
+        }
+
         void OnResponseEnterRoom(PtMessagePackage message)
         {
             using (ByteBuffer buffer = new ByteBuffer(message.Content))
@@ -200,9 +217,9 @@ namespace Engine.Client.Modules
             int startIndex = -1;
             m_NetworkClient.Send((ushort)RequestMessageId.RS_HistoryKeyframes,new ByteBuffer().WriteInt32(startIndex).GetRawBytes());
         }
-        public void RequestSyncClientKeyframes(int frameIdx, PtFrames frames)
+        public void RequestSyncClientKeyframes(PtFrames frames)
         {
-            frames.SetFrameIdx(frameIdx);
+            frames.SetFrameIdx(-1);
             m_NetworkClient.Send((ushort)RequestMessageId.RS_SyncClientKeyframes, PtFrames.Write(frames));
         }
 
