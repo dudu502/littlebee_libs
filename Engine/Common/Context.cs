@@ -81,16 +81,6 @@ namespace Engine.Common
             return null;
         }
 
-        public static Guid GenerateGuidFromSeed(string seed)
-        {
-            using(var sha256 = SHA256.Create())
-            {
-                byte[] seedBytes = Encoding.UTF8.GetBytes(seed);
-                byte[] hashBytes = sha256.ComputeHash(seedBytes);
-                return new Guid(hashBytes.Take(16).ToArray());
-            }
-        }
-
         public Context SetSimulationController(SimulationController controller)
         {
             simulationController = controller;
