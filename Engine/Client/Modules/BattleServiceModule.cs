@@ -115,7 +115,7 @@ namespace Engine.Client.Modules
                         // let EntityInitializer to load all entitys
                         await m_Context.GetSimulationController<DefaultSimulationController>().GetSimulation<DefaultSimulation>()
                              .GetEntityWorld().GetEntityInitializer().CreateEntities(mapId);
-                        RequestInitPlayer();
+                        RequestInitPlayer(true);
                         break;
                     case UserState.Re_EnteredRoom:
                         uint re_mapId = buffer.ReadUInt32();
@@ -125,7 +125,7 @@ namespace Engine.Client.Modules
                             m_Context.SetMeta(ContextMetaId.SELECTED_ROOM_MAP_ID, re_mapId.ToString());
                             await m_Context.GetSimulationController<DefaultSimulationController>().GetSimulation<DefaultSimulation>()
                                 .GetEntityWorld().GetEntityInitializer().CreateEntities(re_mapId);
-                            RequestInitPlayer();
+                            RequestInitPlayer(false);
                         }
                         break;
                     case UserState.BeReadyToEnterScene:
@@ -216,15 +216,21 @@ namespace Engine.Client.Modules
         {
             m_NetworkClient.Send((ushort)RequestMessageId.RS_EnterRoom, new ByteBuffer().WriteString(userId).GetRawBytes());
         }
-        public void RequestInitPlayer()
+        public void RequestInitPlayer(bool initSelf)
         {
-            // send self player's components
-            EntityList entityList = m_Context.GetSimulationController<DefaultSimulationController>().GetSimulation<DefaultSimulation>()
-                .GetEntityWorld().GetEntityInitializer().OnCreateSelfEntityComponents(new Guid(m_RoomSession.EntityId));
-            
-            m_NetworkClient.Send((ushort)RequestMessageId.RS_InitPlayer,
-                     new ByteBuffer().WriteString(m_RoomSession.EntityId).WriteBytes(EntityList.Write(entityList)).GetRawBytes());
+            ByteBuffer buffer = new ByteBuffer();
+            buffer.WriteString(m_RoomSession.EntityId);
+            buffer.WriteBool(initSelf);
+            if (initSelf)
+            {
+                // send self player's components
+                EntityList entityList = m_Context.GetSimulationController<DefaultSimulationController>().GetSimulation<DefaultSimulation>()
+                    .GetEntityWorld().GetEntityInitializer().OnCreateSelfEntityComponents(new Guid(m_RoomSession.EntityId));
+                buffer.WriteBytes(EntityList.Write(entityList));
+            }            
+            m_NetworkClient.Send((ushort)RequestMessageId.RS_InitPlayer, buffer.GetRawBytes());
         }
+
         public void RequestPlayerReady()
         {
             m_NetworkClient.Send((ushort)RequestMessageId.RS_PlayerReady, new ByteBuffer().WriteString(m_RoomSession.EntityId).GetRawBytes());

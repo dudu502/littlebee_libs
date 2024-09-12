@@ -35,7 +35,7 @@ public class Sample2 : Sample
             EntityList result = new EntityList();
             result.SetElements(new List<Entity>());
 
-            Entity entity = new Entity(Context.GenerateGuidFromSeed(entityId.GetHashCode().ToString()));
+            Entity entity = new Entity();
             BasicAttributes attributes = new BasicAttributes();
             attributes.SetEntityId(entityId.ToString());
             attributes.SetSelectable(true);

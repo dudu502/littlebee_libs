@@ -42,7 +42,7 @@ public class Sample1 : Sample
 
             for (int i = 0; i < 100; ++i)
             {
-                Entity entity = new Entity(Context.GenerateGuidFromSeed(theSeed.ToString()+i));
+                Entity entity = new Entity();
                 BasicAttributes attributes = new BasicAttributes();
                 attributes.SetEntityId(entityId.ToString());
                 entity.AddComponent(attributes);

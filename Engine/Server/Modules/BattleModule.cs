@@ -93,11 +93,15 @@ namespace Engine.Server.Modules
             using (ByteBuffer buffer = new ByteBuffer(message.Content))
             {
                 string entityId = buffer.ReadString();
-                byte[] entityBytes = buffer.ReadBytes();
-                if(Session.Users.TryGetValue(entityId,out var user))
+                bool initSelfEntity = buffer.ReadBool();
+                if (initSelfEntity)
                 {
-                    user.EntityRawBytes = entityBytes;
-                }
+                    byte[] entityBytes = buffer.ReadBytes();
+                    if (Session.Users.TryGetValue(entityId, out var user))
+                    {
+                        user.EntityRawBytes = entityBytes;
+                    }
+                }              
                 m_Server.Send((ushort)ResponseMessageId.RS_InitPlayer, new ByteBuffer().WriteString(entityId).GetRawBytes());
                 m_Server.Send(message.ExtraPeerId, (ushort)ResponseMessageId.RS_InitSelfPlayer, null);
             }
