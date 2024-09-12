@@ -11,10 +11,9 @@ using Engine.Common;
 
 namespace Engine.Client.Lockstep
 {
-    public class DefaultSimulationController:SimulationController
+    public class DefaultSimulationController : SimulationController
     {
-        
-        public void CreateSimulation(Simulation sim, EntityWorld world,ISimulativeBehaviour[] behaviours,
+        public void CreateSimulation(Simulation sim, EntityWorld world, ISimulativeBehaviour[] behaviours,
             IEntitySystem[] systems)
         {
             base.CreateSimulation(sim, behaviours);
@@ -31,16 +30,14 @@ namespace Engine.Client.Lockstep
             BattleServiceModule battleServiceModule = Context.Retrieve(Context.CLIENT).GetModule<BattleServiceModule>();
             while (State == RunState.Running)
             {
-                while(battleServiceModule.HasKeyFrames())
+                while (battleServiceModule.HasKeyFrames())
+                    m_SimulationInstance.Run();    
+                Thread.Sleep(10);
+                if (action != null)
                 {
-                    m_SimulationInstance.Run();
-                    Thread.Sleep(10);
-                    if (action != null)
-                    {
-                        action();
-                        action = null;
-                    }
-                }  
+                    action();
+                    action = null;
+                }
             }
             State = RunState.Stopped;
         }

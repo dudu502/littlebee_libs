@@ -30,7 +30,7 @@ namespace Engine.Client.Network
                 listener = new EventBasedNetListener();
                 manager = new NetManager(listener);
                 manager.UnconnectedMessagesEnabled = true;
-                listener.NetworkReceiveEvent += (peer, reader, method) =>
+                listener.NetworkReceiveEvent += (peer, reader, chnl,method) =>
                 {
                     byte[] raw = reader.GetRemainingBytes();
                     queueMessages.Enqueue(raw);
@@ -77,15 +77,12 @@ namespace Engine.Client.Network
 
         void TickDispatchMessages()
         {
-            while (queueMessages != null &&  queueMessages.Count > 0)
+            while (queueMessages != null && queueMessages.TryDequeue(out byte[] bytes))
             {
-                if (queueMessages.TryDequeue(out byte[] bytes))
-                {
-                    PtMessagePackage package = PtMessagePackage.Read(bytes);
-                    Context.Retrieve(Context.CLIENT).Logger.Info($"{nameof(TickDispatchMessages)} messageId:{(ResponseMessageId)package.MessageId} Length:{bytes.Length}");
-                    EventDispatcher<ResponseMessageId, PtMessagePackage>
-                        .DispatchEvent((ResponseMessageId)package.MessageId, package);
-                }
+                PtMessagePackage package = PtMessagePackage.Read(bytes);
+                Context.Retrieve(Context.CLIENT).Logger.Info($"{nameof(TickDispatchMessages)} messageId:{(ResponseMessageId)package.MessageId} Length:{bytes.Length}");
+                EventDispatcher<ResponseMessageId, PtMessagePackage>
+                    .DispatchEvent((ResponseMessageId)package.MessageId, package);
             }
         }
         public void Close()

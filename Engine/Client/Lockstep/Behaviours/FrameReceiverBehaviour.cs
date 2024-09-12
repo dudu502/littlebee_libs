@@ -2,7 +2,9 @@
 using Engine.Common;
 using Engine.Common.Lockstep;
 using Engine.Common.Protocol.Pt;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Engine.Client.Lockstep.Behaviours
 {
@@ -34,13 +36,28 @@ namespace Engine.Client.Lockstep.Behaviours
         {
             return $"{nameof(FrameReceiverBehaviour)} FrameIdx:{FrameIdx}";
         }
+        void RestoreAndAddFrames(PtFrames frames)
+        {
+            FrameIdx = frames.FrameIdx;
+            defaultSimulation.GetEntityWorld().RestoreFrames(frames);
+            totalFrames.Add(frames.KeyFrames ?? defaultFrame);
+        }
         public void Update()
         {
-            if (battleServiceModule.GetRoomSession().QueueKeyFrames.TryDequeue(out PtFrames frames))
+            var roomSession = battleServiceModule.GetRoomSession();
+            if (roomSession.HistoryFramesList != null &&
+                roomSession.HistoryFramesList.TryDequeue(out var first))
             {
-                FrameIdx = frames.FrameIdx;
-                defaultSimulation.GetEntityWorld().RestoreFrames(frames);
-                totalFrames.Add(frames.KeyFrames??defaultFrame);
+                RestoreAndAddFrames(first);
+
+                if (roomSession.QueueKeyFrames.TryPeek(out var queueKeyFrame) && queueKeyFrame!=null && queueKeyFrame.FrameIdx==FrameIdx)
+                {
+                    roomSession.QueueKeyFrames.TryDequeue(out _);
+                }
+            }
+            else if (roomSession.QueueKeyFrames.TryDequeue(out PtFrames frames))
+            {
+                RestoreAndAddFrames(frames);
             }
         }
     }

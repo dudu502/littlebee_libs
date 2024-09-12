@@ -6,11 +6,17 @@ namespace Engine.Client.Modules.Data
 {
     public class RoomSession
     {
+        /// <summary>
+        /// User EntityId
+        /// </summary>
         public string EntityId;
+        /// <summary>
+        /// User Id
+        /// </summary>
         public string UserId;
-        public Dictionary<int, PtFrames> DictKeyFrames;
         public int InitIndex = -1;
         public int WriteKeyFrameIndex = -1;
+        public ConcurrentQueue<PtFrames> HistoryFramesList;
         public ConcurrentQueue<PtFrames> QueueKeyFrames = new ConcurrentQueue<PtFrames>();
         private PtFrames keyFrameCached = new PtFrames().SetKeyFrames(new List<PtFrame>());
 
@@ -30,7 +36,6 @@ namespace Engine.Client.Modules.Data
         {
             EntityId = string.Empty;
             UserId = string.Empty;
-            DictKeyFrames = null;
             InitIndex = -1;
             WriteKeyFrameIndex = -1;
             QueueKeyFrames = new ConcurrentQueue<PtFrames>();

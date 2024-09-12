@@ -33,7 +33,7 @@ public class Sample1 : Sample
         public override EntityList OnCreateSelfEntityComponents(Guid entityId)
         {
             int theSeed = entityId.GetHashCode(); //短线重连构造自己物体时候需要使用相同的随机数种子
-            Debug.LogWarning("OnCreateSelfEntityComponents "+entityId.ToString());
+            Debug.LogWarning("OnCreateSelfEntityComponents "+entityId.ToString()+" hashcode"+theSeed);
             TSRandom tSRandom = TSRandom.New(theSeed);
             List<Entity> entities = new List<Entity>();
             EntityList result = new EntityList();
@@ -42,7 +42,7 @@ public class Sample1 : Sample
 
             for (int i = 0; i < 100; ++i)
             {
-                Entity entity = new Entity();
+                Entity entity = new Entity(Context.GenerateGuidFromSeed(theSeed.ToString()+i));
                 BasicAttributes attributes = new BasicAttributes();
                 attributes.SetEntityId(entityId.ToString());
                 entity.AddComponent(attributes);

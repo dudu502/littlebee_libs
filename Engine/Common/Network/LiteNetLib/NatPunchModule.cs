@@ -1,5 +1,5 @@
-using System.Collections.Concurrent;
-using System.Collections.Generic;
+﻿using System.Collections.Concurrent;
+using System.Diagnostics.CodeAnalysis;
 using System.Net;
 using System.Net.Sockets;
 using LiteNetLib.Utils;
@@ -60,24 +60,24 @@ namespace LiteNetLib
 
         class NatIntroduceRequestPacket
         {
-            public IPEndPoint Internal { get; set; }
-            public string Token { get; set; }
+            public IPEndPoint Internal { [Preserve] get; [Preserve] set; }
+            public string Token { [Preserve] get; [Preserve] set; }
         }
 
         class NatIntroduceResponsePacket
         {
-            public IPEndPoint Internal { get; set; }
-            public IPEndPoint External { get; set; }
-            public string Token { get; set; }
+            public IPEndPoint Internal { [Preserve] get; [Preserve] set; }
+            public IPEndPoint External { [Preserve] get; [Preserve] set; }
+            public string Token { [Preserve] get; [Preserve] set; }
         }
 
         class NatPunchPacket
         {
-            public string Token { get; set; }
-            public bool IsExternal { get; set; }
+            public string Token { [Preserve] get; [Preserve] set; }
+            public bool IsExternal { [Preserve] get; [Preserve] set; }
         }
 
-        private readonly NetSocket _socket;
+        private readonly NetManager _socket;
         private readonly ConcurrentQueue<RequestEventData> _requestEvents = new ConcurrentQueue<RequestEventData>();
         private readonly ConcurrentQueue<SuccessEventData> _successEvents = new ConcurrentQueue<SuccessEventData>();
         private readonly NetDataReader _cacheReader = new NetDataReader();
@@ -86,7 +86,12 @@ namespace LiteNetLib
         private INatPunchListener _natPunchListener;
         public const int MaxTokenLength = 256;
 
-        internal NatPunchModule(NetSocket socket)
+        /// <summary>
+        /// Events automatically will be called without PollEvents method from another thread
+        /// </summary>
+        public bool UnsyncedEvents = false;
+
+        internal NatPunchModule(NetManager socket)
         {
             _socket = socket;
             _netPacketProcessor.SubscribeReusable<NatIntroduceResponsePacket>(OnNatIntroductionResponse);
@@ -108,13 +113,16 @@ namespace LiteNetLib
             _natPunchListener = listener;
         }
 
-        private void Send<T>(T packet, IPEndPoint target) where T : class, new()
+        private void Send<
+#if NET5_0_OR_GREATER
+            [DynamicallyAccessedMembers(Trimming.SerializerMemberTypes)]
+#endif
+        T>(T packet, IPEndPoint target) where T : class, new()
         {
-            SocketError errorCode = 0;
             _cacheWriter.Reset();
             _cacheWriter.Put((byte)PacketProperty.NatMessage);
             _netPacketProcessor.Write(_cacheWriter, packet);
-            _socket.SendTo(_cacheWriter.Data, 0, _cacheWriter.Length, target, ref errorCode);
+            _socket.SendRaw(_cacheWriter.Data, 0, _cacheWriter.Length, target);
         }
 
         public void NatIntroduce(
@@ -142,24 +150,23 @@ namespace LiteNetLib
 
         public void PollEvents()
         {
-            if (_natPunchListener == null || (_successEvents.Count == 0 && _requestEvents.Count == 0))
+            if (UnsyncedEvents)
                 return;
-           
-            while (_successEvents.Count > 0)
+
+            if (_natPunchListener == null || (_successEvents.IsEmpty && _requestEvents.IsEmpty))
+                return;
+
+            while (_successEvents.TryDequeue(out var evt))
             {
-                if(_successEvents.TryDequeue(out var evt))
-                {
-                    _natPunchListener.OnNatIntroductionSuccess(
-                              evt.TargetEndPoint,
-                              evt.Type,
-                              evt.Token);
-                }
+                _natPunchListener.OnNatIntroductionSuccess(
+                    evt.TargetEndPoint,
+                    evt.Type,
+                    evt.Token);
             }
-            
-            while (_requestEvents.Count > 0)
+
+            while (_requestEvents.TryDequeue(out var evt))
             {
-                if(_requestEvents.TryDequeue(out var evt))
-                    _natPunchListener.OnNatIntroductionRequest(evt.LocalEndPoint, evt.RemoteEndPoint, evt.Token);
+                _natPunchListener.OnNatIntroductionRequest(evt.LocalEndPoint, evt.RemoteEndPoint, evt.Token);
             }
         }
 
@@ -172,7 +179,7 @@ namespace LiteNetLib
         {
             //prepare outgoing data
             string networkIp = NetUtils.GetLocalIp(LocalAddrType.IPv4);
-            if (string.IsNullOrEmpty(networkIp))
+            if (string.IsNullOrEmpty(networkIp) || masterServerEndPoint.AddressFamily == AddressFamily.InterNetworkV6)
             {
                 networkIp = NetUtils.GetLocalIp(LocalAddrType.IPv6);
             }
@@ -182,19 +189,29 @@ namespace LiteNetLib
                 {
                     Internal = NetUtils.MakeEndPoint(networkIp, _socket.LocalPort),
                     Token = additionalInfo
-                }, 
+                },
                 masterServerEndPoint);
         }
 
         //We got request and must introduce
         private void OnNatIntroductionRequest(NatIntroduceRequestPacket req, IPEndPoint senderEndPoint)
         {
-            _requestEvents.Enqueue(new RequestEventData
+            if (UnsyncedEvents)
             {
-                LocalEndPoint = req.Internal,
-                RemoteEndPoint = senderEndPoint,
-                Token = req.Token
-            });         
+                _natPunchListener.OnNatIntroductionRequest(
+                    req.Internal,
+                    senderEndPoint,
+                    req.Token);
+            }
+            else
+            {
+                _requestEvents.Enqueue(new RequestEventData
+                {
+                    LocalEndPoint = req.Internal,
+                    RemoteEndPoint = senderEndPoint,
+                    Token = req.Token
+                });
+            }
         }
 
         //We got introduce and must punch
@@ -205,34 +222,43 @@ namespace LiteNetLib
             // send internal punch
             var punchPacket = new NatPunchPacket {Token = req.Token};
             Send(punchPacket, req.Internal);
-            NetDebug.Write(NetLogLevel.Trace, "[NAT] internal punch sent to " + req.Internal);
+            NetDebug.Write(NetLogLevel.Trace, $"[NAT] internal punch sent to {req.Internal}");
 
             // hack for some routers
-            SocketError errorCode = 0;
             _socket.Ttl = 2;
-            _socket.SendTo(new[] { (byte)PacketProperty.Empty }, 0, 1, req.External, ref errorCode);
+            _socket.SendRaw(new[] { (byte)PacketProperty.Empty }, 0, 1, req.External);
 
             // send external punch
             _socket.Ttl = NetConstants.SocketTTL;
             punchPacket.IsExternal = true;
             Send(punchPacket, req.External);
-            NetDebug.Write(NetLogLevel.Trace, "[NAT] external punch sent to " + req.External);
+            NetDebug.Write(NetLogLevel.Trace, $"[NAT] external punch sent to {req.External}");
         }
 
         //We got punch and can connect
         private void OnNatPunch(NatPunchPacket req, IPEndPoint senderEndPoint)
         {
             //Read info
-            NetDebug.Write(NetLogLevel.Trace, "[NAT] punch received from {0} - additional info: {1}",
-                senderEndPoint, req.Token);
+            NetDebug.Write(NetLogLevel.Trace, $"[NAT] punch received from {senderEndPoint} - additional info: {req.Token}");
 
             //Release punch success to client; enabling him to Connect() to Sender if token is ok
-            _successEvents.Enqueue(new SuccessEventData
+            if(UnsyncedEvents)
             {
-                TargetEndPoint = senderEndPoint,
-                Type = req.IsExternal ? NatAddressType.External : NatAddressType.Internal, 
-                Token = req.Token
-            });
+                _natPunchListener.OnNatIntroductionSuccess(
+                    senderEndPoint,
+                    req.IsExternal ? NatAddressType.External : NatAddressType.Internal,
+                    req.Token
+                    );
+            }
+            else
+            {
+                _successEvents.Enqueue(new SuccessEventData
+                {
+                    TargetEndPoint = senderEndPoint,
+                    Type = req.IsExternal ? NatAddressType.External : NatAddressType.Internal,
+                    Token = req.Token
+                });
+            }
         }
     }
 }

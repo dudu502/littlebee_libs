@@ -1,4 +1,5 @@
 ﻿using Engine.Client.Protocol.Pt;
+using Engine.Common;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -24,8 +25,11 @@ namespace Engine.Client.Ecsr.Entitas
         {
             foreach (EntityList entityList in entityLists)
             {
-                foreach(Entity entity in entityList.Elements) 
+                foreach (Entity entity in entityList.Elements)
+                {
                     World.CreateEntity(entity);
+                    Context.Retrieve(Context.CLIENT).Logger.Warn("CreateEntities EntityId:"+entity.Id.ToString());
+                }
             }
         }
         /// <summary>

@@ -15,6 +15,7 @@ using Engine.Common.Protocol;
 using Engine.Common.Protocol.Pt;
 using SevenZip.Buffer;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -73,12 +74,13 @@ namespace Engine.Client.Modules
                 string userId = buffer.ReadString();
                 m_RoomSession.EntityId = userEntityId;
                 m_RoomSession.UserId = userId;
-                m_Logger.Info($"{nameof(OnResponseEnterRoom)} userEntityId:{userEntityId} userId:{userId}");
+                m_Logger.Warn($"{nameof(OnResponseEnterRoom)} userEntityId:{userEntityId} userId:{userId}");
             }
         }
         void OnResponseSyncKeyframes(PtMessagePackage message)
         {
-            m_RoomSession.QueueKeyFrames.Enqueue(PtFrames.Read(message.Content));
+            PtFrames frames = PtFrames.Read(message.Content);
+            m_RoomSession.QueueKeyFrames.Enqueue(frames);
         }
         void OnResponseInitPlayer(PtMessagePackage message)
         {
@@ -96,6 +98,7 @@ namespace Engine.Client.Modules
         {
             m_Logger.Info($"{nameof(OnResponsePlayerReady)}");
         }
+
         async void OnResponseAllUserState(PtMessagePackage message)
         {
             using (ByteBuffer buffer = new ByteBuffer(message.Content))
@@ -142,6 +145,7 @@ namespace Engine.Client.Modules
                                 entities.Add(EntityList.Read(bytes));
                             });
                         }
+            
                         // Create all init entities and components
                         entityInitializer.CreateEntities(entities);
 
@@ -185,11 +189,24 @@ namespace Engine.Client.Modules
                 long encodingTicks = buffer.ReadInt64();
                 PtFramesList list = PtFramesList.Read(await SevenZip.Helper.DecompressBytesAsync(buffer.ReadBytes()));
                 m_RoomSession.WriteKeyFrameIndex = list.FrameIdx;
-                m_RoomSession.DictKeyFrames = new Dictionary<int, PtFrames>();
-                list.Elements.ForEach(e => m_RoomSession.DictKeyFrames.Add(e.FrameIdx, e));
+                m_RoomSession.HistoryFramesList = new ConcurrentQueue<PtFrames>(list.Elements);
+
+                //foreach(var item in list.Elements)
+                //{
+                //    if (item.HasKeyFrames())
+                //    {
+                //        foreach(var f in item.KeyFrames)
+                //        {
+                //            if(f.HasUpdaters())
+                //                m_Logger.Warn("OnResponseHistoryKeyframes Updater "+f.Updaters.Elements.Count);
+                //        }
+                //    }
+                //}
+
                 int offset = m_RoomSession.InitIndex == -1 ? 0 : m_RoomSession.InitIndex;
                 startDate -= DateTime.Now - startDate + new TimeSpan(encodingTicks);
                 // start simulation
+                //m_Logger.Warn($"OnResponseHistoryKeyframes {m_RoomSession.WriteKeyFrameIndex} {offset}");
                 m_Context.GetSimulationController<DefaultSimulationController>().Start(startDate, m_RoomSession.WriteKeyFrameIndex - offset,
                     progress=>EventDispatcher<LoadingType,LoadingEventId>.DispatchEvent(LoadingType.Loading,new LoadingEventId(LoadingEventId.SynchronizingKeyFrames, progress))
                     , ()=>EventDispatcher<LoadingType,LoadingEventId>.DispatchEvent(LoadingType.Loading,new LoadingEventId(LoadingEventId.SynchronizingKeyFramesCompleted,1)));

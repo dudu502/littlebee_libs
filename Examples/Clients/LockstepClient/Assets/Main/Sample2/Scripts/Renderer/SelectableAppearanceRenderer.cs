@@ -17,7 +17,7 @@ public class SelectableAppearanceRenderer : AppearanceRenderer
     {
         if (EntityId != Guid.Empty && World != null)
         {
-            var result = World.ReadComponent<Appearance, Engine.Client.Ecsr.Components.Position>(EntityId);
+            var result = World.ReadComponent<Appearance, Position>(EntityId);
             if (World.IsActive)
             {
                 transform.position = Vector3.Lerp(transform.position, new Vector3(result.Item2.Pos.x.AsFloat(), 0, result.Item2.Pos.y.AsFloat()),0.25f);

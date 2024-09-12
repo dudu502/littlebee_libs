@@ -17,12 +17,9 @@ namespace LiteNetLib.Utils
             _ntpEndPoint = endPoint;
         }
 
-        public bool NeedToKill
-        {
-            get { return _killTime >= KillTimer; }
-        }
+        public bool NeedToKill => _killTime >= KillTimer;
 
-        public bool Send(NetSocket socket, int time)
+        public bool Send(Socket socket, int time)
         {
             _resendTime += time;
             _killTime += time;
@@ -30,10 +27,16 @@ namespace LiteNetLib.Utils
             {
                 return false;
             }
-            SocketError errorCode = 0;
             var packet = new NtpPacket();
-            var sendCount = socket.SendTo(packet.Bytes, 0, packet.Bytes.Length, _ntpEndPoint, ref errorCode);
-            return errorCode == 0 && sendCount == packet.Bytes.Length;
+            try
+            {
+                int sendCount = socket.SendTo(packet.Bytes, 0, packet.Bytes.Length, SocketFlags.None, _ntpEndPoint);
+                return sendCount == packet.Bytes.Length;
+            }
+            catch
+            {
+                return false;
+            }
         }
     }
 }

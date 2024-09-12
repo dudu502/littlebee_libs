@@ -1,4 +1,5 @@
-﻿using Engine.Common.Protocol;
+﻿using Engine.Common;
+using Engine.Common.Protocol;
 using TrueSync;
 
 namespace Engine.Client.Ecsr.Components
@@ -32,6 +33,7 @@ namespace Engine.Client.Ecsr.Components
         {
             base.UpdateParams(content);
             Deserialize(content);
+            Context.Retrieve(Context.CLIENT).Logger.Warn("Movement UpdateParams "+ this.Direction.ToString());
         }
         public override void CopyFrom(AbstractComponent component)
         {

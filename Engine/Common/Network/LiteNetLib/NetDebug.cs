@@ -47,7 +47,7 @@ namespace LiteNetLib
             {
                 if (Logger == null)
                 {
-#if UNITY_4 || UNITY_5 || UNITY_5_3_OR_NEWER
+#if UNITY_5_3_OR_NEWER
                     UnityEngine.Debug.Log(string.Format(str, args));
 #else
                     Console.WriteLine(str, args);
@@ -61,32 +61,32 @@ namespace LiteNetLib
         }
 
         [Conditional("DEBUG_MESSAGES")]
-        internal static void Write(string str, params object[] args)
+        internal static void Write(string str)
         {
-            WriteLogic(NetLogLevel.Trace, str, args);
+            WriteLogic(NetLogLevel.Trace, str);
         }
 
         [Conditional("DEBUG_MESSAGES")]
-        internal static void Write(NetLogLevel level, string str, params object[] args)
+        internal static void Write(NetLogLevel level, string str)
         {
-            WriteLogic(level, str, args);
+            WriteLogic(level, str);
         }
 
         [Conditional("DEBUG_MESSAGES"), Conditional("DEBUG")]
-        internal static void WriteForce(string str, params object[] args)
+        internal static void WriteForce(string str)
         {
-            WriteLogic(NetLogLevel.Trace, str, args);
+            WriteLogic(NetLogLevel.Trace, str);
         }
 
         [Conditional("DEBUG_MESSAGES"), Conditional("DEBUG")]
-        internal static void WriteForce(NetLogLevel level, string str, params object[] args)
+        internal static void WriteForce(NetLogLevel level, string str)
         {
-            WriteLogic(level, str, args);
+            WriteLogic(level, str);
         }
 
-        internal static void WriteError(string str, params object[] args)
+        internal static void WriteError(string str)
         {
-            WriteLogic(NetLogLevel.Error, str, args);
+            WriteLogic(NetLogLevel.Error, str);
         }
     }
 }

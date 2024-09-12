@@ -34,7 +34,7 @@ namespace Engine.Server.Network
                 Context.Retrieve(Context.SERVER).Logger.Info("NetworkEventId.PeerConnected " + peer.Id);
                 EventDispatcher<NetworkEventId, int>.DispatchEvent(NetworkEventId.PeerConnected, peer.Id);
             };
-            listener.NetworkReceiveEvent += (peer, reader, method) =>
+            listener.NetworkReceiveEvent += (peer, reader, chnl, method) =>
             {
                 byte[] raw = reader.GetRemainingBytes();
                 PtMessagePackage package = PtMessagePackage.Read(raw);

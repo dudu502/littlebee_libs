@@ -4,6 +4,9 @@ using Engine.Common.Module;
 using Engine.Common.Network.Integration;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace Engine.Common
 {
@@ -77,6 +80,17 @@ namespace Engine.Common
                 return value;
             return null;
         }
+
+        public static Guid GenerateGuidFromSeed(string seed)
+        {
+            using(var sha256 = SHA256.Create())
+            {
+                byte[] seedBytes = Encoding.UTF8.GetBytes(seed);
+                byte[] hashBytes = sha256.ComputeHash(seedBytes);
+                return new Guid(hashBytes.Take(16).ToArray());
+            }
+        }
+
         public Context SetSimulationController(SimulationController controller)
         {
             simulationController = controller;

@@ -18,7 +18,6 @@ using Engine.Common.Protocol.Pt;
 using System;
 using System.Collections.Generic;
 using TrueSync;
-using static TMPro.SpriteAssetUtilities.TexturePacker_JsonArray;
 using System.Threading.Tasks;
 
 public class Sample2 : Sample
@@ -30,13 +29,13 @@ public class Sample2 : Sample
         }
         public override EntityList OnCreateSelfEntityComponents(Guid entityId)
         {
-            Debug.LogWarning("OnCreateSelfEntityComponents" + entityId) ;
-            TSRandom tSRandom = TSRandom.New(GetHashCode());
+            Debug.LogWarning("OnCreateSelfEntityComponents" + entityId+" hash:"+entityId.GetHashCode()) ;
+            TSRandom tSRandom = TSRandom.New(entityId.GetHashCode());
 
             EntityList result = new EntityList();
             result.SetElements(new List<Entity>());
 
-            Entity entity = new Entity();
+            Entity entity = new Entity(Context.GenerateGuidFromSeed(entityId.GetHashCode().ToString()));
             BasicAttributes attributes = new BasicAttributes();
             attributes.SetEntityId(entityId.ToString());
             attributes.SetSelectable(true);
@@ -55,7 +54,7 @@ public class Sample2 : Sample
             movement.SetDirection(TSVector2.zero);
             entity.AddComponent(movement);
             result.Elements.Add(entity);
-
+            Debug.LogWarning("Init Pos:"+position.Pos.ToString());
             return result;
         }
         public override Task CreateEntities(uint mapId)
@@ -225,6 +224,7 @@ public class Sample2 : Sample
 
     void UpdateInputs()
     {
+        bool hasCommand = false;
         if (MainContext == null) return;
         if (MainContext.GetSimulationController() == null) return;
         if (MainContext.GetSimulationController().GetSimulation<DefaultSimulation>() == null) return;
@@ -233,7 +233,7 @@ public class Sample2 : Sample
         ptFrames.Clear();
         if (Selection.SelectedIds.Count > 0)
         {
-            bool hasCommand = false;
+    
             var dir = new TSVector2(0, 0);
             if (Input.GetKeyDown(KeyCode.W))
             {
@@ -282,7 +282,6 @@ public class Sample2 : Sample
 
             if (hasCommand)
             {
-
                 foreach (Guid entityId in Selection.SelectedIds)
                 {
                     var comps = entityWorld.ReadComponent<BasicAttributes, Movement>(entityId);
@@ -297,18 +296,20 @@ public class Sample2 : Sample
                                                                     .SetComponentClsName(typeof(Movement).AssemblyQualifiedName)
                                                                     .SetParamContent(deltaMovement.Serialize()));
                         ptFrames.Add(frame);
+
+                        Debug.LogWarning("Push PtFrame Id:"+ frame.EntityId+" " + frame.Updaters.Elements[0].ComponentClsName);
                     }
                 }
             }
             if (ptFrames.Count > 0)
             {
-    
                 foreach (var frame in ptFrames)
                 {
-                 
                     Engine.Client.Lockstep.Behaviours.Data.Input.InputFrames.Enqueue(frame);
                 }              
             }
+
+            //Debug.LogWarning("hasCommand "+ hasCommand+ " ptFramesCount:"+ ptFrames.Count);
         }
     }
 }
