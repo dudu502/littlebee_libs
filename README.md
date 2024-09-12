@@ -153,10 +153,8 @@ void Awake(){
   MainContext.SetSimulationController(defaultSimulationController);
   defaultSimulationController.CreateSimulation(new DefaultSimulation(),new EntityWorld(),
       new ISimulativeBehaviour[] {
-          new LogicFrameBehaviour(),        //逻辑帧累加，保存关键帧等
-          new RollbackBehaviour(),          //网络关键帧回滚
+          new FrameReceiverBehaviour(),     //收取服务器的帧数据并处理
           new EntityBehaviour(),            //执行ECS中System
-          new ComponentsBackupBehaviour(),  //关键帧备份并同步至服务
       },
       new IEntitySystem[]
       {
@@ -238,19 +236,6 @@ public class PtMyData
 
 ## 帧同步模拟器
 帧同步模拟器是SDK中执行帧同步的关键部分，重点需要不同设备在启动后经过一段时间后所有的设备都能保持一致的帧数，这就需要在每次tick的时候通过DateTime校准，要做到这点需要解决本地时间流逝和逻辑TICK之间的关系。详细代码可以打开[SimulationController.cs](https://github.com/dudu502/littlebee_libs/blob/main/Engine/Common/Lockstep/SimulationController.cs) 文件查看。
-
-以下三张图分别描述了帧同步模拟器在三种不同场景下的使用情况。
-
-下图表示客户端，服务端在同一时刻的大致行为，还有回放逻辑也是对应一致的行为。
-![客户端服务端和回放时间轴概图](https://github.com/dudu502/littlebee_libs/blob/main/Res/Timeline1.png)
-
-这张图是客户端和服务端在每一个逻辑TICK中执行逻辑。上半部分是客户端，客户端需要执行的逻辑包含ECSR部分，下半部分是服务端部分。
-![客户端服务端和回放时间轴概图细节](https://github.com/dudu502/littlebee_libs/blob/main/Res/Timeline2.png)
-
-最后一张图是描述回放的每一个逻辑帧。
-![回放时间轴概图细节](https://github.com/dudu502/littlebee_libs/blob/main/Res/Timeline3.png)
-
-通过这几张图结合具体做什么类型的游戏，我们可以设置自定义System和Component来处理相关逻辑。
 
 # 项目任务  
 - [x] SDK基本功能部分 
