@@ -32,7 +32,7 @@ Context.Retrieve(name);
 ```mermaid  
 classDiagram
     class INetworkServer{
-      +Send(ushort messageId,byte[] data, IPEndPoint ep)
+      +Send(IPEndPoint ep,ushort messageId,byte[] data)
       +Send(int clientId,ushort messageId,byte[] data)
       +Send(int[] clientIds,ushort messageId,byte[] data)
       +Send(ushort messageId,byte[] data)
