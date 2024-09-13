@@ -8,7 +8,7 @@ namespace Engine.Client.Protocol.Pt
         public string Version;
         public uint MapId = 0;
         public List<EntityList> InitEntities;
-        public List<List<PtFrame>> Frames;
+        public List<PtFrames> Frames;
 
         public static byte[] Write(PtReplay info)
         {
@@ -16,25 +16,12 @@ namespace Engine.Client.Protocol.Pt
             {
                 buffer.WriteString(info.Version);
                 buffer.WriteUInt32(info.MapId);
-
                 bool hasInitEntities = info.InitEntities != null;
                 buffer.WriteBool(hasInitEntities);
-                if (hasInitEntities)                
+                if (hasInitEntities)
                     buffer.WriteCollection(info.InitEntities, value => EntityList.Write(value));
-   
-                int framesCount = info.Frames.Count;
-                buffer.WriteInt32(framesCount);
-                for (int i = 0; i < framesCount; ++i)
-                {
-                    List<PtFrame> frames = info.Frames[i];
-                    int fcount = frames.Count;
-                    buffer.WriteInt32(fcount);
-                    for (int j = 0; j < fcount; ++j)
-                    {
-                        PtFrame frame = frames[j];
-                        buffer.WriteBytes(PtFrame.Write(frame));
-                    }
-                }
+
+                buffer.WriteCollection(info.Frames, value => PtFrames.Write(value));
                 return buffer.GetRawBytes();
             }
         }
@@ -48,20 +35,7 @@ namespace Engine.Client.Protocol.Pt
                 bool hasInitEntities = buffer.ReadBool();
                 if (hasInitEntities)
                     info.InitEntities = buffer.ReadCollection(raw => EntityList.Read(raw));
-
-                info.Frames = new List<List<PtFrame>>();
-                int framesCount = buffer.ReadInt32();
-                for (int i = 0; i < framesCount; ++i)
-                {
-                    List<PtFrame> frames = new List<PtFrame>();
-                    int fcount = buffer.ReadInt32();
-                    for (int j = 0; j < fcount; ++j)
-                    {
-                        PtFrame frame = PtFrame.Read(buffer.ReadBytes());
-                        frames.Add(frame);
-                    }
-                    info.Frames.Add(frames);
-                }
+                info.Frames = buffer.ReadCollection(raw => PtFrames.Read(raw));
                 return info;
             }
         }

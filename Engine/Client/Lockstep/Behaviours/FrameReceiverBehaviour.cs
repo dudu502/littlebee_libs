@@ -13,17 +13,17 @@ namespace Engine.Client.Lockstep.Behaviours
         public Simulation Sim { set; get; }
         BattleServiceModule battleServiceModule;
         DefaultSimulation defaultSimulation;
-        List<List<PtFrame>> totalFrames;
-        readonly List<PtFrame> defaultFrame = new List<PtFrame>();
+        List<PtFrames> totalFrames;
+        readonly PtFrames defaultFrames = new PtFrames().SetKeyFrames(new List<PtFrame>());
         public int FrameIdx { get; private set; }
         public FrameReceiverBehaviour()
         {
 
         }
-        public List<List<PtFrame>> GetFrames() { return totalFrames; }
+        public List<PtFrames> GetFrames() { return totalFrames; }
         public void Start()
         {
-            totalFrames = new List<List<PtFrame>>();
+            totalFrames = new List<PtFrames>();
             battleServiceModule = Context.Retrieve(Context.CLIENT).GetModule<BattleServiceModule>();
             defaultSimulation = Sim as DefaultSimulation;
         }
@@ -40,7 +40,7 @@ namespace Engine.Client.Lockstep.Behaviours
         {
             FrameIdx = frames.FrameIdx;
             defaultSimulation.GetEntityWorld().RestoreFrames(frames);
-            totalFrames.Add(frames.KeyFrames ?? defaultFrame);
+            totalFrames.Add(frames ?? defaultFrames);
         }
         public void Update()
         {

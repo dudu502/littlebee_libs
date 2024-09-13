@@ -1,4 +1,5 @@
-﻿using Engine.Common.Event;
+﻿using Engine.Common;
+using Engine.Common.Event;
 using Engine.Common.Lockstep;
 using Engine.Common.Misc;
 using Engine.Common.Protocol.Pt;
@@ -9,12 +10,12 @@ namespace Engine.Client.Lockstep.Behaviours
     {
         public Simulation Sim { get; set; }
         private int FrameIdx;
-        List<List<PtFrame>> m_Frames;
+        List<PtFrames> m_Frames;
         public void Start()
         {
             FrameIdx = -1;
         }
-        public void SetFrameIdxInfos(List<List<PtFrame>> infos)
+        public void SetFrameIdxInfos(List<PtFrames> infos)
         {
             m_Frames = infos;
         }
@@ -22,10 +23,10 @@ namespace Engine.Client.Lockstep.Behaviours
         {
             return $"{nameof(ReplayLogicFrameBehaviour)} FrameIdx:{FrameIdx}";
         }
-        public List<PtFrame> GetFrameIdxInfoAtCurrentFrame()
+        public PtFrames GetFrameIdxInfoAtCurrentFrame()
         {
             if (FrameIdx < m_Frames.Count)
-                return m_Frames[FrameIdx];
+                return m_Frames.Find(frame => frame.FrameIdx == FrameIdx);            
             return null;
         }
         public void Stop()
