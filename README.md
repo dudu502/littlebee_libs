@@ -1,6 +1,6 @@
 # 帧同步开发框架
 
-这是一个基于netstandard2.0的帧同步游戏开发SDK，提供服务端，客户端的SDK部分。目前主要的代码案例用Unity编写客户端，dotnetcore控制台程序为服务端。
+将帧同步项目 https://github.com/dudu502/LittleBee 帧同步核心部分提取出SDK，本SDK基于netstandard2.0。提供服务端，客户端的SDK部分。目前主要的代码案例用Unity编写客户端，dotnetcore控制台程序为服务端。
 
 ## 项目结构如下
 
@@ -17,14 +17,19 @@
 
 ## 说明
 ### API
-SDK中找到Context类，这是框架的主类，这个类很重要它是整个SDK的入口，在客户端和服务端中都用这个类作为程序入口，都是相似API的用法，默认Context的name分为服务端和客户端：
+SDK中找到Context类，这是框架的主类，这个类很重要它是整个SDK的入口，在客户端和服务端中都用这个类作为程序入口，都是相似API的用法，默认Context的name分为服务端和客户端，使用的时候根据需要选择client或server类型来构造Context实例。
 ```csharp
 public const string CLIENT = "client";
 public const string SERVER = "server";
 ```
-在构造方法里传入name来指定对应的Context，对应的获取方法：
+在构造方法里传入name来指定对应的Context：
 ```csharp
-Context.Retrieve(name);
+Context clientContext = new Context(Context.CLIENT);
+Context serverContext = new Context(Context.SERVER);
+```
+对应的获取方法：
+```csharp
+Context context = Context.Retrieve(name);
 ```
 在SDK内或自定义游戏中均可以通过上述的方法获取Context对象。再通过Context对象可以方便获取其他对象和数据。
 
@@ -79,7 +84,7 @@ public sealed class ContextMetaId
 }
 ```
 ### 服务端代码案例
-服务器分Gate和Battle两部分，Gate服务旨在提供用户一个大厅服务，让用户登录进来，每一个用户有一个不同的uid，这个uid目前仅用不同的字符串区别测试就可以，正式项目应该是数据库中的guid以确保每一个用户的id是唯一的。在这个Gate服务中提供用户创建房间，加入房间，离开房间等有关组队的服务。当多用户在房间内开启战斗的时候Gate服务会开启Battle服务的新进程让并告知这些用户去进入Battle服务。每一个战斗都会开启一个新的Battle进程。在Battle服务中具体实现了同步关键帧给所有用户的服务。
+服务器分Gate和Battle两部分，Gate服务旨在提供用户一个大厅服务，让用户登录进来，每一个用户有一个不同的uid，这个uid目前仅用不同的字符串区别测试就可以，正式项目应该是数据库中的guid以确保每一个用户的id是唯一的。在这个Gate服务中提供用户创建房间，加入房间，离开房间等有关组队的服务。当多用户在房间内开启战斗的时候Gate服务会开启Battle服务的新进程并告知这些用户进入Battle服务。每一个战斗都会开启一个新的Battle进程。在Battle服务中具体实现了同步关键帧给所有用户的服务。
 
 如下是Gate服务端的代码案例：
 ```csharp
@@ -229,7 +234,7 @@ public class PtMyData
 |PtFrame|string EntityId<br>PtComponentUpdaterList Updater<br>byte[] NewEntitiesRaw|一个关键帧数据|
 |PtFrames|int FrameIdx<br>List<PtFrame> KeyFrames|在某一帧的所有关键帧集合|
 |PtMap|string Version<br>EntityList Entities|地图数据|
-|PtReplay|string Version<br>uint MapId<br>List<EntityList> InitEntities<br>List<List<PtFrame>> Frames|录像（回放）数据|
+|PtReplay|string Version<br>uint MapId<br>List<EntityList> InitEntities<br>List<PtFrames> Frames|录像（回放）数据|
 
 ## 录像（回放）机制
 录像（回放）机制是帧同步技术中最有特点的机制，也是一个绕不开的点。SDK中也有录像的保存加载。
