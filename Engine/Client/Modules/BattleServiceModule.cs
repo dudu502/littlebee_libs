@@ -191,22 +191,9 @@ namespace Engine.Client.Modules
                 m_RoomSession.WriteKeyFrameIndex = list.FrameIdx;
                 m_RoomSession.HistoryFramesList = new ConcurrentQueue<PtFrames>(list.Elements);
 
-                //foreach(var item in list.Elements)
-                //{
-                //    if (item.HasKeyFrames())
-                //    {
-                //        foreach(var f in item.KeyFrames)
-                //        {
-                //            if(f.HasUpdaters())
-                //                m_Logger.Warn("OnResponseHistoryKeyframes Updater "+f.Updaters.Elements.Count);
-                //        }
-                //    }
-                //}
-
                 int offset = m_RoomSession.InitIndex == -1 ? 0 : m_RoomSession.InitIndex;
                 startDate -= DateTime.Now - startDate + new TimeSpan(encodingTicks);
                 // start simulation
-                //m_Logger.Warn($"OnResponseHistoryKeyframes {m_RoomSession.WriteKeyFrameIndex} {offset}");
                 m_Context.GetSimulationController<DefaultSimulationController>().Start(startDate, m_RoomSession.WriteKeyFrameIndex - offset,
                     progress=>EventDispatcher<LoadingType,LoadingEventId>.DispatchEvent(LoadingType.Loading,new LoadingEventId(LoadingEventId.SynchronizingKeyFrames, progress))
                     , ()=>EventDispatcher<LoadingType,LoadingEventId>.DispatchEvent(LoadingType.Loading,new LoadingEventId(LoadingEventId.SynchronizingKeyFramesCompleted,1)));
@@ -248,6 +235,15 @@ namespace Engine.Client.Modules
 
         public override void Dispose()
         {
+
+            EventDispatcher<ResponseMessageId, PtMessagePackage>.RemoveListener(ResponseMessageId.RS_ClientConnected, OnResponseRoomServerClientConnected);
+            EventDispatcher<ResponseMessageId, PtMessagePackage>.RemoveListener(ResponseMessageId.RS_EnterRoom, OnResponseEnterRoom);
+            EventDispatcher<ResponseMessageId, PtMessagePackage>.RemoveListener(ResponseMessageId.RS_SyncKeyframes, OnResponseSyncKeyframes);
+            EventDispatcher<ResponseMessageId, PtMessagePackage>.RemoveListener(ResponseMessageId.RS_InitPlayer, OnResponseInitPlayer);
+            EventDispatcher<ResponseMessageId, PtMessagePackage>.RemoveListener(ResponseMessageId.RS_InitSelfPlayer, OnResponseInitSelfPlayer);
+            EventDispatcher<ResponseMessageId, PtMessagePackage>.RemoveListener(ResponseMessageId.RS_PlayerReady, OnResponsePlayerReady);
+            EventDispatcher<ResponseMessageId, PtMessagePackage>.RemoveListener(ResponseMessageId.RS_AllUserState, OnResponseAllUserState);
+            EventDispatcher<ResponseMessageId, PtMessagePackage>.RemoveListener(ResponseMessageId.RS_HistoryKeyframes, OnResponseHistoryKeyframes);
             base.Dispose();
         }
     }

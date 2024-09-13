@@ -162,11 +162,9 @@ namespace Engine.Server.Modules
         }
 
         void OnSyncClientKeyframes(PtMessagePackage message)
-        {
-            
+        {            
             PtFrames collection = PtFrames.Read(message.Content);
             Session.QueueKeyFrameCollection.Enqueue(collection);
-            //m_Logger.Warn("]OnSyncClientKeyframes----Keyframes   " + Session.QueueKeyFrameCollection.Count);
         }
 
         async void OnHistoryKeyframes(PtMessagePackage message)
@@ -199,21 +197,18 @@ namespace Engine.Server.Modules
                 }      
             }
             Session.KeyFrameList.Elements.Add(flushCollection);
-
-            //if (flushCollection.HasKeyFrames())
-            //{
-            //    foreach (var item in flushCollection.KeyFrames)
-            //    {
-            //        if (item.HasUpdaters())
-            //            m_Logger.Warn("FlushKeyFrame Updater " + item.Updaters.Elements.Count);
-            //    }
-            //}
-
             m_Server.Send((ushort)ResponseMessageId.RS_SyncKeyframes, PtFrames.Write(flushCollection));
         }
 
         public override void Dispose()
         {
+            EventDispatcher<NetworkEventId, int>.RemoveListener(NetworkEventId.PeerConnected, OnPeerConnected);
+            EventDispatcher<NetworkEventId, int>.RemoveListener(NetworkEventId.PeerDisconnected, OnPeerDisconnected);
+            EventDispatcher<RequestMessageId, PtMessagePackage>.RemoveListener(RequestMessageId.RS_EnterRoom, OnEnterRoom);
+            EventDispatcher<RequestMessageId, PtMessagePackage>.RemoveListener(RequestMessageId.RS_InitPlayer, OnInitPlayer);
+            EventDispatcher<RequestMessageId, PtMessagePackage>.RemoveListener(RequestMessageId.RS_PlayerReady, OnPlayerReady);
+            EventDispatcher<RequestMessageId, PtMessagePackage>.RemoveListener(RequestMessageId.RS_SyncClientKeyframes, OnSyncClientKeyframes);
+            EventDispatcher<RequestMessageId, PtMessagePackage>.RemoveListener(RequestMessageId.RS_HistoryKeyframes, OnHistoryKeyframes);
             base.Dispose();
         }
     }

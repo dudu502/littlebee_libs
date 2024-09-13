@@ -7,5 +7,6 @@
         void Connect(string ip, int port, string key);
         void Close();
         int GetActivePort();
+        void Dispose();
     }
 }

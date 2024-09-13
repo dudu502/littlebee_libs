@@ -174,6 +174,15 @@ namespace Engine.Client.Modules
         }
         public override void Dispose()
         {
+            EventDispatcher<ResponseMessageId, PtMessagePackage>.RemoveListener(ResponseMessageId.GS_ClientConnected, OnResponseGateServerCliented);
+            EventDispatcher<ResponseMessageId, PtMessagePackage>.RemoveListener(ResponseMessageId.GS_UpdateRoom, OnResponseUpdateRoom);
+            EventDispatcher<ResponseMessageId, PtMessagePackage>.RemoveListener(ResponseMessageId.GS_RoomList, OnResponseRoomList);
+            EventDispatcher<ResponseMessageId, PtMessagePackage>.RemoveListener(ResponseMessageId.GS_CreateRoom, OnResponseCreateRoom);
+            EventDispatcher<ResponseMessageId, PtMessagePackage>.RemoveListener(ResponseMessageId.GS_JoinRoom, OnResponseJoinRoom);
+            EventDispatcher<ResponseMessageId, PtMessagePackage>.RemoveListener(ResponseMessageId.GS_ErrorCode, OnResponseErrorCode);
+            EventDispatcher<ResponseMessageId, PtMessagePackage>.RemoveListener(ResponseMessageId.GS_LeaveRoom, OnResponseLeaveRoom);
+            EventDispatcher<ResponseMessageId, PtMessagePackage>.RemoveListener(ResponseMessageId.GS_LaunchGame, OnResponseLaunchGame);
+            EventDispatcher<ResponseMessageId, PtMessagePackage>.RemoveListener(ResponseMessageId.GS_LaunchRoomInstance, OnResponseLaunchRoomInstance);
             base.Dispose();
         }
     }

@@ -98,6 +98,7 @@ namespace Engine.Common.Lockstep
         {
             m_SimulationInstance?.Dispose();
             m_SimulationInstance = null;
+            m_RunnerThread = null;
         }
     }
 }

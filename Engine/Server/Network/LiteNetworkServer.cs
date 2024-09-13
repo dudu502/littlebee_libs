@@ -104,5 +104,18 @@ namespace Engine.Server.Network
         {
             manager.SendUnconnectedMessage(PtMessagePackage.Write(PtMessagePackage.Build(messageId, data)), endPoint);
         }
+        public void Dispose()
+        {
+            listener.ClearPeerDisconnectedEvent();
+            listener.ClearDeliveryEvent();
+            listener.ClearConnectionRequestEvent();
+            listener.ClearNetworkErrorEvent();
+            listener.ClearNetworkLatencyUpdateEvent();
+            listener.ClearNetworkReceiveEvent();
+            listener.ClearNetworkReceiveUnconnectedEvent();
+            listener.ClearPeerAddressChangedEvent();
+            listener.ClearPeerConnectedEvent();
+            listener.ClearNtpResponseEvent();
+        }
     }
 }

@@ -4,9 +4,6 @@ using Engine.Common.Module;
 using Engine.Common.Network.Integration;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Security.Cryptography;
-using System.Text;
 
 namespace Engine.Common
 {
@@ -30,8 +27,7 @@ namespace Engine.Common
         public INetworkServer Server { get; private set; }
         public INetworkClient Client { get; private set; }
         public ILogger Logger { get;private set; }
-
-        public string Name; 
+        public string Name { get; private set; }
 
         SimulationController simulationController;
 
@@ -149,6 +145,29 @@ namespace Engine.Common
                 context += $"Sim:{simulationController}";
             }
             return context;
+        }
+
+        public static void Destory(Context context)
+        {
+            if(context != null)
+            {
+                s_instances.Remove(context.Name);
+                context.metas.Clear();
+                foreach(var module in context.modules.Values)
+                {
+                    module.Dispose();
+                }
+                context.modules.Clear();
+                if(context.Server!=null)
+                    context.Server.Dispose();
+                context.Server = null;
+                if(context.Client!=null)
+                    context.Client.Dispose();
+                context.Client = null;
+                context.simulationController.DisposeSimulation();
+                context.simulationController = null;
+                context.Logger = null;
+            }
         }
     }
 }

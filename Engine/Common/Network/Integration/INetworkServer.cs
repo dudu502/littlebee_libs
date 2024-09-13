@@ -10,5 +10,6 @@ namespace Engine.Common.Network.Integration
         void Send(ushort messageId, byte[] data);
         void Run(int port);
         int GetActivePort();
+        void Dispose();
     }
 }

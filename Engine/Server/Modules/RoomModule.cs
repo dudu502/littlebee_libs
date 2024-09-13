@@ -357,6 +357,16 @@ namespace Engine.Server.Modules
         }
         public override void Dispose()
         {
+            EventDispatcher<NetworkEventId, int>.RemoveListener(NetworkEventId.PeerConnected, OnPeerConnected);
+            EventDispatcher<NetworkEventId, int>.RemoveListener(NetworkEventId.PeerDisconnected, OnPeerDisconnected);
+            EventDispatcher<RequestMessageId, PtMessagePackage>.RemoveListener(RequestMessageId.GS_EnterGate, OnEnterGate);
+            EventDispatcher<RequestMessageId, PtMessagePackage>.RemoveListener(RequestMessageId.GS_RoomList, OnRoomList);
+            EventDispatcher<RequestMessageId, PtMessagePackage>.RemoveListener(RequestMessageId.GS_CreateRoom, OnCreateRoom);
+            EventDispatcher<RequestMessageId, PtMessagePackage>.RemoveListener(RequestMessageId.GS_UpdateRoom, OnUpdateRoom);
+            EventDispatcher<RequestMessageId, PtMessagePackage>.RemoveListener(RequestMessageId.GS_JoinRoom, OnJoinRoom);
+            EventDispatcher<RequestMessageId, PtMessagePackage>.RemoveListener(RequestMessageId.GS_LeaveRoom, OnLeaveRoom);
+            EventDispatcher<RequestMessageId, PtMessagePackage>.RemoveListener(RequestMessageId.GS_LaunchGame, OnLaunchGame);
+            EventDispatcher<RequestMessageId, PtMessagePackage>.RemoveListener(RequestMessageId.UGS_RoomPlayerDisconnect, OnRoomPlayerDisconnected);
             base.Dispose();
         }
     }

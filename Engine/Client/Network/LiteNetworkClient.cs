@@ -107,5 +107,19 @@ namespace Engine.Client.Network
         {
             return manager.LocalPort;
         }
+
+        public void Dispose()
+        {
+            listener.ClearPeerDisconnectedEvent();
+            listener.ClearDeliveryEvent();
+            listener.ClearConnectionRequestEvent();
+            listener.ClearNetworkErrorEvent();
+            listener.ClearNetworkLatencyUpdateEvent();
+            listener.ClearNetworkReceiveEvent();
+            listener.ClearNetworkReceiveUnconnectedEvent();
+            listener.ClearPeerAddressChangedEvent();
+            listener.ClearPeerConnectedEvent();
+            listener.ClearNtpResponseEvent();
+        }
     }
 }
