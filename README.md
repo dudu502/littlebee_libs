@@ -51,6 +51,29 @@ classDiagram
       +Close()
       int GetActivePort()
     }
+    class SimulationController{
+      +GetFrameMsLength()
+      +GetFrameLerp()
+      +UpdateFrameMsLength(float factor)
+      +CreateSimulation(Simulation sim,ISimulativeBehaviour[] bhs)
+      +Start(DateTime sTime,int hist_kf_cout,Action<float> progress,Action runner)
+      +Stop()
+      +GetSimulation()
+      +DisposeSimulation()
+    }
+    class Simulation{
+      +Start()
+      +GetBehaviour()
+      +ContainBehaviour(ISimulativeBehaviour beh)
+      +AddBehaviour(ISimulativeBehaviour beh)
+      +RemoveBehaviour(ISimulativeBehaviour beh)
+      +Run()
+    }
+    class ISimulativeBehaviour{
+      +Start()
+      +Update()
+      +Stop()
+    }
     class Context {  
         +INetworkServer Server  
         +INetworkClient Client  

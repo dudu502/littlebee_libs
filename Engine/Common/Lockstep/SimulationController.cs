@@ -36,7 +36,7 @@ namespace Engine.Common.Lockstep
         }
         public void Start(DateTime startDateTime,
                             int history_keyframes_count = 0,
-                            Action<float> process = null,
+                            Action<float> progress = null,
                             Action runner = null)
         {
             m_CurrentDateTime = startDateTime;
@@ -44,7 +44,7 @@ namespace Engine.Common.Lockstep
             for (int i = 0; i < history_keyframes_count; i++)
             {
                 m_SimulationInstance.Run();
-                process?.Invoke(1f * i / history_keyframes_count);
+                progress?.Invoke(1f * i / history_keyframes_count);
             }
             State = RunState.Running;
             m_RunnerThread = new Thread(Run);
