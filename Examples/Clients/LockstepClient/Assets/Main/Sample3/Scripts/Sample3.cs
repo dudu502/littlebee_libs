@@ -69,30 +69,6 @@ public class Sample3 : Sample
 
             return result;
         }
-
-        public override Task CreateEntities(uint mapId)
-        {
-            return Task.Run(() =>
-            {
-                var path = Path.Combine(Context.Retrieve(Context.CLIENT).GetMeta(ContextMetaId.PERSISTENT_DATA_PATH), "map", mapId + ".map");
-                byte[] bytes = File.ReadAllBytes(path);
-                try
-                {
-                    PtMap map = PtMap.Read(bytes);
-                    if (map.HasEntities())
-                    {
-                        foreach (Entity entity in map.Entities.Elements)
-                        {
-                            World.CreateEntity(entity);
-                        }
-                    }
-                }
-                catch (Exception e)
-                {
-                    Debug.LogWarning(e);
-                }
-            });
-        }
     }
     public class GameEntityRenderSpawner : EntityRenderSpawner
     {
@@ -110,12 +86,15 @@ public class Sample3 : Sample
         protected override void CreateEntityRendererImpl(CreateEntityRendererRequest request)
         {
             base.CreateEntityRendererImpl(request);
-            GameObject resPrefab = GameObject.Instantiate<GameObject>(Resources.Load<GameObject>(request.ResourcePath));
-            if (resPrefab.TryGetComponent<AppearanceRenderer>(out var component))
+            if (request.Status == Appearance.StatusStartLoading)
             {
-                component.EntityId = request.EntityId;
-                component.World = entityWorld;
-                resPrefab.transform.SetParent(gameContainer);
+                GameObject resPrefab = GameObject.Instantiate<GameObject>(Resources.Load<GameObject>(request.ResourcePath));
+                if (resPrefab.TryGetComponent<AppearanceRenderer>(out var component))
+                {
+                    component.EntityId = request.EntityId;
+                    component.World = entityWorld;
+                    resPrefab.transform.SetParent(gameContainer);
+                }
             }
         }
     }

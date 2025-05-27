@@ -205,17 +205,19 @@ namespace Engine.Client.Modules
         }
         public void RequestInitPlayer(bool initSelf)
         {
-            ByteBuffer buffer = new ByteBuffer();
-            buffer.WriteString(m_RoomSession.EntityId);
-            buffer.WriteBool(initSelf);
-            if (initSelf)
+            using (ByteBuffer buffer = new ByteBuffer())
             {
-                // send self player's components
-                EntityList entityList = m_Context.GetSimulationController<DefaultSimulationController>().GetSimulation<DefaultSimulation>()
-                    .GetEntityWorld().GetEntityInitializer().OnCreateSelfEntityComponents(new Guid(m_RoomSession.EntityId));
-                buffer.WriteBytes(EntityList.Write(entityList));
-            }            
-            m_NetworkClient.Send((ushort)RequestMessageId.RS_InitPlayer, buffer.GetRawBytes());
+                buffer.WriteString(m_RoomSession.EntityId);
+                buffer.WriteBool(initSelf);
+                if (initSelf)
+                {
+                    // send self player's components
+                    EntityList entityList = m_Context.GetSimulationController<DefaultSimulationController>().GetSimulation<DefaultSimulation>()
+                        .GetEntityWorld().GetEntityInitializer().OnCreateSelfEntityComponents(new Guid(m_RoomSession.EntityId));
+                    buffer.WriteBytes(EntityList.Write(entityList));
+                }
+                m_NetworkClient.Send((ushort)RequestMessageId.RS_InitPlayer, buffer.GetRawBytes());
+            }
         }
 
         public void RequestPlayerReady()
@@ -235,7 +237,6 @@ namespace Engine.Client.Modules
 
         public override void Dispose()
         {
-
             EventDispatcher<ResponseMessageId, PtMessagePackage>.RemoveListener(ResponseMessageId.RS_ClientConnected, OnResponseRoomServerClientConnected);
             EventDispatcher<ResponseMessageId, PtMessagePackage>.RemoveListener(ResponseMessageId.RS_EnterRoom, OnResponseEnterRoom);
             EventDispatcher<ResponseMessageId, PtMessagePackage>.RemoveListener(ResponseMessageId.RS_SyncKeyframes, OnResponseSyncKeyframes);

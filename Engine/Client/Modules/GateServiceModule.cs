@@ -63,7 +63,6 @@ namespace Engine.Client.Modules
             // disconnect gate server and connect to room server
             m_Logger.Warn($"{nameof(OnResponseLaunchRoomInstance)} Disconnect Gate");
             m_Client.Close();
-            //await Task.Delay(100);
             await Task.Yield();
             m_Logger.Warn($"{nameof(OnResponseLaunchRoomInstance)} Connect Battle");
             m_Client.Connect(launchData.RoomServerAddr, launchData.RoomServerPort,launchData.ConnectionKey);

@@ -70,30 +70,6 @@ public class Sample1 : Sample
 
             return result;
         }
-
-        public override Task CreateEntities(uint mapId)
-        {
-            return Task.Run(() =>
-            {
-                var path = Path.Combine(Context.Retrieve(Context.CLIENT).GetMeta(ContextMetaId.PERSISTENT_DATA_PATH), "map", mapId + ".map");
-                byte[] bytes = File.ReadAllBytes(path);
-                try
-                {
-                    PtMap map = PtMap.Read(bytes);
-                    if (map.HasEntities())
-                    {
-                        foreach (Entity entity in map.Entities.Elements)
-                        {
-                            World.CreateEntity(entity);
-                        }
-                    }
-                }
-                catch (Exception e)
-                {
-                    Debug.LogWarning(e);
-                }
-            });    
-        }
     }
     public class GameEntityRenderSpawner : EntityRenderSpawner
     {
@@ -111,12 +87,16 @@ public class Sample1 : Sample
         protected override void CreateEntityRendererImpl(CreateEntityRendererRequest request)
         {
             base.CreateEntityRendererImpl(request);
-            GameObject resPrefab = GameObject.Instantiate<GameObject>(Resources.Load<GameObject>(request.ResourcePath));
-            if (resPrefab.TryGetComponent<AppearanceRenderer>(out var component))
+            if (request.Status == Appearance.StatusStartLoading)
             {
-                component.EntityId = request.EntityId;
-                component.World = entityWorld;
-                resPrefab.transform.SetParent(gameContainer);
+                GameObject resPrefab = GameObject.Instantiate<GameObject>(Resources.Load<GameObject>(request.ResourcePath));
+                if (resPrefab.TryGetComponent<AppearanceRenderer>(out var component))
+                {
+                    component.EntityId = request.EntityId;
+                    component.World = entityWorld;
+                    resPrefab.transform.SetParent(gameContainer);
+                }
+                request.Status = Appearance.StatusLoaded;
             }
         }
     }
@@ -177,7 +157,7 @@ public class Sample1 : Sample
         File.WriteAllBytes(path,PtMap.Write(ptMap));
     }
 
-    public override void PlayReplay(string name)
+    async public override void PlayReplay(string name)
     {
         if (MainContext.GetSimulationController().State == SimulationController.RunState.Running)
             return;
@@ -204,7 +184,7 @@ public class Sample1 : Sample
         entityWorld.SetEntityInitializer(new GameEntityInitializer(entityWorld));
         entityWorld.SetEntityRenderSpawner(new GameEntityRenderSpawner(entityWorld, GameContainer));
         // load map
-        entityWorld.GetEntityInitializer().CreateEntities(replay.MapId);
+        await entityWorld.GetEntityInitializer().CreateEntities(replay.MapId);
         // load init entities;
         entityWorld.GetEntityInitializer().InitEntities = replay.InitEntities;
         entityWorld.GetEntityInitializer().CreateEntities(replay.InitEntities);

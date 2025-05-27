@@ -1,9 +1,10 @@
-﻿using Engine.Common.Misc;
+﻿using Engine.Client.Ecsr.Components;
+using Engine.Common.Misc;
 using System;
 
 namespace Engine.Client.Ecsr.Renders
 {
-    public struct CreateEntityRendererRequest
+    public class CreateEntityRendererRequest
     {
         public Guid EntityId;
         public string ResourcePath;

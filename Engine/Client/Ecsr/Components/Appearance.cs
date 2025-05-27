@@ -6,6 +6,7 @@ namespace Engine.Client.Ecsr.Components
     {
         public const byte StatusDefault = 0;
         public const byte StatusStartLoading = 1;
+        public const byte StatusLoaded = 2;
         private byte __tag__;
 
         public byte Status { get; private set; } = StatusDefault;
