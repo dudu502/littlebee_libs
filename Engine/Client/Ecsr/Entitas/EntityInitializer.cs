@@ -66,54 +66,6 @@ namespace Engine.Client.Ecsr.Entitas
             });
         }
 
-        /// <summary>
-        /// Load map config
-        /// Load Render...
-        /// </summary>
-        /// <param name="mapId"></param>
-        /// <returns></returns>
-        //public virtual Task CreateEntities(uint mapId)
-        //{
-        //    return Task.Run(() =>
-        //    {
-        //        string path = Path.Combine(Context.Retrieve(Context.CLIENT).GetMeta(ContextMetaId.PERSISTENT_DATA_PATH), "map", mapId + ".map");
-        //        byte[] bytes = File.ReadAllBytes(path);
-        //        PtMap map = PtMap.Read(bytes);
-        //        if (map.HasEntities())
-        //        {
-        //            List<CreateEntityRendererRequest> requests = new List<CreateEntityRendererRequest>();
-        //            foreach(Entity entity in map.Entities.Elements)
-        //            {
-        //                World.CreateEntity(entity);
-
-        //                Appearance appearance = entity.GetComponent(typeof(Appearance)) as Appearance;
-        //                if(appearance != null && appearance.Status == Appearance.StatusDefault) 
-        //                {
-        //                    appearance.SetStatus(Appearance.StatusStartLoading);
-        //                    CreateEntityRendererRequest request = new CreateEntityRendererRequest(entity.Id, appearance.Status, appearance.Resource);
-        //                    requests.Add(request);
-        //                    World.GetRenderSpawner().CreateEntityRenderer(request);
-        //                }
-        //            }
-
-        //            bool loadedAll = false;
-        //            while (!loadedAll)
-        //            {
-        //                Thread.Sleep(20);
-        //                loadedAll = true;
-        //                foreach (CreateEntityRendererRequest request in requests)
-        //                {
-        //                    if (request.Status != Appearance.StatusLoaded)
-        //                    {
-        //                        loadedAll = false;
-        //                        continue;
-        //                    }
-        //                }
-        //            }
-        //        }
-        //    });
-        //}
-
         public void CreateEntities(List<EntityList> entityLists)
         {
             foreach (EntityList entityList in entityLists)
